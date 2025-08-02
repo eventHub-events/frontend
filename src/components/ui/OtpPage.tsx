@@ -1,0 +1,133 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { authService } from "../../services/authService";
+import { useRouter, useSearchParams } from "next/navigation";
+
+interface OTPPageProps {
+  userType: "user" | "organizer";
+}
+
+export default function OTPPage({ userType }: OTPPageProps) {
+  const isUser = userType === "user";
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get email from query param (passed from signup page)
+  const email = searchParams.get("email") || "";
+  console.log("email is",email)
+
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(120); // 2 min timer
+  const [resendLoading, setResendLoading] = useState(false);
+
+  // Timer logic
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  // Handle OTP submit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp) return;
+
+    setLoading(true);
+    try {
+     const result= await authService.verifyOtp({ email, otp, role: userType });
+     console.log("result is",result)
+      alert("OTP Verified! Redirecting...");
+      router.push(isUser ? "/user/dashboard" : "/organizer/dashboard");
+    } catch (error: any) {
+      alert(error?.response?.data?.message || "OTP Verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle Resend OTP
+  const handleResendOtp = async () => {
+    setResendLoading(true);
+    try {
+      console.log("email in  resent")
+      await authService.resentOtp({ email });
+      setTimeLeft(120); // Reset timer
+      alert("New OTP sent!");
+    } catch (error: any) {
+      alert(error?.response?.data?.message || "Error resending OTP");
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex justify-center items-center bg-gray-50">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center">
+        <h2
+          className={`text-2xl font-bold mb-4 ${
+            isUser ? "text-purple-600" : "text-orange-600"
+          }`}
+        >
+          {isUser ? "Verify Your Account" : "Organizer OTP Verification"}
+        </h2>
+        <p className="text-gray-500 text-sm mb-6">
+          Please enter the OTP sent to <span className="font-semibold">{email}</span>
+        </p>
+
+        {/* OTP Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            maxLength={6}
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            className="w-full border rounded-lg px-4 py-2 text-sm text-center focus:ring-2 focus:ring-purple-500"
+          />
+
+          <button
+            type="submit"
+            disabled={loading || !otp}
+            className={`w-full py-2 rounded-lg text-white font-medium ${
+              isUser
+                ? "bg-gradient-to-r from-purple-500 to-blue-500"
+                : "bg-gradient-to-r from-orange-500 to-red-500"
+            }`}
+          >
+            {loading ? "Verifying..." : "Verify OTP"}
+          </button>
+        </form>
+
+        {/* Timer & Resend */}
+        <div className="mt-4 text-center text-sm">
+          {timeLeft > 0 ? (
+            <p>
+              Resend OTP in{" "}
+              <span className="font-semibold">
+                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
+              </span>
+            </p>
+          ) : (
+            <button
+              onClick={handleResendOtp}
+              disabled={resendLoading}
+              className="text-purple-600 font-semibold"
+            >
+              {resendLoading ? "Sending..." : "Resend OTP"}
+            </button>
+          )}
+        </div>
+
+        {/* Back button */}
+        <button
+          className="mt-4 text-sm text-gray-600 hover:underline"
+          onClick={() => router.back()}
+        >
+          Go Back
+        </button>
+      </div>
+    </div>
+  );
+}
