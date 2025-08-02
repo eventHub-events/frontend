@@ -1,5 +1,5 @@
 "use client";
-
+import type { AxiosError } from "axios";
 import Link from "next/link";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
@@ -47,9 +47,9 @@ export default function SignupPage({ userType }: SignupPageProps) {
        toast.success("Please verify your email/OTP.");
       router.push(`/verify-otp/${userType}?email=${encodeURIComponent(form.email)}`);
      
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error?.response?.data?.message || "Signup failed");
+    } catch (error) {
+     const err= error as AxiosError<{message:string}>
+      toast.error(err?.response?.data?.message || "Signup failed");
     
     } finally {
       setLoading(false);

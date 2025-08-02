@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 
@@ -78,9 +79,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
         <p className="text-xs text-center mt-4">
             {"Don't have an account? "}
-          <a href="/signup" className="text-blue-500">
-            Sign up for free
-          </a>
+         <Link href="/signup" className="text-blue-500">
+    Sign up for free
+  </Link>
         </p>
       </div>
     </div>

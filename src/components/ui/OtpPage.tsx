@@ -1,8 +1,9 @@
 "use client";
-
+import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import { authService } from "../../services/authService";
 import { useRouter, useSearchParams } from "next/navigation";
+import type {AxiosError} from "axios"
 
 interface OTPPageProps {
   userType: "user" | "organizer";
@@ -38,10 +39,13 @@ export default function OTPPage({ userType }: OTPPageProps) {
     try {
      const result= await authService.verifyOtp({ email, otp, role: userType });
      console.log("result is",result)
-      alert("OTP Verified! Redirecting...");
-      router.push(isUser ? "/user/dashboard" : "/organizer/dashboard");
-    } catch (error: any) {
-      alert(error?.response?.data?.message || "OTP Verification failed");
+     toast.success("OTP Verified!  Please log in.")
+     
+      router.push(isUser ? `/login/${result.data.data.role}` : "/organizer/dashboard");
+    } catch (error) {
+      const err=error as AxiosError<{message:string}>;
+      toast.error(err?.response?.data?.message || "OTP Verification failed")
+   
     } finally {
       setLoading(false);
     }
@@ -54,9 +58,12 @@ export default function OTPPage({ userType }: OTPPageProps) {
       console.log("email in  resent")
       await authService.resentOtp({ email });
       setTimeLeft(120); // Reset timer
-      alert("New OTP sent!");
-    } catch (error: any) {
-      alert(error?.response?.data?.message || "Error resending OTP");
+      toast.info("New OTP sent!")
+    
+    } catch (error) {
+      const err=error as AxiosError<{message:string}>;
+      toast.error(err?.response?.data?.message || "Error resending OTP")
+      
     } finally {
       setResendLoading(false);
     }
