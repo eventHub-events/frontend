@@ -1,20 +1,24 @@
+"use client"
 import "./globals.css";
 import Header from "../components/user/landing/Header";
 import Footer from "../components/user/landing/Footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Providers } from "@/redux/Providers";
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <Header /> {/* Always show header */}
+        <Providers>
+        <Header /> 
         <main>{children}</main>
-        <Footer /> {/* Always show footer */}
+        <Footer /> 
         
-        {/* Global Toast container - all pages can use toast.success(), toast.error() */}
+        
         <ToastContainer 
-          position="top-right" 
+          position="top-center" 
           autoClose={3000} 
           hideProgressBar={false}
           newestOnTop
@@ -22,8 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           pauseOnHover
           theme="colored"
         />
+        </Providers>
       </body>
     </html>
   );
 }
-

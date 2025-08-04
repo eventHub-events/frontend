@@ -7,6 +7,9 @@ import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { authService } from "../../services/authService"; // shared login API
+import { useAppDispatch } from "@/redux/hooks";
+import { setUser } from "@/redux/slices/user/authSlice";
+import { GiConsoleController } from "react-icons/gi";
 
 interface LoginPageProps {
   userType: "user" | "organizer" | "admin";
@@ -21,6 +24,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const dispatch= useAppDispatch()
 
   // Handle login
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,20 +36,28 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
     try {
       setLoading(true);
+      console.log("email and password",email,password)
 
-      // Pass role to backend
+      
       const response = await authService.login({ email, password });
+      console.log("logggggg",response)
 
-      toast.success("Login successful!");
+         dispatch(setUser(response.data.data))
+         setTimeout(() => {
+  toast.success("Login successful!");
+}, 300);
+
+     
 
       // Redirect dynamically based on userType
       if (isAdmin) router.push("/admin/dashboard");
       else if (isOrganizer) router.push("/organizer/dashboard");
-      else router.push("/user/dashboard");
+      else router.push("/user/home");
 
     } catch (err: unknown) {
 
      const axiosErr = err as AxiosError<{ message: string }>;
+     console.log("errr",axiosErr.response?.data)
   toast.error(axiosErr.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
