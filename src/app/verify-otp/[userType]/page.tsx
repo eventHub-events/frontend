@@ -4,6 +4,7 @@ interface Props {
   params: { userType: "user" | "organizer" };
 }
 
-export default function OTPVerificationPage({ params }: Props) {
-  return <OTPPage userType={params.userType} />;
+export default async function OTPVerificationPage({ params }: Props) {
+  const { userType } = await params;
+  return <OTPPage userType={userType} />;
 }

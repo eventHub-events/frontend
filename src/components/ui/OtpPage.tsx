@@ -41,7 +41,7 @@ export default function OTPPage({ userType }: OTPPageProps) {
      console.log("result is",result)
      toast.success("OTP Verified!  Please log in.")
      
-      router.push(isUser ? `/login/${result.data.data.role}` : "/organizer/dashboard");
+      router.push(isUser ? `/login/${result.data.statusCode.role}` : "/organizer/dashboard");
     } catch (error) {
       const err=error as AxiosError<{message:string}>;
       toast.error(err?.response?.data?.message || "OTP Verification failed")

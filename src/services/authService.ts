@@ -13,8 +13,8 @@ export const authService = {
       withCredentials: true,
     }),
 
-  login: <T>(payload: T, userType: "user" | "organizer") =>
-    apiclient.post(`/auth/login?role=${userType}`, payload, {
+  login: <T>(payload: T) =>
+    apiclient.post(`/api/user/login`, payload, {
       withCredentials: true,
     }),
 };
