@@ -17,4 +17,10 @@ export const authService = {
     apiclient.post(`/api/user/login`, payload, {
       withCredentials: true,
     }),
+    logout: () => {
+  return apiclient.post(`/api/user/logout`, {}, {
+    withCredentials: true
+  });
+}
+
 };

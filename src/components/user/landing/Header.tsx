@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import EventHubIcon from "../../ui/EventHubIcon";
 import GetStartedModal from "./GetStartedModal";
+import { toast } from "react-toastify";
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { FaUserCircle } from "react-icons/fa";
 import { clearUser } from "@/redux/slices/user/authSlice";
 import { useRouter } from "next/navigation";
+import { authService } from "@/services/authService";
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,11 +22,18 @@ const Header: React.FC = () => {
   const router = useRouter();
 
   //===================================================== Logout handler
-  const handleLogout = () => {
+ const handleLogout = async () => {
+  try {
+    const response = await authService.logout();
+    toast.success(response.data?.message || "Logged out successfully");
     dispatch(clearUser());
-    localStorage.removeItem("token")
-    router.push("/")
-  };
+    router.push("/");
+  } catch (error) {
+    toast.error("Logout failed");
+    console.error(error);
+  }
+};
+
 
   //=================================================> Close dropdown on outside click
   useEffect(() => {
@@ -38,7 +47,7 @@ const Header: React.FC = () => {
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+  }, [user]);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">

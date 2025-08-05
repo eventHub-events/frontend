@@ -44,7 +44,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
          dispatch(setUser(response.data.data))
          setTimeout(() => {
-  toast.success("Login successful!");
+   toast.success("Login successful!");
 }, 300);
 
      
