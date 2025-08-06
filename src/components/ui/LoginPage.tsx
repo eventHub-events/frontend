@@ -27,42 +27,37 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
   const dispatch= useAppDispatch()
 
   // Handle login
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      toast.error("Please enter both email and password");
-      return;
-    }
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!email || !password) {
+    toast.error("Please enter both email and password");
+    return;
+  }
 
-    try {
-      setLoading(true);
-      console.log("email and password",email,password)
+  try {
+    setLoading(true);
 
-      
-      const response = await authService.login({ email, password });
-      console.log("logggggg",response)
+    const response = await authService.login({ email, password });
+    const { role } = response.data.data;
 
-         dispatch(setUser(response.data.data))
-         setTimeout(() => {
-   toast.success("Login successful!");
-}, 300);
+    // Save user to Redux
+    dispatch(setUser(response.data.data));
 
-     
+    toast.success("Login successful!");
 
-      // Redirect dynamically based on userType
-      if (isAdmin) router.push("/admin/dashboard");
-      else if (isOrganizer) router.push("/organizer/dashboard");
-      else router.push("/user/home");
+    // Redirect based on role from backend
+    if (role === "admin") router.push("/admin/dashboard");
+    else if (role === "organizer") router.push("/organizer/dashboard");
+    else router.push("/user/home");
 
-    } catch (err: unknown) {
+  } catch (err: unknown) {
+    const axiosErr = err as AxiosError<{ message: string }>;
+    toast.error(axiosErr.response?.data?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
-     const axiosErr = err as AxiosError<{ message: string }>;
-     console.log("errr",axiosErr.response?.data)
-  toast.error(axiosErr.response?.data?.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">

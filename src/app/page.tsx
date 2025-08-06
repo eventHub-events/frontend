@@ -9,12 +9,12 @@ import Image from "next/image";
 export default function Home() {
   return (
   <div >
-    {/* <Header/> */}
+    <Header/> 
     <HeroSection/>
     <FeaturedEvents/>
     <Categories/>
     <EventsList/>
-    {/* <Footer/> */}
+     <Footer/> 
   </div>
   );
 }

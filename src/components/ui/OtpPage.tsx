@@ -40,8 +40,11 @@ export default function OTPPage({ userType }: OTPPageProps) {
      const result= await authService.verifyOtp({ email, otp, role: userType });
      console.log("result is",result)
      toast.success("OTP Verified!  Please log in.")
+     console.log("hhh",result.data.data.role)
+     console.log("ccc",result.data.data)
+     console.log("ccc",result.data)
      
-      router.push(isUser ? `/login/${result.data.statusCode.role}` : "/organizer/dashboard");
+      router.push(isUser ? `/login/${result.data.data.role}` : `/login/${result.data.data.role}` );
     } catch (error) {
       const err=error as AxiosError<{message:string}>;
       toast.error(err?.response?.data?.message || "OTP Verification failed")

@@ -22,6 +22,7 @@ export default function SignupPage({ userType }: SignupPageProps) {
     phone: "",
     password: "",
     confirmPassword: "",
+    role:userType
   });
 
   const [loading, setLoading] = useState(false);
