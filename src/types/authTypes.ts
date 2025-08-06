@@ -6,6 +6,11 @@ export interface IUser{
   image?:string
 }
 
+export interface IOrganizer extends IUser{
+companyName?:string;
+kycStatus?:"Pending"|"Verified"|"Rejected";
+
+}
 export interface IUserLoginPayload {
   email:string;
   password:string;

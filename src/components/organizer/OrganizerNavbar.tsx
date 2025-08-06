@@ -1,28 +1,51 @@
 "use client";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { FaBell, FaUserCircle } from "react-icons/fa";
 import { MdVerified, MdKeyboardArrowDown } from "react-icons/md";
 import { HiSearch, HiSparkles } from "react-icons/hi";
 import { BiLogOut } from "react-icons/bi";
 import { RiVipCrownFill } from "react-icons/ri";
+import { toast } from "react-toastify";
+import { authService } from "@/services/authService";
+
+import { useRouter } from "next/navigation";
+import { clearOrganizer } from "@/redux/slices/organizer/authSlice";
+import { GiConsoleController } from "react-icons/gi";
 
 export const OrganizerNavbar: React.FC = () => {
-  // const organizer = useAppSelector((state) => state.organizer);
-  const organizer = {
-    id: "org_123456789",
-    name: "John Doe",
-    email: "johndoe@eventhub.com",
-    phone: 9876543210,
-    companyName: "Doe Events Pvt Ltd",
-    kycStatus: "verified",
-    totalEarnings: 125000,
-    trustScore: 4.8,
-    profileDescription: "We organize premium corporate and wedding events across the country.",
-    image: "https://example.com/uploads/organizer-avatar.jpg",
-    isBlock: false,
-    role: "organizer",
-    isVerified: true
-  };
+    const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+    const router= useRouter()
+    const dispatch= useAppDispatch()
+    if (!organizer) return null
+  // const organizer = {
+  //   id: "org_123456789",
+  //   name: "John Doe",
+  //   email: "johndoe@eventhub.com",
+  //   phone: 9876543210,
+  //   companyName: "Doe Events Pvt Ltd",
+  //   kycStatus: "verified",
+  //   totalEarnings: 125000,
+  //   trustScore: 4.8,
+  //   profileDescription: "We organize premium corporate and wedding events across the country.",
+  //   image: "https://example.com/uploads/organizer-avatar.jpg",
+  //   isBlock: false,
+  //   role: "organizer",
+  //   isVerified: true
+  // };
+
+  const handleLogout = async () => {
+  try {
+    const response = await authService.logout();
+    toast.success(response.data?.message || "Logged out successfully");
+  } catch (error) {
+    toast.error("Logout failed on server, logging out locally");
+    console.error(error);
+  } finally {
+    dispatch(clearOrganizer());
+    router.push("/");
+  }
+};
+
 
   return (
     <header className="relative h-24 bg-white/70 backdrop-blur-2xl border-b border-gray-200/40 flex items-center justify-between px-8 sticky top-0 z-50 shadow-sm shadow-gray-900/5">
@@ -51,7 +74,7 @@ export const OrganizerNavbar: React.FC = () => {
             {/* AI Assistant Indicator */}
             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center gap-2 text-xs text-gray-400 group-focus-within:text-violet-600 transition-colors duration-300">
               <HiSparkles className="animate-pulse" />
-              <span className="hidden md:inline font-medium">AI Search</span>
+              {/* <span className="hidden md:inline font-medium">AI Search</span> */}
             </div>
           </div>
         </div>
@@ -85,7 +108,7 @@ export const OrganizerNavbar: React.FC = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl animate-pulse opacity-20"></div>
               
-              {organizer.image ? (
+              {organizer?.image ? (
                 <img
                   src={organizer.image}
                   alt={organizer.name}
@@ -97,12 +120,12 @@ export const OrganizerNavbar: React.FC = () => {
                 </div>
               )}
               
-              {/* Status Indicators */}
-              {organizer.kycStatus === "verified" && (
+              {/* Status Indicators  */}
+              {/* { {organizer.kycStatus === "Verified" && (
                 <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-white">
                   <MdVerified size={14} className="text-emerald-500" />
                 </div>
-              )}
+              )} */}
               
               {/* Online Status */}
               <div className="absolute -top-1 -left-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-sm animate-pulse"></div>
@@ -124,11 +147,11 @@ export const OrganizerNavbar: React.FC = () => {
               
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-semibold text-gray-500 truncate max-w-32">
-                  {organizer.companyName}
+                  {organizer.companyName?organizer.companyName:""}
                 </span>
                 <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
                 <span className="text-xs font-medium text-emerald-600">
-                  ${(organizer.totalEarnings / 1000)}k
+                  ${(organizer.totalEarnings / 1000)?(organizer.totalEarnings / 1000):0}k
                 </span>
               </div>
             </div>
@@ -146,7 +169,7 @@ export const OrganizerNavbar: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
           
           <button
-            // onClick={}
+            onClick={ handleLogout}
             className="relative flex items-center gap-3 px-5 py-3.5 bg-gradient-to-r from-red-50/80 to-rose-50/80 hover:from-red-100 hover:to-rose-100 backdrop-blur-md text-red-600 hover:text-red-700 rounded-2xl font-semibold text-sm border border-red-200/50 hover:border-red-300/70 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-red-500/10 transform hover:scale-105"
           >
             <BiLogOut size={18} className="group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />

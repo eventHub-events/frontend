@@ -6,6 +6,6 @@ interface Props {
 }
 
 export default async  function Login({ params }: Props) {
-   const { userType } = await params;
+   const { userType } =  params;
   return <LoginPage userType={userType} />;
 }

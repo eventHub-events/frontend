@@ -10,6 +10,7 @@ import { authService } from "../../services/authService"; // shared login API
 import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/slices/user/authSlice";
 import { GiConsoleController } from "react-icons/gi";
+import { setOrganizer } from "@/redux/slices/organizer/authSlice";
 
 interface LoginPageProps {
   userType: "user" | "organizer" | "admin";
@@ -40,19 +41,33 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
     const response = await authService.login({ email, password });
     const { role } = response.data.data;
 
-    // Save user to Redux
-    dispatch(setUser(response.data.data));
+   
+
+    
+   
 
     toast.success("Login successful!");
 
     // Redirect based on role from backend
     if (role === "admin") router.push("/admin/dashboard");
-    else if (role === "organizer") router.push("/organizer/dashboard");
-    else router.push("/user/home");
+    else if (role === "organizer") {
+          dispatch(setOrganizer(response.data.data))
+      router.push("/organizer/dashboard");
+    }
+    else if(role==="user"){
+       dispatch(setUser(response.data.data));
+      router.push("/user/home");
+    }else{
+      throw new Error("Unknown role");
+    }
+    
+      
 
   } catch (err: unknown) {
     const axiosErr = err as AxiosError<{ message: string }>;
     toast.error(axiosErr.response?.data?.message || "Login failed");
+    console.log(axiosErr.response?.data.message)
+    
   } finally {
     setLoading(false);
   }
