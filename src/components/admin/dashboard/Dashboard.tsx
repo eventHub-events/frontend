@@ -1,7 +1,9 @@
 "use client";
+import { useAdminState } from "@/hooks/useAdminState";
 import React from "react";
 
 const AdminDashboard = () => {
+  useAdminState()
   return (
     <div className="space-y-6">
       {/* Metrics Section */}

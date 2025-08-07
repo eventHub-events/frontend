@@ -1,5 +1,7 @@
 "use client"
 
+import { useAppDispatch } from "@/redux/hooks"
+import { setAdmin } from "@/redux/slices/admin/authSlice"
 import { authService } from "@/services/authService"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -14,6 +16,7 @@ export  default function AdminLogin(){
   const[isSubmitting,setIsSubmitting]=useState(false)
   const [errorMessage,setErrorMessage]=useState("")
   const router= useRouter()
+  const dispatch= useAppDispatch()
 
   const handleSubmit=async (e:React.FormEvent<HTMLFormElement>)=>{
   e.preventDefault()
@@ -25,6 +28,8 @@ export  default function AdminLogin(){
    
     console.log("response from  admin login",response)
      if(response){
+        dispatch(setAdmin(response.data.data))
+        toast.success("Admin login Successful")
          router.push("/admin/dashboard")
      }
 

@@ -16,9 +16,16 @@ const adminAuthSlice= createSlice({
     reducers:{
        setAdmin:(state,action:PayloadAction<IAdmin>)=>{
         state.admin=action.payload
+        if(typeof window!== "undefined"){
+          localStorage.setItem("adminInfo",JSON.stringify(action.payload))
+
+        }
        },
        clearAdmin:(state)=>{
           state.admin=null
+          if (typeof window !== "undefined") {
+        localStorage.removeItem("adminInfo");
+      }
        }
     }
 })

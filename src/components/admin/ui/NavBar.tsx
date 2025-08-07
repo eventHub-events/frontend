@@ -1,7 +1,26 @@
 "use client";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { clearAdmin } from "@/redux/slices/admin/authSlice";
+import { authService } from "@/services/authService";
 import { Bell, UserCircle, Search, Sparkles, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { toast } from "react-toastify";
 
 export default function Navbar() {
+  const admin = useAppSelector((state) => state.adminAuth.admin);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const handleLogout = async () => {
+    try {
+      await authService.adminLogout();
+      dispatch(clearAdmin());
+      toast.success("Admin logout successful"); 
+      router.push("/admin/login");
+    } catch (error: unknown) {
+      toast.error("Logout failed. Please try again.");
+    }
+  };
   return (
     <header className="h-20 fixed top-0 left-64 right-0 bg-white/85 backdrop-blur-xl border-b border-gray-200/60 px-8 flex items-center justify-between z-50 shadow-sm shadow-gray-900/5">
       {/* Animated Background Gradient */}
@@ -40,7 +59,10 @@ export default function Navbar() {
         {/* Notification Bell */}
         <div className="relative">
           <button className="relative p-3 text-gray-500 hover:text-violet-600 bg-gray-50/60 hover:bg-white backdrop-blur-md rounded-xl border border-gray-200/40 hover:border-violet-200/60 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer">
-            <Bell size={20} className="group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
+            <Bell
+              size={20}
+              className="group-hover:scale-110 group-hover:rotate-12 transition-all duration-300"
+            />
             <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-red-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-red-500/30">
               <span className="text-xs font-bold text-white">3</span>
             </div>
@@ -64,7 +86,7 @@ export default function Navbar() {
 
           <div className="flex flex-col min-w-0">
             <p className="text-sm font-bold text-gray-800 group-hover:text-gray-900 transition-colors duration-200">
-              Admin User
+              {admin ? admin.name : "Admin User"}
             </p>
             <p className="text-xs font-medium text-gray-500 group-hover:text-gray-600 transition-colors duration-200">
               System Administrator
@@ -77,6 +99,7 @@ export default function Navbar() {
           className="p-3 text-gray-500 hover:text-red-600 bg-gray-50/60 hover:bg-white backdrop-blur-md rounded-xl border border-gray-200/40 hover:border-red-200/60 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer flex items-center gap-2"
           onClick={() => {
             console.log("Logging out...");
+            handleLogout();
           }}
         >
           <LogOut size={18} />
