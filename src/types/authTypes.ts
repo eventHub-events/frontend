@@ -3,12 +3,16 @@ export interface IUser{
   name:string;
   email:string;
   role: "user"|"organizer"|"admin";
-  image?:string
+  image?:string,
+  isVerified?:boolean
 }
 
 export interface IOrganizer extends IUser{
 companyName?:string;
 kycStatus?:"Pending"|"Verified"|"Rejected";
+
+}
+export interface IAdmin extends IUser{
 
 }
 export interface IUserLoginPayload {

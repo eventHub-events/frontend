@@ -1,0 +1,27 @@
+import { IAdmin } from "@/types/authTypes";
+import { createSlice,PayloadAction } from "@reduxjs/toolkit";
+
+
+interface IOrganizerAuthState{
+  admin:IAdmin| null
+}
+
+const initialState:IOrganizerAuthState={
+  admin:null
+}
+
+const adminAuthSlice= createSlice({
+    name:"adminAuth",
+    initialState,
+    reducers:{
+       setAdmin:(state,action:PayloadAction<IAdmin>)=>{
+        state.admin=action.payload
+       },
+       clearAdmin:(state)=>{
+          state.admin=null
+       }
+    }
+})
+
+export const{setAdmin,clearAdmin}=adminAuthSlice.actions
+export default adminAuthSlice.reducer

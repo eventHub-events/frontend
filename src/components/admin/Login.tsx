@@ -22,6 +22,7 @@ export  default function AdminLogin(){
     console.log(email,password)
 
     const response= await authService.adminLogin({email,password})
+   
     console.log("response from  admin login",response)
      if(response){
          router.push("/admin/dashboard")
