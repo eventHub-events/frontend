@@ -17,6 +17,9 @@ export const authService = {
     apiclient.post(`/api/user/login`, payload, {
       withCredentials: true,
     }),
+    adminLogin:<T>(payload:T)=>
+       apiclient.post(`/api/admin/login`,payload),
+    
     logout: () => {
   return apiclient.post(`/api/user/logout`, {}, {
     withCredentials: true
