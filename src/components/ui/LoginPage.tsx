@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { authService } from "../../services/authService"; // shared login API
 import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/slices/user/authSlice";
-import { GiConsoleController } from "react-icons/gi";
+// import { GiConsoleController } from "react-icons/gi";
 import { setOrganizer } from "@/redux/slices/organizer/authSlice";
 
 interface LoginPageProps {
@@ -20,7 +20,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
   const router = useRouter();
   const isUser = userType === "user";
   const isOrganizer = userType === "organizer";
-  const isAdmin = userType === "admin";
+
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

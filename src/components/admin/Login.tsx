@@ -14,7 +14,7 @@ export  default function AdminLogin(){
   const [email,setEmail]=useState("")
   const [password,setPassword]=useState("")
   const[isSubmitting,setIsSubmitting]=useState(false)
-  const [errorMessage,setErrorMessage]=useState("")
+  
   const router= useRouter()
   const dispatch= useAppDispatch()
 
@@ -81,9 +81,9 @@ return (
             />
           </div>
 
-          {errorMessage && (
+          {/* {errorMessage && (
             <p className="text-sm text-red-600 text-center">{errorMessage}</p>
-          )}
+          )} */}
 
           <button
             type="submit"

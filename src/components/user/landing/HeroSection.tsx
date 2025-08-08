@@ -5,7 +5,7 @@ import { FiSearch, FiMapPin, FiCalendar } from "react-icons/fi";
 import { motion } from "framer-motion";
 
 const HeroSection: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
   const [date, setDate] = useState("");
 

@@ -1,36 +1,47 @@
-"use client"
-import Spinner from "@/components/ui/Spinner";
-import { useAppSelector } from "@/redux/hooks";
+"use client";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
 
-export const withRoleProtection = (
-  WrappedComponent: React.FC,
-  allowedRoles: string[]
-): React.FC => {
-  const ProtectedComponent: React.FC = () => {
-    const user = useAppSelector((state) => state.auth.user);
-    const router = useRouter();
-    const[loading,setLoading]= useState(true)
+type UserRole = "admin" | "organizer" | "user";
 
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        setLoading(false);
-        if (!user || !allowedRoles.includes(user.role)) {
-          router.replace("/");
-        }
-      }, 500); 
+interface ProtectedRouteProps {
+  allowedRoles: UserRole[];
+  children: React.ReactNode;
+}
 
-      return () => clearTimeout(timeout);
-    }, [user]);
+interface CurrentUser {
+  role: UserRole;
+  id:string,
+  name:string;
+  email:string
+}
 
-    if (loading) return <Spinner />
+const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
+  const router = useRouter();
 
-    return <WrappedComponent />;
-  };
+  // Get data from all role slices
+  const admin = useAppSelector((state) => state.adminAuth.admin);
+  const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+  const user = useAppSelector((state) => state.auth.user);
 
-  
-  ProtectedComponent.displayName = `withRoleProtection(${WrappedComponent.displayName || WrappedComponent.name || "Component"})`;
+  // Identify logged-in user with role
+  const currentUser: CurrentUser | null = useMemo(() => {
+    if (admin) return { ...admin, role: "admin" };
+    if (organizer) return { ...organizer, role: "organizer" };
+    if (user) return { ...user, role: "user" };
+    return null;
+  }, [admin, organizer, user]);
 
-  return ProtectedComponent;
+  useEffect(() => {
+    if (!currentUser) {
+      router.push("/");
+    } else if (!allowedRoles.includes(currentUser.role)) {
+      router.push("/unauthorized");
+    }
+  }, [currentUser, allowedRoles, router]);
+
+  return <>{currentUser && allowedRoles.includes(currentUser.role) && children}</>;
 };
+
+export default ProtectedRoute;

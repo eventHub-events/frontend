@@ -6,6 +6,7 @@ import AdminDashboard from "@/components/admin/dashboard/Dashboard";
 
 const DashboardPage = () => {
   return (
+    
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
 

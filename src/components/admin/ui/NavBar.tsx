@@ -18,7 +18,8 @@ export default function Navbar() {
       toast.success("Admin logout successful"); 
       router.push("/admin/login");
     } catch (error: unknown) {
-      toast.error("Logout failed. Please try again.");
+      const err= error instanceof Error?error.message:"Logout failed. Please try again."
+      toast.error(err);
     }
   };
   return (

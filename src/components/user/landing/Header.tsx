@@ -10,6 +10,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { clearUser } from "@/redux/slices/user/authSlice";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/authService";
+import { useUserState } from "@/hooks/useUserState";
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,7 @@ const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
+   useUserState()
   //===================================================== Logout handler
  const handleLogout = async () => {
   try {

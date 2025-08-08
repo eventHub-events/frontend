@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { 
-  MdTrendingUp, 
-  MdTrendingDown, 
+  // MdTrendingUp, 
+  // MdTrendingDown, 
   MdEvent, 
   MdConfirmationNumber, 
   MdAttachMoney, 
@@ -24,7 +24,7 @@ const OrganizerDashboard: React.FC = () => {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-700 to-purple-600 bg-clip-text text-transparent">
               Welcome back, John! 👋
             </h1>
-            <p className="text-gray-600 mt-2 text-lg">Here's what's happening with your events today.</p>
+            <p className="text-gray-600 mt-2 text-lg">{` Here's what's happening with your events today.`}</p>
           </div>
           <div className="flex items-center gap-4">
             <button className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-2xl font-semibold shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/30 transform hover:scale-105 transition-all duration-300">
@@ -88,8 +88,8 @@ const OrganizerDashboard: React.FC = () => {
                     ? "bg-emerald-100 text-emerald-700" 
                     : "bg-red-100 text-red-700"
                 }`}>
-                  {stat.change.startsWith("+") ? <MdTrendingUp /> : <MdTrendingDown />}
-                  {stat.change}
+                  {/* {stat.change.startsWith("+") ? <MdTrendingUp /> : <MdTrendingDown />}
+                  {stat.change} */}
                 </div>
               </div>
               

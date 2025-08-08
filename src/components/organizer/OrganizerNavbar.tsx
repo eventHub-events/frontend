@@ -10,28 +10,14 @@ import { authService } from "@/services/authService";
 
 import { useRouter } from "next/navigation";
 import { clearOrganizer } from "@/redux/slices/organizer/authSlice";
-import { GiConsoleController } from "react-icons/gi";
+// import { GiConsoleController } from "react-icons/gi";
 
 export const OrganizerNavbar: React.FC = () => {
     const organizer = useAppSelector((state) => state.organizerAuth.organizer);
     const router= useRouter()
     const dispatch= useAppDispatch()
     if (!organizer) return null
-  // const organizer = {
-  //   id: "org_123456789",
-  //   name: "John Doe",
-  //   email: "johndoe@eventhub.com",
-  //   phone: 9876543210,
-  //   companyName: "Doe Events Pvt Ltd",
-  //   kycStatus: "verified",
-  //   totalEarnings: 125000,
-  //   trustScore: 4.8,
-  //   profileDescription: "We organize premium corporate and wedding events across the country.",
-  //   image: "https://example.com/uploads/organizer-avatar.jpg",
-  //   isBlock: false,
-  //   role: "organizer",
-  //   isVerified: true
-  // };
+  
 
   const handleLogout = async () => {
   try {
@@ -151,7 +137,8 @@ export const OrganizerNavbar: React.FC = () => {
                 </span>
                 <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
                 <span className="text-xs font-medium text-emerald-600">
-                  ${(organizer.totalEarnings / 1000)?(organizer.totalEarnings / 1000):0}k
+                  {/* ${(organizer?.totalEarnings / 1000)?(organizer?.totalEarnings / 1000):0}k */}
+                  0
                 </span>
               </div>
             </div>
