@@ -6,8 +6,9 @@ interface IOrganizerAuthState{
   admin:IAdmin| null
 }
 
+const storedUser = typeof window !== "undefined" ? localStorage.getItem("adminInfo") : null;
 const initialState:IOrganizerAuthState={
-  admin:null
+  admin: storedUser?JSON.parse(storedUser):null
 }
 
 const adminAuthSlice= createSlice({

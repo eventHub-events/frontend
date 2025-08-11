@@ -1,9 +1,32 @@
 "use client";
 import { useAdminState } from "@/hooks/useAdminState";
-import React from "react";
+import { useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const AdminDashboard = () => {
-  useAdminState()
+    const admin = useAppSelector((state)=>state.adminAuth.admin)
+    const router= useRouter()
+
+ const [isChecking, setIsChecking] = useState(false);
+
+  useEffect(() => {
+    const checking = admin === undefined || admin === null;
+  setIsChecking(checking);
+console.log("checking admin ",isChecking)
+  if (!checking && !admin) {
+    
+    console.log("re- routing")
+    toast.info("Re-routing to login ")
+    // router.replace("/admin/login");
+
+  }
+  }, [admin, router]);
+
+  if (isChecking) {
+    return <div>Loading...</div>; // Or spinner
+  }
   return (
     <div className="space-y-6">
       {/* Metrics Section */}

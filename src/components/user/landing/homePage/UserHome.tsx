@@ -1,5 +1,5 @@
 "use client"
-import { withRoleProtection } from "../../auth/RoleProtection"
+
 import Categories from "../Categories"
 import EventsList from "../EventsList"
 import FeaturedEvents from "../FeaturedEvents"
@@ -9,7 +9,7 @@ import HeroSection from "../HeroSection"
 
 
 
-const UserHome=()=>{
+export  const UserHome=()=>{
   return (
     <div>
       <main>
@@ -21,4 +21,3 @@ const UserHome=()=>{
     </div>
   )
 }
-export  default withRoleProtection(UserHome,["user"])

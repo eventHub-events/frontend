@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 
@@ -24,6 +24,11 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
   const admin = useAppSelector((state) => state.adminAuth.admin);
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
   const user = useAppSelector((state) => state.auth.user);
+   const [isClient, setIsClient] = useState(false);
+    useEffect(() => {
+    setIsClient(true); 
+  }, []);
+
 
   // Identify logged-in user with role
   const currentUser: CurrentUser | null = useMemo(() => {
@@ -33,13 +38,17 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
     return null;
   }, [admin, organizer, user]);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/");
-    } else if (!allowedRoles.includes(currentUser.role)) {
-      router.push("/unauthorized");
+ useEffect(() => {
+    if (isClient) {
+      if (!currentUser) {
+        router.push(`/${allowedRoles[0]}/login`);
+      } else if (!allowedRoles.includes(currentUser.role)) {
+        router.push("/unauthorized");
+      }
     }
-  }, [currentUser, allowedRoles, router]);
+  }, [isClient, currentUser, allowedRoles, router]);
+
+  if (!isClient) return null;
 
   return <>{currentUser && allowedRoles.includes(currentUser.role) && children}</>;
 };
