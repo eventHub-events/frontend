@@ -35,3 +35,14 @@ export interface IGetMeResponse {
   success:boolean;
   data:IUser;
 }
+
+export interface IUserInfo{
+  _id:string,
+  name:string,
+  email:string,
+  createdAt:Date,
+  role:string,
+  kycStatus:string,
+  isBlocked:boolean
+
+}

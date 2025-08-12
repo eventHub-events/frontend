@@ -1,46 +1,53 @@
+"use client"
+import { authService } from "@/services/authService";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+ import {FiEdit, FiSlash, FiUnlock,FiEye } from "react-icons/fi";
+import { IUserInfo } from "@/types/authTypes";
+
 
 
 const UserOrganizerManagement=()=>{
-   const [users] = useState([
-    {
-      name: "John Smith",
-      email: "john@example.com",
-      type: "Organizer",
-      status: "Active",
-      kycStatus: "Verified",
-      activity: "12 events\n$45,600",
-      joinDate: "1/15/2024",
-    },
-    {
-      name: "Sarah Johnson",
-      email: "sarah@example.com",
-      type: "Attendee",
-      status: "Active",
-      kycStatus: "N/A",
-      activity: "8 attended\n$1,240",
-      joinDate: "2/20/2024",
-    },
-    {
-      name: "Mike Chen",
-      email: "mike@example.com",
-      type: "Organizer",
-      status: "Suspended",
-      kycStatus: "Pending",
-      activity: "3 events\n$8,900",
-      joinDate: "11/10/2023",
-    },
-  ]);
+   const [users,setUsers] = useState< IUserInfo[]>([])
+   const[isUpdated,setIsUpdated]=useState(false)
 
   useEffect(()=>{
+    async function fetchUser(){
 
-    const users=
+try{
+ const usersList= await authService.usersList()
+ console.log( usersList.data.data)
+    setUsers(usersList.data?.data)
+    
+setIsUpdated(false)
 
-  },[])
+}catch(err:unknown){
+    const error=  err  instanceof Error? err.message:"something went wrong"
+    toast.error(error)
+
+}
+    }
+
+   
+fetchUser()
+
+  },[isUpdated])
+
+  const handleStatus=async  (id:string,data:boolean)=>{
+     console.log("handleStatus called with:", id, data);
+  if (!id) {
+    console.error(" No ID passed");
+    return;
+  }
+      const result= await authService.changeStatus({id,data:{isBlocked:data}})
+      setIsUpdated(true)
+      console.log(result)
+
+  }
 
  return (
     <div className="p-6">
-      {/* Header */}
+     
       <div className="mb-6">
         <h1 className="text-2xl font-semibold">User & Organizer Management</h1>
         <p className="text-gray-500">
@@ -48,7 +55,7 @@ const UserOrganizerManagement=()=>{
         </p>
       </div>
 
-      {/* Search + Filters */}
+      
       <div className="flex flex-wrap items-center gap-4 mb-6">
         <input
           type="text"
@@ -69,16 +76,17 @@ const UserOrganizerManagement=()=>{
         </div>
       </div>
 
-      {/* Table */}
+      
       <div className="bg-white shadow rounded-lg overflow-x-auto">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b text-gray-600">
               <th className="py-3 px-4">Name</th>
+            
               <th className="py-3 px-4">Type</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4">KYC Status</th>
-              <th className="py-3 px-4">Activity</th>
+               <th className="py-3 px-4">Status</th>
+               <th className="py-3 px-4">KYC Status</th> 
+              {/* <th className="py-3 px-4">Activity</th>  */}
               <th className="py-3 px-4">Join Date</th>
               <th className="py-3 px-4">Actions</th>
             </tr>
@@ -100,19 +108,21 @@ const UserOrganizerManagement=()=>{
                     <p className="text-sm text-gray-500">{user.email}</p>
                   </div>
                 </td>
-                <td className="py-3 px-4">{user.type}</td>
-                <td className="py-3 px-4">
-                  <span
+                <td className="py-3 px-4">{user.role}</td>
+
+                  <td className="py-3 px-4">
+                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      user.status === "Active"
+                      user.isBlocked === false
                         ? "bg-green-100 text-green-700"
                         : "bg-red-100 text-red-700"
                     }`}
                   >
-                    {user.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
+                    {user.isBlocked?"Blocked":"Active"}
+                  </span>  
+                </td> 
+
+                 <td className="py-3 px-4">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       user.kycStatus === "Verified"
@@ -124,9 +134,10 @@ const UserOrganizerManagement=()=>{
                   >
                     {user.kycStatus}
                   </span>
-                </td>
-                <td className="py-3 px-4 whitespace-pre-line">{user.activity}</td>
-                <td className="py-3 px-4">{user.joinDate}</td>
+                </td> 
+
+                {/* <td className="py-3 px-4 whitespace-pre-line">{user.activity}</td> */}
+                <td className="py-3 px-4">{new Date(user.createdAt).toLocaleDateString('en-GB')} </td>
                 <td className="py-3 px-4 flex items-center gap-2">
                   <button className="text-blue-500 hover:text-blue-700">
                     <FiEye />
@@ -134,9 +145,13 @@ const UserOrganizerManagement=()=>{
                   <button className="text-green-500 hover:text-green-700">
                     <FiEdit />
                   </button>
-                  <button className="text-red-500 hover:text-red-700">
-                    <FiTrash2 />
-                  </button>
+                  <button
+  onClick={() => handleStatus(user._id, !user.isBlocked)}
+  className="text-red-500 hover:text-red-700"
+>
+  {user.isBlocked ? <FiUnlock /> : <FiSlash />}
+</button>
+                 
                 </td>
               </tr>
             ))}
