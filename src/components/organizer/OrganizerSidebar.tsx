@@ -50,7 +50,7 @@ export const OrganizerSidebar: React.FC = () => {
       {/* Navigation */}
       <nav className="flex-1 px-4 pb-6">
         <div className="space-y-1">
-          {menuItems.map((item, index) => {
+          {menuItems.map((item) => {
             const isActive = pathname === item.href;
             
             return (

@@ -122,9 +122,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 border rounded-lg"
           />
-          <a href="#" className="text-xs text-right block text-blue-500">
-            Forgot your password?
-          </a>
+        <Link href={`/forgetPassword/${userType}`} className="text-xs text-right block text-blue-500">
+  Forgot your password?
+</Link>
+
           <button
             type="submit"
             disabled={loading}

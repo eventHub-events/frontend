@@ -1,5 +1,5 @@
 "use client";
-import { useAdminState } from "@/hooks/useAdminState";
+
 import { useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ console.log("checking admin ",isChecking)
     
     console.log("re- routing")
     toast.info("Re-routing to login ")
-    // router.replace("/admin/login");
+     router.replace("/admin/login");
 
   }
   }, [admin, router]);

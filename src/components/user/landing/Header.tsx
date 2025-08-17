@@ -22,7 +22,7 @@ const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-   useUserState()
+  
   //===================================================== Logout handler
  const handleLogout = async () => {
   try {

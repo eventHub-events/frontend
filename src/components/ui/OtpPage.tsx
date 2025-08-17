@@ -3,7 +3,8 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import { authService } from "../../services/authService";
 import { useRouter, useSearchParams } from "next/navigation";
-import type {AxiosError} from "axios"
+import type { AxiosError } from "axios";
+import { passwordService } from "@/services/user/passwordService";
 
 interface OTPPageProps {
   userType: "user" | "organizer";
@@ -14,14 +15,12 @@ export default function OTPPage({ userType }: OTPPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Get email from query param (passed from signup page)
-  const email = searchParams.get("email") || "";
-  console.log("email is",email)
-
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(120); // 2 min timer
   const [resendLoading, setResendLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [type, setType] = useState<"register" | "reset">("register");
 
   // Timer logic
   useEffect(() => {
@@ -30,25 +29,46 @@ export default function OTPPage({ userType }: OTPPageProps) {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
+  // Handle email & type
+  useEffect(() => {
+    const t = (searchParams.get("type") || "register") as "register" | "reset";
+    setType(t);
+
+    if (t === "reset") {
+      const storedEmail = sessionStorage.getItem("resetEmail");
+      if (storedEmail) {
+        setEmail(storedEmail);
+      }
+    } else {
+      const emailFromURL = searchParams.get("email") || "";
+      setEmail(emailFromURL);
+    }
+  }, [searchParams]);
+
   // Handle OTP submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otp) return;
+    if (!otp || !email) {
+      toast.error("Missing OTP or email.");
+      return;
+    }
 
     setLoading(true);
     try {
-     const result= await authService.verifyOtp({ email, otp, role: userType });
-     console.log("result is",result)
-     toast.success("OTP Verified!  Please log in.")
-     console.log("hhh",result.data.data.role)
-     console.log("ccc",result.data.data)
-     console.log("ccc",result.data)
-     
-      router.push(isUser ? `/login/${result.data.data.role}` : `/login/${result.data.data.role}` );
+      let result;
+      if (type === "register") {
+        result = await authService.verifyOtp({ email, otp, role: userType });
+        toast.success("OTP Verified! Please log in.");
+        router.push(`/login/${result.data.data.role}`);
+      } else if (type === "reset") {
+        result = await passwordService.verifyResetPasswordOtp(userType, { email, otp });
+        toast.success("OTP Verified! You can now change your password.");
+        sessionStorage.removeItem("resetEmail");
+        router.push(`/changePassword/${userType}`);
+      }
     } catch (error) {
-      const err=error as AxiosError<{message:string}>;
-      toast.error(err?.response?.data?.message || "OTP Verification failed")
-   
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err?.response?.data?.message || "OTP Verification failed");
     } finally {
       setLoading(false);
     }
@@ -58,15 +78,14 @@ export default function OTPPage({ userType }: OTPPageProps) {
   const handleResendOtp = async () => {
     setResendLoading(true);
     try {
-      console.log("email in  resent")
-      await authService.resentOtp({ email });
-      setTimeLeft(120); // Reset timer
-      toast.info("New OTP sent!")
-    
+      if (type === "register") {
+        await authService.resentOtp({ email });
+        setTimeLeft(120);
+        toast.info("New OTP sent!");
+      }
     } catch (error) {
-      const err=error as AxiosError<{message:string}>;
-      toast.error(err?.response?.data?.message || "Error resending OTP")
-      
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err?.response?.data?.message || "Error resending OTP");
     } finally {
       setResendLoading(false);
     }
@@ -86,7 +105,6 @@ export default function OTPPage({ userType }: OTPPageProps) {
           Please enter the OTP sent to <span className="font-semibold">{email}</span>
         </p>
 
-        {/* OTP Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"

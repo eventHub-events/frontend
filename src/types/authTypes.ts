@@ -14,7 +14,10 @@ kycStatus?:"Pending"|"Verified"|"Rejected";
 }
 export interface IAdmin extends IUser{
 
+  role:"admin"
 }
+
+
 export interface IUserLoginPayload {
   email:string;
   password:string;
