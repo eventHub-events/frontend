@@ -3,7 +3,7 @@ import OTPPage from "../../../components/ui/OtpPage";
 import Footer from "@/components/user/landing/Footer";
 
 interface Props {
-  params: { userType: "user" | "organizer" };
+  params: Promise<{ userType: "user" | "organizer" }>;
 }
 
 export default async function OTPVerificationPage({ params }: Props) {

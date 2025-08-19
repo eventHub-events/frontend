@@ -19,10 +19,10 @@ export default function UserForgetPasswordPage() {
       console.log("user forget password:", email);
       sessionStorage.setItem("resetEmail",email)
       console.log("Session Email Set:", sessionStorage.getItem("resetEmail"));
-      const result = await passwordService.forgetPassword("user", { email });
+      const result = await passwordService.forgetPassword(role, { email });
       if (result) {
         toast.success("Success! Please enter the OTP");
-        router.push(`/verify-otp/user?type=reset`);
+        router.push(`/verify-otp/${role}?type=reset`);
       }
     } catch (err: unknown) {
       const errMessage=err instanceof Error?err.message:"something went wrong";
@@ -33,7 +33,7 @@ export default function UserForgetPasswordPage() {
   };
 
   return (
-    <div>er
+    <div>
       <Header />
       {loading ? (
         <Spinner />

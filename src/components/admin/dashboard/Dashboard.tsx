@@ -22,7 +22,7 @@ console.log("checking admin ",isChecking)
      router.replace("/admin/login");
 
   }
-  }, [admin, router]);
+  }, [admin, router,isChecking]);
 
   if (isChecking) {
     return <div>Loading...</div>; // Or spinner

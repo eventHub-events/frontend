@@ -15,7 +15,7 @@ import { setOrganizer } from "@/redux/slices/organizer/authSlice";
 interface LoginPageProps {
   userType: "user" | "organizer" | "admin";
 }
-
+  
 const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
   const router = useRouter();
   const isUser = userType === "user";

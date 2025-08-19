@@ -38,12 +38,17 @@ export default function ForgetPasswordForm({
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-2 rounded hover:opacity-90 transition"
-          >
-            Send Request
-          </button>
+       <button
+  type="submit"
+  className={`w-full text-white py-2 rounded hover:opacity-90 transition ${
+    role === "organizer"
+      ? "bg-gradient-to-r from-orange-500 to-red-500"
+      : "bg-gradient-to-r from-purple-500 to-indigo-500"
+  }`}
+>
+  Send Request
+</button>
+
         </form>
       </div>
     </div>

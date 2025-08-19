@@ -7,6 +7,7 @@ import { BiLogOut } from "react-icons/bi";
 import { RiVipCrownFill } from "react-icons/ri";
 import { toast } from "react-toastify";
 import { authService } from "@/services/authService";
+import Image from 'next/image';
 
 import { useRouter } from "next/navigation";
 import { clearOrganizer } from "@/redux/slices/organizer/authSlice";
@@ -95,7 +96,7 @@ export const OrganizerNavbar: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl animate-pulse opacity-20"></div>
               
               {organizer?.image ? (
-                <img
+                <Image
                   src={organizer.image}
                   alt={organizer.name}
                   className="relative w-12 h-12 rounded-2xl object-cover border-2 border-white shadow-lg group-hover:scale-105 transition-transform duration-300"

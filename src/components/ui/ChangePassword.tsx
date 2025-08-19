@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import * as Yup from "yup";
+import { ValidationError } from "yup";
 
 type ForgetPasswordFormProps = {
   role: "user" | "organizer";
-  onSubmit: (data: { password: string; confirmPassword: string }) => void;
+  onSubmit: (role:"user"|"organizer",data: { password: string; confirmPassword: string }) => void;
 };
 
 const validationSchema = Yup.object().shape({
@@ -40,15 +41,21 @@ export default function ForgetPasswordForm({ role, onSubmit }: ForgetPasswordFor
 
     try {
       await validationSchema.validate(formData, { abortEarly: false });
-      onSubmit(formData);
-    } catch (err: any) {
+      onSubmit(role,formData);
+    } catch (err) {
+    if (err instanceof ValidationError) {
       const validationErrors: { [key: string]: string } = {};
-      err.inner.forEach((error: any) => {
-        validationErrors[error.path] = error.message;
+      err.inner.forEach((error) => {
+        if (error.path) {
+          validationErrors[error.path] = error.message;
+        }
       });
       setErrors(validationErrors);
+    } else {
+      console.error("Unexpected error:", err);
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-[60vh] flex justify-center items-center">
@@ -96,12 +103,17 @@ export default function ForgetPasswordForm({ role, onSubmit }: ForgetPasswordFor
             </button>
           </div>
 
-          <button
-            type="submit"
-            className="w-full py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium"
-          >
-            Submit
-          </button>
+         <button
+  type="submit"
+  className={`w-full text-white py-2 rounded hover:opacity-90 transition ${
+    role === "organizer"
+      ? "bg-gradient-to-r from-orange-500 to-red-500"
+      : "bg-gradient-to-r from-purple-500 to-indigo-500"
+  }`}
+>
+  Submit
+</button>
+
         </form>
       </div>
     </div>

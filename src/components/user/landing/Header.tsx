@@ -10,7 +10,8 @@ import { FaUserCircle } from "react-icons/fa";
 import { clearUser } from "@/redux/slices/user/authSlice";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/authService";
-import { useUserState } from "@/hooks/useUserState";
+import Image from 'next/image';
+
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,7 +83,7 @@ const Header: React.FC = () => {
     className="focus:outline-none"
   >
     {user.image ? (
-      <img
+      <Image
         src={user.image}
         alt="User"
         className="w-8 h-8 rounded-full object-cover border border-gray-300"

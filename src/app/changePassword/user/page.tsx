@@ -10,14 +10,15 @@ import { useRouter } from "next/navigation";
 export default function ChangePasswordPage() {
   const router = useRouter();
 
-  const handleSubmit = async (data: { password: string; confirmPassword: string }) => {
+  // Updated function signature to match the component's expectation
+  const handleSubmit = async (role: "user" | "organizer", data: { password: string; confirmPassword: string }) => {
     try {
-      const result = await passwordService.changePassword("user", data);
-      console.log("result",result)
+      const result = await passwordService.changePassword(role, data);
+      console.log("result", result);
       toast.success("Password changed successfully!");
       router.push(`/login/${result.data.data.role}`);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       toast.error("Failed to change password");
     }
   };

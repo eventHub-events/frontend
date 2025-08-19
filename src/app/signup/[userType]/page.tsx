@@ -1,9 +1,11 @@
-// "use client";
-
 import SignupPage from "../../../components/ui/SignupPage";
 
-export default async function Page({ params }: { params: { userType: string } }) {
-  const { userType } =  await params;
+interface Props {
+  params: Promise<{ userType: string }>;
+}
+
+export default async function Page({ params }: Props) {
+  const { userType } = await params;
 
   // Validate userType
   if (userType !== "user" && userType !== "organizer") {

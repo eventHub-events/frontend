@@ -1,4 +1,5 @@
 import React from "react";
+import Image from 'next/image';
 import { 
   FaMusic, 
   FaPalette, 
@@ -65,9 +66,11 @@ const EventsList: React.FC = () => {
             >
               {/* Event Image */}
               <div className="relative h-48 overflow-hidden">
-                <img 
+                <Image 
                   src={event.image} 
                   alt={event.title}
+                  width={500}
+                  height={300}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>

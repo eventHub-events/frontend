@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
  import {FiEdit, FiSlash, FiUnlock,FiEye } from "react-icons/fi";
 import { IUserInfo } from "@/types/authTypes";
+import { confirmAction, showToast } from "@/services/common/alert";
+import Image from 'next/image';
 
 
 
@@ -32,6 +34,21 @@ setIsUpdated(false)
 fetchUser()
 
   },[isUpdated])
+
+  const handleBlockToggle = async (userId: string, isBlocked: boolean) => {
+  const action = isBlocked ? "unblock" : "block";
+  const confirmed = await confirmAction(
+    `Are you sure you want to ${action} this user?`,
+    `This will ${isBlocked ? "reactivate" : "suspend"} their access.`,
+    isBlocked ? "Unblock" : "Block"
+  );
+
+  if (confirmed) {
+    await handleStatus(userId, !isBlocked); // toggle status
+    showToast(`User ${isBlocked ? "unblocked" : "blocked"} successfully`, "success");
+  }
+};
+
 
   const handleStatus=async  (id:string,data:boolean)=>{
      console.log("handleStatus called with:", id, data);
@@ -98,7 +115,7 @@ fetchUser()
                 className="border-b hover:bg-gray-50 transition-colors"
               >
                 <td className="py-3 px-4 flex items-center gap-3">
-                  <img
+                  <Image
                     src={`https://i.pravatar.cc/40?img=${i + 1}`}
                     alt={user.name}
                     className="w-10 h-10 rounded-full"
@@ -146,7 +163,7 @@ fetchUser()
                     <FiEdit />
                   </button>
                   <button
-  onClick={() => handleStatus(user._id, !user.isBlocked)}
+  onClick={() =>  handleBlockToggle(user._id, user.isBlocked)}
   className="text-red-500 hover:text-red-700"
 >
   {user.isBlocked ? <FiUnlock /> : <FiSlash />}

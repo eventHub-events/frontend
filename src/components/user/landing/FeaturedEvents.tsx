@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import Image from 'next/image';
 import { 
   FiCalendar as DateIcon, 
   FiMapPin as LocationIcon,
@@ -9,7 +12,7 @@ import { GiWineBottle } from "react-icons/gi";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 
 const FeaturedEvents = () => {
-  // Premium event data with organizers and ratings
+  // Premium event data with local image paths
   const events = [
     {
       id: 1,
@@ -23,7 +26,7 @@ const FeaturedEvents = () => {
       totalReviews: 128,
       organizer: "Luxury Dining Collective",
       category: "Culinary Delights",
-      image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&auto=format&fit=crop"
+      image: "/events/event1.jpg" // Local image path
     },
     {
       id: 2,
@@ -37,7 +40,7 @@ const FeaturedEvents = () => {
       totalReviews: 215,
       organizer: "Vintage Curators LLC",
       category: "Premium Wines",
-      image: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=800&auto=format&fit=crop"
+      image: "/events/event2.jpg"
     },
     {
       id: 3,
@@ -51,7 +54,7 @@ const FeaturedEvents = () => {
       totalReviews: 187,
       organizer: "Epicurean Events Group",
       category: "Luxury Pairing",
-      image: "https://images.unsplash.com/photo-1506377717376-cb4e0e37496e?w=800&auto=format&fit=crop"
+      image: "/events/event3.jpg"
     },
     {
       id: 4,
@@ -65,7 +68,7 @@ const FeaturedEvents = () => {
       totalReviews: 94,
       organizer: "Green Vine Ventures",
       category: "Eco Wines",
-      image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=800&auto=format&fit=crop"
+      image: "/events/event4.jpg"
     },
     {
       id: 5,
@@ -79,7 +82,7 @@ const FeaturedEvents = () => {
       totalReviews: 76,
       organizer: "Spirit Connoisseurs",
       category: "Spirit Pairing",
-      image: "https://images.unsplash.com/photo-1518098268026-4e89f1a2cd8e?w=800&auto=format&fit=crop"
+      image: "/events/event5.jpg"
     },
     {
       id: 6,
@@ -93,7 +96,7 @@ const FeaturedEvents = () => {
       totalReviews: 63,
       organizer: "Modern Mixology Co.",
       category: "Craft Cocktails",
-      image: "https://images.unsplash.com/photo-1551751299-1b51cab2694c?w=800&auto=format&fit=crop"
+      image: "/events/event6.jpg"
     }
   ];
 
@@ -115,9 +118,6 @@ const FeaturedEvents = () => {
           <h2 className="text-4xl font-bold text-gray-900 mb-3">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Featured</span> Events
           </h2>
-          {/* <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Curated events for discerning tastes
-          </p> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -126,12 +126,15 @@ const FeaturedEvents = () => {
               key={event.id} 
               className="group relative bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-200 hover:border-cyan-200"
             >
-              {/* Image with gradient overlay */}
-              <div className="relative h-64 overflow-hidden">
-                <img 
+              {/* Fixed Image Implementation */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden">
+                <Image 
                   src={event.image} 
                   alt={event.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  priority={event.id <= 3}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center shadow-sm">
@@ -165,7 +168,7 @@ const FeaturedEvents = () => {
                   </div>
                 </div>
 
-                {/* Full width availability bar */}
+                {/* Availability bar */}
                 <div className="mb-6">
                   <div className="flex justify-between text-sm text-gray-500 mb-1">
                     <span>Availability</span>
