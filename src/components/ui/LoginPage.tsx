@@ -11,6 +11,7 @@ import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/slices/user/authSlice";
 // import { GiConsoleController } from "react-icons/gi";
 import { setOrganizer } from "@/redux/slices/organizer/authSlice";
+import { connectSocket } from "@/utils/socket";
 
 interface LoginPageProps {
   userType: "user" | "organizer" | "admin";
@@ -39,9 +40,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
     setLoading(true);
 
     const response = await authService.login({ email, password });
-    const { role } = response.data.data;
+    console.log("response is",response)
+    const { role,id } = response.data.data;
 
-   
+   connectSocket(id)
 
     
    
