@@ -6,6 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 import { authService } from "../../services/authService"
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { validateConfirmPassword, validateEmail, validateName, validatePassword, validatePhone } from "@/utils/validation";
 
 interface SignupPageProps {
   userType: "user" | "organizer";
@@ -24,38 +25,78 @@ export default function SignupPage({ userType }: SignupPageProps) {
     confirmPassword: "",
     role:userType
   });
+  const[errors,setErrors]=useState({
+    name:"",
+    email:"",
+    phone:"",
+    password:"",
+    confirmPassword:""
+  })
 
   const [loading, setLoading] = useState(false);
 
   // update form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    // setForm({ ...form, [e.target.name]: e.target.value });
+
+     const { name, value } = e.target;
+  setForm({ ...form, [name]: value });
+
+  // Real-time validation on change
+  let error = "";
+  switch (name) {
+    case "name":
+      error = validateName(value);
+      break;
+    case "email":
+      error = validateEmail(value);
+      break;
+    case "phone":
+      error = validatePhone(value);
+      break;
+    case "password":
+      error = validatePassword(value);
+      break;
+    case "confirmPassword":
+      error = validateConfirmPassword(value, form.password);
+      break;
+  }
+  setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
   // handle submit
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
 
-    try {
-      // send role along with form data
-      await authService.signup(
-        {
-          ...form,
-           // pass the role here
-        }
-      );
-       toast.success("Please verify your email/OTP.");
-      router.push(`/verify-otp/${userType}?email=${encodeURIComponent(form.email)}`);
-     
-    } catch (error) {
-     const err= error as AxiosError<{message:string}>
-      toast.error(err?.response?.data?.message || "Signup failed");
-    
-    } finally {
-      setLoading(false);
-    }
+  const newErrors = {
+    name: validateName(form.name),
+    email: validateEmail(form.email),
+    phone: validatePhone(form.phone),
+    password: validatePassword(form.password),
+    confirmPassword: validateConfirmPassword(form.confirmPassword, form.password),
   };
+
+  setErrors(newErrors);
+
+  const hasErrors = Object.values(newErrors).some((msg) => msg !== "");
+  if (hasErrors) {
+    toast.error("Please fix the form errors.");
+    return;
+  }
+
+  // continue with signup
+  try {
+    setLoading(true);
+    await authService.signup(form);
+    toast.success("Please verify your email/OTP.");
+    router.push(`/verify-otp/${userType}?email=${encodeURIComponent(form.email)}`);
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    toast.error(err?.response?.data?.message || "Signup failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -97,7 +138,9 @@ export default function SignupPage({ userType }: SignupPageProps) {
               value={form.name}
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+
             />
+            {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
             <input
               name="email"
               type="email"
@@ -106,6 +149,7 @@ export default function SignupPage({ userType }: SignupPageProps) {
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500"
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             <input
               name="phone"
               type="tel"
@@ -114,6 +158,7 @@ export default function SignupPage({ userType }: SignupPageProps) {
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500"
             />
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
             <input
               name="password"
               type="password"
@@ -122,6 +167,7 @@ export default function SignupPage({ userType }: SignupPageProps) {
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500"
             />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             <input
               name="confirmPassword"
               type="password"
@@ -130,6 +176,7 @@ export default function SignupPage({ userType }: SignupPageProps) {
               onChange={handleChange}
               className="w-full border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-purple-500"
             />
+            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
 
             <button
               type="submit"

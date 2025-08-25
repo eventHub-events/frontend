@@ -11,7 +11,7 @@ import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/slices/user/authSlice";
 // import { GiConsoleController } from "react-icons/gi";
 import { setOrganizer } from "@/redux/slices/organizer/authSlice";
-import { connectSocket } from "@/utils/socket";
+
 
 interface LoginPageProps {
   userType: "user" | "organizer" | "admin";
@@ -41,9 +41,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
     const response = await authService.login({ email, password });
     console.log("response is",response)
-    const { role,id } = response.data.data;
+    const { role } = response.data.data;
 
-   connectSocket(id)
+   
 
     
    
@@ -67,6 +67,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
   } catch (err: unknown) {
     const axiosErr = err as AxiosError<{ message: string }>;
+    console.log("axios error",axiosErr)
     toast.error(axiosErr.response?.data?.message || "Login failed");
     console.log(axiosErr.response?.data.message)
     

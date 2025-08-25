@@ -17,13 +17,21 @@ const organizerAuthSlice = createSlice({
   reducers:{
      setOrganizer:(state,action:PayloadAction<IOrganizer>)=>{
             state.organizer=action.payload
+             if(typeof window!== "undefined"){
+          localStorage.setItem("organizerInfo",JSON.stringify(action.payload))
+
+        }
      },
-     clearOrganizer:(state)=>{
+     organizerLogout:(state)=>{
          state.organizer=null
+           if (typeof window !== "undefined") {
+        localStorage.removeItem("organizerInfo");
+      }
+         
      }
 
   }
   
 })
-export const {setOrganizer,clearOrganizer}= organizerAuthSlice.actions  
+export const {setOrganizer,organizerLogout}= organizerAuthSlice.actions  
 export default organizerAuthSlice.reducer

@@ -6,12 +6,14 @@ import { toast } from "react-toastify";
 import { IUserInfo } from "@/types/authTypes";
 import { confirmAction, showToast } from "@/services/common/alert";
 import Image from 'next/image';
+import { useAdminSocket } from "@/hooks/useAdminSocket";
 
 
 
 const UserOrganizerManagement=()=>{
    const [users,setUsers] = useState< IUserInfo[]>([])
    const[isUpdated,setIsUpdated]=useState(false)
+   const{blockUser}= useAdminSocket()
 
   useEffect(()=>{
     async function fetchUser(){
@@ -36,6 +38,13 @@ fetchUser()
   },[isUpdated])
 
   const handleBlockToggle = async (userId: string, isBlocked: boolean) => {
+
+    
+    if (!userId) {
+     console.error(" No ID passed");
+    return;
+   }
+
   const action = isBlocked ? "unblock" : "block";
   const confirmed = await confirmAction(
     `Are you sure you want to ${action} this user?`,
@@ -44,23 +53,27 @@ fetchUser()
   );
 
   if (confirmed) {
-    await handleStatus(userId, !isBlocked); // toggle status
-    showToast(`User ${isBlocked ? "unblocked" : "blocked"} successfully`, "success");
+    // await handleStatus(userId, !isBlocked); // toggle status
+    await blockUser(userId,!isBlocked)
+  
+      setIsUpdated(true)
   }
 };
 
 
-  const handleStatus=async  (id:string,data:boolean)=>{
-     console.log("handleStatus called with:", id, data);
-  if (!id) {
-    console.error(" No ID passed");
-    return;
-  }
-      const result= await authService.changeStatus({id,data:{isBlocked:data}})
-      setIsUpdated(true)
-      console.log(result)
+  // const handleStatus=async  (id:string,data:boolean)=>{
+  //    console.log("handleStatus called with:", id, data);
+  // if (!id) {
+  //   console.error(" No ID passed");
+  //   return;
+  // }
+  //     const result= await authService.changeStatus({id,data:{isBlocked:data}})
+  //     setIsUpdated(true)
+  //     console.log(result)
 
-  }
+  // }
+
+
 
  return (
     <div className="p-6">
@@ -109,17 +122,19 @@ fetchUser()
             </tr>
           </thead>
           <tbody>
-            {users.map((user, i) => (
+            {users?.map((user, i) => (
               <tr
                 key={i}
                 className="border-b hover:bg-gray-50 transition-colors"
               >
                 <td className="py-3 px-4 flex items-center gap-3">
-                  <Image
-                    src={`https://i.pravatar.cc/40?img=${i + 1}`}
-                    alt={user.name}
-                    className="w-10 h-10 rounded-full"
-                  />
+            <Image
+  src={`https://i.pravatar.cc/40?img=${i + 1}`}
+  alt={user.name}
+  width={40}
+  height={40}
+  className="rounded-full"
+/>
                   <div>
                     <p className="font-medium">{user.name}</p>
                     <p className="text-sm text-gray-500">{user.email}</p>

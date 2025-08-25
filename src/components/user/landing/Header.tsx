@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
 import { FaUserCircle } from "react-icons/fa";
-import { clearUser } from "@/redux/slices/user/authSlice";
+import {  userLogout } from "@/redux/slices/user/authSlice";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/authService";
 import Image from 'next/image';
@@ -29,7 +29,7 @@ const Header: React.FC = () => {
   try {
     const response = await authService.logout();
     toast.success(response.data?.message || "Logged out successfully");
-    dispatch(clearUser());
+    dispatch(userLogout());
     router.push("/");
   } catch (error) {
     toast.error("Logout failed");

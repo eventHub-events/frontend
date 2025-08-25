@@ -1,10 +1,14 @@
-// src/app/organizer/layout.tsx
+"use client"
 
 import "@/app/globals.css";
 import Header from "@/components/user/landing/Header";
 import Footer from "@/components/user/landing/Footer";
+import { useAuthSocket } from "@/hooks/useAuthSocket";
+import { useUserState } from "@/hooks/useUserState";
 
-export default function OrganizerLayout({ children }: { children: React.ReactNode }) {
+export default function UserLayout({ children }: { children: React.ReactNode }) {
+  useAuthSocket()
+  useUserState()
   return (
     <div>
 

@@ -10,7 +10,7 @@ import { authService } from "@/services/authService";
 import Image from 'next/image';
 
 import { useRouter } from "next/navigation";
-import { clearOrganizer } from "@/redux/slices/organizer/authSlice";
+import { organizerLogout } from "@/redux/slices/organizer/authSlice";
 // import { GiConsoleController } from "react-icons/gi";
 
 export const OrganizerNavbar: React.FC = () => {
@@ -28,7 +28,7 @@ export const OrganizerNavbar: React.FC = () => {
     toast.error("Logout failed on server, logging out locally");
     console.error(error);
   } finally {
-    dispatch(clearOrganizer());
+    dispatch(organizerLogout());
     router.push("/");
   }
 };
