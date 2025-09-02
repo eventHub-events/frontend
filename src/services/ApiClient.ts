@@ -25,14 +25,8 @@ console.log("error is",error.message)
       originalRequest._retry = true;
 
       try {
-        // await axios.post(
-        //   // `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/refreshToken`,
-        //   {},
-        //   { withCredentials: true, headers: { "x-refresh-request": "true" } }
-        // );
 
-        // // Retry original request after successful refresh
-        // return apiClient(originalRequest);
+       
       } catch (refreshError) {
         console.log("refresh error happend", refreshError);
         let role = "user";

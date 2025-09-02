@@ -4,7 +4,7 @@ export const authService = {
   signup: <T>(payload: T) =>
     apiClient.post(`/api/user/register`, payload, {
       withCredentials: true,
-      headers: { "Content-Type": "application/json" }, // Ensures HttpOnly cookies are sent
+      headers: { "Content-Type": "application/json" }, 
     }),
   resentOtp: <T>(payload: T) => apiClient.post(`/api/user/resend-otp`, payload),
 

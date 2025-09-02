@@ -48,9 +48,6 @@ console.log("connected to  webSocket for user:",activeAccount?.id,activeAccount.
       else dispatch(organizerLogout())
       router.push(`/login/${role}`)
     })
-    socket.onAny((event, ...args) => {
-  console.log("🔔 Received event:", event, args);
-});
 
 
  return () => {
