@@ -4,6 +4,7 @@ import { FaCheckCircle, FaStar, FaCamera } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { profileService } from '@/services/organizer/profileService';
 import { useAppSelector } from '@/redux/hooks';
+import UploadDocumentSection from './UploadDocumentSection';
 
 const tabs = ['Profile', "Documents",'Verification', 'Security', 'Notifications'];
 
@@ -292,7 +293,13 @@ const [profileData, setProfileData] = useState({
       )}
 
       {/* Other Tabs Placeholder */}
-      {activeTab !== 'Profile' && (
+      {activeTab === 'Documents' && organizerId && (
+  <div className="mt-4">
+    <UploadDocumentSection organizerId={organizerId} />
+  </div>
+)}
+
+      {activeTab !== 'Profile' && activeTab !== 'Documents' && (
         <div className="text-gray-500 text-sm py-10 text-center">
           {activeTab} section content goes here.
         </div>
