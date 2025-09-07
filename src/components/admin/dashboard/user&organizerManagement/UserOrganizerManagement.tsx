@@ -7,6 +7,7 @@ import { IUserInfo } from "@/types/authTypes";
 import { confirmAction, showToast } from "@/services/common/alert";
 import Image from 'next/image';
 import { useAdminSocket } from "@/hooks/useAdminSocket";
+import Pagination from "@/components/ui/Pagination";
 
 
 
@@ -14,6 +15,8 @@ const UserOrganizerManagement=()=>{
    const [users,setUsers] = useState< IUserInfo[]>([])
    const[isUpdated,setIsUpdated]=useState(false)
    const{blockUser}= useAdminSocket()
+   const[currentPage,setCurrentPage]=useState(1);
+   const[totalPages,setTotalPages]=useState(1);
 
   useEffect(()=>{
     async function fetchUser(){
@@ -190,6 +193,11 @@ fetchUser()
           </tbody>
         </table>
       </div>
+       <Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={(page) => setCurrentPage(page)}
+/>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6">
@@ -210,6 +218,7 @@ fetchUser()
           <p className="text-2xl font-bold">924</p>
         </div>
       </div>
+     
     </div>
   );
 };
