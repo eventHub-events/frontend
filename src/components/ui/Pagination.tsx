@@ -8,7 +8,7 @@ interface PaginationProps{
 }
 
 export default function Pagination({currentPage,totalPages,onPageChange}:PaginationProps){
-  if(totalPages<=1)return null;
+  if(totalPages<1)return null;
   const pages= Array.from({length:totalPages},(_,i)=>i+1);
   return (
     <div className="flex gap-2 mt -4 justify-center">

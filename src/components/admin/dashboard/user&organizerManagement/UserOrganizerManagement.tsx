@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
  import {FiEdit, FiSlash, FiUnlock,FiEye } from "react-icons/fi";
 import { IUserInfo } from "@/types/authTypes";
-import { confirmAction, showToast } from "@/services/common/alert";
+import { confirmAction} from "@/services/common/alert";
 import Image from 'next/image';
 import { useAdminSocket } from "@/hooks/useAdminSocket";
 import Pagination from "@/components/ui/Pagination";
@@ -17,14 +17,20 @@ const UserOrganizerManagement=()=>{
    const{blockUser}= useAdminSocket()
    const[currentPage,setCurrentPage]=useState(1);
    const[totalPages,setTotalPages]=useState(1);
+  
 
   useEffect(()=>{
     async function fetchUser(){
 
 try{
- const usersList= await authService.usersList()
- console.log( usersList.data.data)
-    setUsers(usersList.data?.data)
+ const usersList= await authService.usersList(currentPage,5)
+ console.log(usersList)
+ console.log( usersList.data.data.users)
+ 
+    setUsers(usersList.data?.data.users)
+    setTotalPages(Math.ceil(usersList.data?.data.total/5))
+    console.log("total",totalPages)
+   
     
 setIsUpdated(false)
 
@@ -38,7 +44,7 @@ setIsUpdated(false)
    
 fetchUser()
 
-  },[isUpdated])
+  },[isUpdated,currentPage,totalPages])
 
   const handleBlockToggle = async (userId: string, isBlocked: boolean) => {
 
@@ -193,11 +199,14 @@ fetchUser()
           </tbody>
         </table>
       </div>
-       <Pagination
-  currentPage={currentPage}
-  totalPages={totalPages}
-  onPageChange={(page) => setCurrentPage(page)}
-/>
+    <div className="mt-4 flex justify-center">
+  <Pagination
+    currentPage={currentPage}
+    totalPages={totalPages}
+    onPageChange={(page) => setCurrentPage(page)}
+  />
+</div>
+
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-6">
