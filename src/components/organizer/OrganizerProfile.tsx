@@ -7,8 +7,22 @@ import { useAppSelector } from '@/redux/hooks';
 import UploadDocumentSection from './UploadDocumentSection';
 import { uploadImageToCloudinary } from '@/services/common/cloudinary';
 import { toast } from 'react-toastify';
+import Image from 'next/image';
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security', 'Notifications'];
+type ProfileFormData = {
+  organizerId: string;
+  name: string;
+  email: string;
+  phone: string;
+  organization: string;
+  totalEarnings: string;
+  location: string;
+  website: string;
+  bio: string;
+  profilePicture: string;
+};
+
 
 export default function OrganizerProfile() {
   const [activeTab, setActiveTab] = useState('Profile');
@@ -16,7 +30,7 @@ export default function OrganizerProfile() {
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
 
-  const [profileFormData, setProfileFormData] = useState({
+  const [profileFormData, setProfileFormData] = useState<ProfileFormData>({
     organizerId: '',
     name: '',
     email: '',
@@ -29,7 +43,7 @@ export default function OrganizerProfile() {
     profilePicture: '',
   });
 
-  const [profileData, setProfileData] = useState({ ...profileFormData });
+  const [profileData, setProfileData] = useState<ProfileFormData>({ ...profileFormData });
 
   useEffect(() => {
     if (organizer && !profileFormData.organizerId) {
@@ -65,8 +79,9 @@ export default function OrganizerProfile() {
           setProfileData(flatData);
           setProfileFormData(flatData);
         }
-      } catch (error) {
-        toast.error('Failed to fetch profile');
+      } catch (error:unknown) {
+        const err= error instanceof Error? error.message:"Failed to fetch profile"
+        toast.error(err);
       }
     };
 
@@ -123,8 +138,9 @@ export default function OrganizerProfile() {
 
       setProfileData(profileFormData);
       setIsEditing(false);
-    } catch (err) {
-      toast.error('Failed to save profile');
+    } catch (err:unknown) {
+      const error = err instanceof Error ? err.message : 'Failed to save profile';
+      toast.error(error);
     }
   };
 
@@ -160,11 +176,12 @@ export default function OrganizerProfile() {
             <div className="flex items-center space-x-5">
               <div className="relative w-20 h-20 rounded-full overflow-hidden border border-gray-300 bg-gray-100">
                 {profileFormData.profilePicture ? (
-                  <img
-                    src={profileFormData.profilePicture}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
+                 <Image
+  src={profileFormData.profilePicture}
+  alt="Profile"
+  fill
+  className="object-cover"
+/>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-semibold">
                     {organizer?.name?.charAt(0).toUpperCase() || 'U'}
@@ -236,7 +253,7 @@ export default function OrganizerProfile() {
                 <label className="block text-sm text-gray-600 mb-1">{field.label}</label>
                 <input
                   className="w-full border rounded px-3 py-2"
-                  value={(profileFormData as any)[field.key]}
+                  value={profileFormData[field.key as keyof ProfileFormData]}
                   onChange={(e) =>
                     setProfileFormData((prev) => ({
                       ...prev,

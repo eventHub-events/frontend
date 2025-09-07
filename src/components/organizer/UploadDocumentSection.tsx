@@ -1,7 +1,7 @@
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { documentService } from "@/services/organizer/documentService";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -24,6 +24,16 @@ export default function UploadDocumentSection({ organizerId }: Props) {
   const [documentType, setDocumentType] = useState("");
   const [uploading, setUploading] = useState(false);
   const [documents, setDocuments] = useState<UploadDocument[]>([]);
+  useEffect(()=>{
+    const fetchDocuments= async ()=>{
+      const docs= await documentService.getDocuments(organizerId);
+      console.log(docs.data.data)
+      setDocuments(docs.data.data)
+
+    }
+    fetchDocuments()
+
+  },[uploading,organizerId])
 
   const handleUpload = async () => {
     if (!selectedFile || !documentType) {

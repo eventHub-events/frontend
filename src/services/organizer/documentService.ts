@@ -1,7 +1,7 @@
 import { apiClient } from "../ApiClient";
 
 export const documentService={
-  getDocuments:(organizerId:string)=>apiClient.get(`api/organizer/${organizerId}`),
+  getDocuments:(organizerId:string)=>apiClient.get(`/api/organizer/uploaded-documents/${organizerId}`),
 
   saveDocuments:(data:{
     organizerId:string;
