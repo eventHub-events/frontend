@@ -61,6 +61,7 @@ export default function OrganizerProfile() {
       try {
         if (!organizerId) return;
         const response = await profileService.getProfile(organizerId);
+        console.log("resProfile ",response)
 
         if (response?.data?.data) {
           const flatData = {
