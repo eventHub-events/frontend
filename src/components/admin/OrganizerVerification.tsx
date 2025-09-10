@@ -56,14 +56,14 @@ const dummyOrganizers: Organizer[] = [
   },
 ];
 
-const OrganizeVerification=()=>{
+export const OrganizeVerification=()=>{
   const[organizers,setOrganizers]=useState<Organizer[]>();
   const[selectedOrg,setSelectedOrg]=useState<Organizer |null>(null);
 
   useEffect(()=>{
     setOrganizers(dummyOrganizers);
     setSelectedOrg(dummyOrganizers[0]);
-  })
+  },[])
 
 
   return (
@@ -86,7 +86,7 @@ const OrganizeVerification=()=>{
       <div className="grid grid-cols-3 gap-6">
         {/* Left Panel */}
         <div className="col-span-1 bg-white shadow rounded p-4 space-y-4">
-           {organizers.map((org)=>(
+           {organizers?.map((org)=>(
             <div
                key={org.id}
                className={`p-3 rounded cursor-pointer ${

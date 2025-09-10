@@ -6,6 +6,7 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 const links = [
   { name: "Dashboard", path: "/admin/dashboard" },
   { name: "User Management", path: "/admin/user-organizer" },
+  { name: "Organizer Verification", path: "/admin/organizer-verification" },
   // { name: "Organizer Management", path: "/dashboard/organizer-management" },
   { name: "Event Management", path: "/dashboard/event-management" },
   { name: "Finance & Payments", path: "/dashboard/finance" },
