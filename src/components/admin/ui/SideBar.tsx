@@ -7,7 +7,6 @@ const links = [
   { name: "Dashboard", path: "/admin/dashboard" },
   { name: "User Management", path: "/admin/user-organizer" },
   { name: "Organizer Verification", path: "/admin/organizer-verification" },
-  // { name: "Organizer Management", path: "/dashboard/organizer-management" },
   { name: "Event Management", path: "/dashboard/event-management" },
   { name: "Finance & Payments", path: "/dashboard/finance" },
   { name: "Promo Codes", path: "/dashboard/promo-codes" },
@@ -42,6 +41,7 @@ export default function Sidebar() {
           </Link>
         ))}
       </nav>
+      
       <div className="mt-auto text-xs text-gray-400 pt-8">
         &copy; {new Date().getFullYear()} EventHub
       </div>
