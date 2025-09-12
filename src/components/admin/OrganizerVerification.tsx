@@ -1,172 +1,168 @@
-"use client"
+"use client";
+
+import { useEffect, useState } from "react";
+import { FiEye, FiDownload, FiClock, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { organizerVerificationService } from "@/services/admin/organizerVerificationService";
+import Image from "next/image";
+import { OrganizerDetail, SelectedOrganizerDetail } from "@/types/admin/organizerVerification";
+import { TiTick } from "react-icons/ti";
 
 
-import { useEffect, useState } from "react"
-import { FiDownload, FiEye } from "react-icons/fi"
 
 
-interface Document {
-  type:string;
-  status:"Pending" | "Verified" |"Rejected";
-  url:string;
-}
 
-interface Organizer{
-  id:string;
-  name:string;
-  email:string;
-  company:string;
-  date:string;
-  status:"Pending"|"Verified"|"Rejected"
-  documents:Document[];
 
-}
+export default function OrganizerVerification() {
+  const [organizers, setOrganizers] = useState<OrganizerDetail[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<SelectedOrganizerDetail | null>(null);
+  
 
-const dummyOrganizers: Organizer[] = [
-  {
-    id: '1',
-    name: 'John Smith',
-    email: 'john@example.com',
-    company: 'Smith Events LLC',
-    date: '1/15/2024',
-    status: 'Pending',
-    documents: [
-      { type: 'Government ID', status: 'Verified', url: '#' },
-      { type: 'Business License', status: 'Pending', url: '#' },
-      { type: 'Tax Certificate', status: 'Pending', url: '#' },
-    ],
-  },
-  {
-    id: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah@example.com',
-    company: 'Creative Events Co.',
-    date: '1/10/2024',
-    status: 'Verified',
-    documents: [],
-  },
-  {
-    id: '3',
-    name: 'Mike Chen',
-    email: 'mike@example.com',
-    company: 'Tech Meetups Inc.',
-    date: '1/8/2024',
-    status: 'Rejected',
-    documents: [],
-  },
-];
+  useEffect(() => {
+    const fetchPending = async () => {
+      try {
+        const res = await organizerVerificationService.fetchPendingOrganizers();
+      
+        console.log("res in  is",res)
+        setOrganizers(res.data?.data || []);
+      } catch (err) {
+        console.error("Failed to fetch pending organizers", err);
+      }
+    };
+    fetchPending();
+  }, []);
 
-export const OrganizeVerification=()=>{
-  const[organizers,setOrganizers]=useState<Organizer[]>();
-  const[selectedOrg,setSelectedOrg]=useState<Organizer |null>(null);
-
-  useEffect(()=>{
-    setOrganizers(dummyOrganizers);
-    setSelectedOrg(dummyOrganizers[0]);
-  },[])
-
+  useEffect(() => {
+    const fetchDetails = async () => {
+      if (selectedId) {
+        try {
+          const res = await organizerVerificationService.fetchVerificationDetails(selectedId);
+          console.log(res)
+          setSelectedDetail(res.data?.data);
+        } catch (err) {
+          console.error("Failed to fetch organizer details", err);
+        }
+      }
+    };
+    fetchDetails();
+  }, [selectedId]);
 
   return (
     <div className="p-6">
-      {/* Search+filter */}
-      <div className="flex justify-between items-center mb-6">
-        <input 
-            type="text"
-            placeholder="Search Verification..."
-            className="w-1/3 px-4 py-2 border rounded"
-            />
-            <select className="border rounded px-3 py-2">
-                 <option>All status</option>
-                 <option>Pending</option>
-                 <option >Verified</option>
-                 <option>Rejected</option>
-            </select>
-      </div>
-      {/* Main Grid */}
       <div className="grid grid-cols-3 gap-6">
-        {/* Left Panel */}
-        <div className="col-span-1 bg-white shadow rounded p-4 space-y-4">
-           {organizers?.map((org)=>(
+        {/* Left Panel - List */}
+        <div className="col-span-1 bg-white rounded shadow p-4 space-y-4">
+          <h3 className="text-lg font-semibold">Verification Requests</h3>
+          {organizers.map((org) => (
             <div
-               key={org.id}
-               className={`p-3 rounded cursor-pointer ${
-                selectedOrg?.id===org.id?'bg-blue-100':'hover:bg-gray-100'
-               }`}
-               onClick={()=>setSelectedOrg(org)}
-               >
-                <div className="font-semibold">{org.name}</div>
-                <div className="text-sm text-gray-500">{org.email}</div>
-                <div className="flex justify-between items-center mt-1">
-                  <span
-                  className={`text-xs px-2 py-1 rounded-full ${
-                    org.status === 'Pending'
-                      ? 'bg-yellow-100 text-yellow-700'
-                      : org.status === 'Verified'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
-                  }`}
-                >
-                  {org.status}
-                </span>
-                 <span className="text-xs text-gray-400">{org.date}</span>
-                  </div>
-            </div>
-           ))}
-        </div>
-         {/* Right Panel */}
-        <div className="col-span-2 bg-white shadow rounded p-6">
-          {selectedOrg && (
-            <>
-              <div className="flex justify-between mb-4">
-                <h2 className="text-xl font-semibold">Verification Details</h2>
+              key={org.id}
+              onClick={() => setSelectedId(org.id)}
+              className={`p-3 rounded cursor-pointer border ${
+                selectedId === org.id ? "bg-blue-50 border-blue-400" : "hover:bg-gray-50"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Image
+                  src={org.organizerProfile.profilePicture||"/avatar-placeholder.png"}
+                  alt="profile"
+                  width={60}
+                  height={70}
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="font-semibold">{org.name}</p>
+                  <p className="text-sm text-gray-500">{org.organizerProfile.organization || "Not Provided"}</p>
+                  <p className="text-sm text-gray-500">{org.email || "Not Provided"}</p>
+                </div>
+              </div>
+              <div className="mt-2 flex justify-between items-center">
                 <span
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    selectedOrg.status === 'Pending'
-                      ? 'bg-yellow-100 text-yellow-700'
-                      : selectedOrg.status === 'Verified'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
+                  className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
+                    org.kycStatus === "Pending"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : org.kycStatus === "Verified"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {selectedOrg.status}
+                  {org.kycStatus === "Pending" && <FiClock className="text-sm" />}
+                  {org.kycStatus === "Verified" && <FiCheckCircle className="text-sm" />}
+                  {org.kycStatus === "Rejected" && <FiXCircle className="text-sm" />}
+                  {org.kycStatus}
+                </span>
+                <span className="text-xs text-gray-400">
+                  {new Date(org.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Right Panel - Details */}
+        <div className="col-span-2 bg-white rounded shadow p-6">
+          {selectedDetail ? (
+            <>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Verification Details</h3>
+                <span
+                  className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm ${
+                    selectedDetail.kycVerified
+                      ? "bg-green-100 text-green-700"
+                      : "bg-yellow-100 text-yellow-700"
+                  }`}
+                >
+                  {selectedDetail.kycVerified ? (
+                    <FiCheckCircle className="text-sm" />
+                  ) : (
+                    <FiClock className="text-sm" />
+                  )}
+                  {selectedDetail.kycVerified ? "Verified" : "Pending"}
                 </span>
               </div>
 
               {/* Organizer Info */}
-              <div className="border rounded p-4 mb-6 bg-gray-50">
-                <p className="font-semibold">{selectedOrg.name}</p>
-                <p className="text-sm text-gray-500">{selectedOrg.email}</p>
-                <p className="text-sm text-gray-500">{selectedOrg.company}</p>
+               <h4 className="font-semibold mb-2" >Organizer information</h4>
+              <div className="border p-4 rounded bg-gray-50 mb-4">
+                <p className="font-semibold">{selectedDetail.organizerId.name}</p>
+                <p className="text-sm text-gray-500">{selectedDetail.organizerId.email}</p>
+                <div className="mt-2">
+                <p className="font-semibold">{selectedDetail.organization}</p>
+                <p className="text-sm text-gray-500">Business Name</p>
+                </div>
               </div>
 
-              {/* Submitted Documents */}
+              {/* Documents */}
+              <h4 className="font-semibold mb-2" >Submitted documents</h4>
               <div className="space-y-3 mb-6">
-                {selectedOrg.documents.map((doc, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center p-3 border rounded"
-                  >
+                {selectedDetail.documents.map((doc, i) => (
+                  <div key={i} className="flex justify-between items-center p-3 border rounded">
                     <div>
                       <p className="font-medium">{doc.type}</p>
                       <p
-                        className={`text-sm ${
-                          doc.status === 'Verified'
-                            ? 'text-green-600'
-                            : doc.status === 'Pending'
-                            ? 'text-yellow-600'
-                            : 'text-red-600'
+                        className={`flex items-center gap-1 text-sm ${
+                          doc.status === "Approved"
+                            ? "text-green-600"
+                            : doc.status === "Pending"
+                            ? "text-yellow-600"
+                            : "text-red-600"
                         }`}
                       >
+                        {doc.status === "Approved" && <FiCheckCircle className="text-sm" />}
+                        {doc.status === "Pending" && <FiClock className="text-sm" />}
+                        {doc.status === "Rejected" && <FiXCircle className="text-sm" />}
                         {doc.status}
                       </p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <button>
-                        <FiEye />
-                      </button>
-                      <button>
-                        <FiDownload />
-                      </button>
+                      
+                        <TiTick  className="cursor-pointer text-green-600" />
+                      
+                      <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                        <FiEye className="cursor-pointer" />
+                      </a>
+                      <a href={doc.url} download>
+                        <FiDownload className="cursor-pointer " />
+                      </a>
                     </div>
                   </div>
                 ))}
@@ -182,12 +178,13 @@ export const OrganizeVerification=()=>{
                 </button>
               </div>
             </>
+          ) : (
+            <div className="text-gray-400 text-center">
+              Select an organizer to view details.
+            </div>
           )}
         </div>
       </div>
-
-     
-      </div>
-    
-  )
+    </div>
+  );
 }

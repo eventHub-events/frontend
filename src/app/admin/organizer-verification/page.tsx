@@ -1,4 +1,5 @@
-import { OrganizeVerification } from "@/components/admin/OrganizerVerification"
+
+import OrganizerVerification from "@/components/admin/OrganizerVerification"
 import Navbar from "@/components/admin/ui/NavBar"
 import Sidebar from "@/components/admin/ui/SideBar"
 import ProtectedRoute from "@/components/user/auth/RoleProtection"
@@ -14,7 +15,7 @@ const OrganizeVerificationPage=()=>{
         <div className="flex-1 ml-64">
           <Navbar/>
           <main className="mt-16 p-4">
-            <OrganizeVerification/>
+            <OrganizerVerification/>
           </main>
         </div>
       </div>
