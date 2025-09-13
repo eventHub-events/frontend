@@ -9,6 +9,9 @@ export const documentService={
     url:string;
     name:string;
   })=>apiClient.post(`/api/organizer/upload-document`,data),
+  deleteDocument:(documentId:string)=>apiClient.delete(`/api/organizer/uploaded-document/${documentId}/deletion`,{
+    withCredentials:true
+  })
 
 
 
