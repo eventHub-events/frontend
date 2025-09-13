@@ -40,7 +40,7 @@ export interface IGetMeResponse {
 }
 
 export interface IUserInfo{
-  _id:string,
+  id:string,
   name:string,
   email:string,
   createdAt:Date,

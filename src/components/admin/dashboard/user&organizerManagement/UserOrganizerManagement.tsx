@@ -187,7 +187,7 @@ fetchUser()
                     <FiEdit />
                   </button>
                   <button
-  onClick={() =>  handleBlockToggle(user._id, user.isBlocked)}
+  onClick={() =>  handleBlockToggle(user.id, user.isBlocked)}
   className="text-red-500 hover:text-red-700"
 >
   {user.isBlocked ? <FiUnlock /> : <FiSlash />}

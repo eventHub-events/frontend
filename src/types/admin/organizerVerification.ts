@@ -53,3 +53,19 @@ export interface OrganizerDetail {
   
   
 }
+export interface UpdateDocumentData {
+  status:string;
+  verified:boolean;
+  reviewedBy:string;
+  reviewedAt:Date;
+  reason?:string
+   
+}
+export interface UpdateOrganizerStatus{
+  kycStatus:string
+  isVerified:boolean;
+
+}
+export interface UpdateOrganizerProfileKycStatus{
+     kycVerified:boolean
+}
