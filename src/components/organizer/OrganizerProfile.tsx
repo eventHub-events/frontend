@@ -8,13 +8,19 @@ import UploadDocumentSection from './UploadDocumentSection';
 import { uploadImageToCloudinary } from '@/services/common/cloudinary';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
+import KycVerificationStatus from './OrganizerKycVerification';
+import { FiXCircle } from 'react-icons/fi';
+
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security', 'Notifications'];
+
 type ProfileFormData = {
   organizerId: string;
   name: string;
   email: string;
   phone: string;
+  isVerified: boolean;
+  kycStatus: 'Pending' | 'Approved' | 'Rejected';
   organization: string;
   totalEarnings: string;
   location: string;
@@ -23,6 +29,12 @@ type ProfileFormData = {
   profilePicture: string;
 };
 
+// Only include fields allowed in input fields (string values)
+const editableFields: Array<keyof Pick<ProfileFormData,
+  'name' | 'email' | 'phone' | 'location' | 'organization' | 'website'
+>> = [
+  'name', 'email', 'phone', 'location', 'organization', 'website'
+];
 
 export default function OrganizerProfile() {
   const [activeTab, setActiveTab] = useState('Profile');
@@ -35,6 +47,8 @@ export default function OrganizerProfile() {
     name: '',
     email: '',
     phone: '',
+    isVerified: false,
+    kycStatus: 'Pending',
     organization: '',
     totalEarnings: '',
     location: '',
@@ -61,14 +75,15 @@ export default function OrganizerProfile() {
       try {
         if (!organizerId) return;
         const response = await profileService.getProfile(organizerId);
-        console.log("resProfile ",response)
 
         if (response?.data?.data) {
-          const flatData = {
+          const flatData: ProfileFormData = {
             organizerId,
             name: response.data.data.organizerId.name,
             email: response.data.data.organizerId.email,
             phone: response.data.data.organizerId.phone,
+            isVerified: response.data.data.organizerId.isVerified,
+            kycStatus: response.data.data.organizerId.kycStatus,
             organization: response.data.data.organization || '',
             totalEarnings: response.data.data.totalEarnings || '',
             location: response.data.data.location || '',
@@ -80,8 +95,8 @@ export default function OrganizerProfile() {
           setProfileData(flatData);
           setProfileFormData(flatData);
         }
-      } catch (error:unknown) {
-        const err= error instanceof Error? error.message:"Failed to fetch profile"
+      } catch (error: unknown) {
+        const err = error instanceof Error ? error.message : 'Failed to fetch profile';
         toast.error(err);
       }
     };
@@ -97,24 +112,16 @@ export default function OrganizerProfile() {
       const imageUrl = await uploadImageToCloudinary(file);
       if (imageUrl) {
         setProfileFormData((prev) => {
-      const updatedForm = {
-        ...prev,
-        profilePicture: imageUrl,
-      };
+          const updatedForm = {
+            ...prev,
+            profilePicture: imageUrl,
+          };
 
-      // Send to backend after setting state
-      profileService
-        .updateProfile(updatedForm.organizerId, updatedForm)
-       
+          profileService.updateProfile(updatedForm.organizerId, updatedForm);
+          return updatedForm;
+        });
 
-      return updatedForm;
-    });
-    setTimeout(()=>{
-
-      toast.success('Profile image updated')
-    },2000)
-        console.log("profileFormData",profileFormData)
-      
+        toast.success('Profile image updated');
       }
     } catch (err: unknown) {
       const error = err instanceof Error ? err.message : 'Failed to upload profile image';
@@ -139,7 +146,7 @@ export default function OrganizerProfile() {
 
       setProfileData(profileFormData);
       setIsEditing(false);
-    } catch (err:unknown) {
+    } catch (err: unknown) {
       const error = err instanceof Error ? err.message : 'Failed to save profile';
       toast.error(error);
     }
@@ -177,18 +184,17 @@ export default function OrganizerProfile() {
             <div className="flex items-center space-x-5">
               <div className="relative w-20 h-20 rounded-full overflow-hidden border border-gray-300 bg-gray-100">
                 {profileFormData.profilePicture ? (
-                 <Image
-  src={profileFormData.profilePicture}
-  alt="Profile"
-  fill
-  className="object-cover"
-/>
+                  <Image
+                    src={profileFormData.profilePicture}
+                    alt="Profile"
+                    fill
+                    className="object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-semibold">
                     {organizer?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
-
                 <input
                   type="file"
                   accept="image/*"
@@ -208,16 +214,19 @@ export default function OrganizerProfile() {
                 <h3 className="text-lg font-semibold">{organizer?.name}</h3>
                 <p className="text-sm text-gray-600">TechEvents Inc</p>
                 <div className="flex items-center text-sm mt-1 space-x-2">
-                  <span className="text-green-600 flex items-center font-medium">
-                    <FaCheckCircle className="mr-1" /> Verified Organizer
-                  </span>
-                  <span className="text-yellow-600 flex items-center font-medium">
-                    <FaStar className="ml-2 mr-1" /> Trust Score: <span className="ml-1">85</span>
-                  </span>
-                </div>
-                <p className="text-sm text-gray-500 mt-1">
-                  Experienced event organizer specializing in tech conferences and workshops.
-                </p>
+   {organizer?.isVerified ? (
+    <span className="text-green-600 flex items-center font-medium">
+      <FaCheckCircle className="mr-1" /> Verified Organizer
+    </span>
+  ) : (
+    <span className="text-red-600 flex items-center font-medium">
+      <FiXCircle className="mr-1" /> Verification Required
+    </span>
+  )}
+  <span className="text-yellow-600 flex items-center font-medium">
+    <FaStar className="ml-2 mr-1" /> Trust Score: <span className="ml-1">85</span>
+  </span>
+</div>
               </div>
             </div>
 
@@ -241,24 +250,18 @@ export default function OrganizerProfile() {
 
           {/* Profile Form */}
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Inputs */}
-            {[
-              { label: 'Full Name', key: 'name' },
-              { label: 'Phone', key: 'phone' },
-              { label: 'Email', key: 'email' },
-              { label: 'Location', key: 'location' },
-              { label: 'Organization', key: 'organization' },
-              { label: 'Website', key: 'website' },
-            ].map((field) => (
-              <div key={field.key}>
-                <label className="block text-sm text-gray-600 mb-1">{field.label}</label>
+            {editableFields.map((field) => (
+              <div key={field}>
+                <label className="block text-sm text-gray-600 mb-1">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
                 <input
                   className="w-full border rounded px-3 py-2"
-                  value={profileFormData[field.key as keyof ProfileFormData]}
+                  value={profileFormData[field]}
                   onChange={(e) =>
                     setProfileFormData((prev) => ({
                       ...prev,
-                      [field.key]: e.target.value,
+                      [field]: e.target.value,
                     }))
                   }
                   readOnly={!isEditing}
@@ -283,7 +286,6 @@ export default function OrganizerProfile() {
               />
             </div>
 
-            {/* Save / Cancel */}
             {isEditing && (
               <div className="flex justify-end space-x-4 mt-4 md:col-span-2">
                 <button
@@ -308,15 +310,19 @@ export default function OrganizerProfile() {
         </>
       )}
 
-      {/* Documents Tab */}
       {activeTab === 'Documents' && organizerId && (
         <div className="mt-4">
           <UploadDocumentSection organizerId={organizerId} />
         </div>
       )}
 
-      {/* Placeholder Tabs */}
-      {activeTab !== 'Profile' && activeTab !== 'Documents' && (
+      {activeTab === 'Verification' && organizerId && (
+        <div className="mt-4">
+          <KycVerificationStatus organizerId={organizerId} overallStatus={profileData.kycStatus} />
+        </div>
+      )}
+
+      {activeTab !== 'Profile' && activeTab!=="Verification" && activeTab !== 'Documents' && (
         <div className="text-gray-500 text-sm py-10 text-center">
           {activeTab} section content goes here.
         </div>
