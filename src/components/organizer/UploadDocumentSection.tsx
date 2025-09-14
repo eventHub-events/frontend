@@ -167,7 +167,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
                   className="relative rounded-lg border border-gray-200 shadow-sm bg-white overflow-hidden hover:shadow-md transition duration-200 flex flex-col"
                 >
                   {/* Close Button */}
-                  {doc.status !== "Approved" && (
+                  {doc.status !== "Approved" && doc.status !=="Rejected"&&(
                     <button
                       onClick={() => handleRemoveDocument(doc._id)}
                       className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
