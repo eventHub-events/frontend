@@ -21,10 +21,30 @@ export const authService = {
     apiClient.post(`/api/admin/login`, payload, { withCredentials: true }),
   adminLogout: () =>
     apiClient.post(`/api/admin/logout`, {}, { withCredentials: true }),
-  usersList: (page:number,limit:number) =>
-    apiClient.get(`/api/admin/usersList?page=${page}&limit=${limit}`, {
-      withCredentials: true,
-    }),
+ usersList: ({
+  page,
+  limit,
+  search,
+  role,
+  status,
+}: {
+  page: number;
+  limit: number;
+  search?: string;
+  role?: string;
+  status?: string;
+}) =>
+  apiClient.get("/api/admin/usersList", {
+    params: {
+      page,
+      limit,
+      ...(search && { search }),
+      ...(role && { role }),
+      ...(status && { status }),
+    },
+    withCredentials: true,
+  }),
+
   changeStatus: <T>(payload: T) =>
     apiClient.post(`/api/admin/updateUser`, payload, { withCredentials: true }),
   logout: () => {
