@@ -6,9 +6,11 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import { Tooltip } from "../ui/Tooltip";
 import { FaInfoCircle, FaLock } from "react-icons/fa";
 
+interface SecurityTabProp{
+  organizerId:string
+}
 
-
-export const SecurityTab = ({organizerId}) => {
+export const SecurityTab = ({organizerId}:SecurityTabProp) => {
   const{
     register,
     handleSubmit,
@@ -20,6 +22,7 @@ export const SecurityTab = ({organizerId}) => {
 
   const onSubmit = (data: PasswordSchemaType ) => {
     console.log("submitted ", data);
+    console.log(organizerId)
 
   }
 
