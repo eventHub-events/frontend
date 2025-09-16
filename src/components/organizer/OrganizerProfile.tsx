@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import Image from 'next/image';
 import KycVerificationStatus from './OrganizerKycVerification';
 import { FiXCircle } from 'react-icons/fi';
+import { SecurityTab } from './OrganizerPassword&security';
 
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security', 'Notifications'];
@@ -319,6 +320,11 @@ export default function OrganizerProfile() {
       {activeTab === 'Verification' && organizerId && (
         <div className="mt-4">
           <KycVerificationStatus organizerId={organizerId} overallStatus={profileData.kycStatus} />
+        </div>
+      )}
+      {activeTab === 'Security' && organizerId && (
+        <div className="mt-4">
+          <SecurityTab organizerId={organizerId}  />
         </div>
       )}
 
