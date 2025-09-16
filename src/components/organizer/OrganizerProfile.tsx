@@ -328,7 +328,7 @@ export default function OrganizerProfile() {
         </div>
       )}
 
-      {activeTab !== 'Profile' && activeTab!=="Verification" && activeTab !== 'Documents' && (
+      {activeTab === "Notifications" && (
         <div className="text-gray-500 text-sm py-10 text-center">
           {activeTab} section content goes here.
         </div>
