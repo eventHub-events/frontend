@@ -5,6 +5,7 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod"
 import { Tooltip } from "../ui/Tooltip";
 import { FaInfoCircle, FaLock } from "react-icons/fa";
+import { profileService } from "@/services/organizer/profileService";
 
 interface SecurityTabProp{
   organizerId:string
@@ -20,9 +21,17 @@ export const SecurityTab = ({organizerId}:SecurityTabProp) => {
     resolver:zodResolver(passwordSchema)
   })
 
-  const onSubmit = (data: PasswordSchemaType ) => {
-    console.log("submitted ", data);
+  const onSubmit = async (data: PasswordSchemaType ) => {
+    try{
+        console.log("submitted ", data);
+    const result = await profileService.updatePAssword(organizerId,data)
+    console.log(result)
+
     console.log(organizerId)
+    }catch(err){
+      console.log("err",err)
+    }
+   
 
   }
 
@@ -40,6 +49,7 @@ export const SecurityTab = ({organizerId}:SecurityTabProp) => {
             <input 
                 type="password"
                 id="currentPassword"
+                autoComplete="current-password"
                 {...register("currentPassword")}
                 placeholder="Enter current password"
                 className={`w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 ${
@@ -62,6 +72,7 @@ export const SecurityTab = ({organizerId}:SecurityTabProp) => {
              <input 
                 type="password"
                 id="newPassword"
+                autoComplete="new-password"
                 {...register("newPassword")}
                 placeholder="Enter new password"
                 className={`w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 ${
@@ -79,6 +90,7 @@ export const SecurityTab = ({organizerId}:SecurityTabProp) => {
           <input
             type="password"
             id="confirmNewPassword"
+            autoComplete="new-password"
             {...register("confirmNewPassword")}
             placeholder="Confirm new password"
             className={`w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 ${
