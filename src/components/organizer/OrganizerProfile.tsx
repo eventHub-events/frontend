@@ -3,7 +3,7 @@
 import { FaCheckCircle, FaStar, FaCamera } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { profileService } from '@/services/organizer/profileService';
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import UploadDocumentSection from './UploadDocumentSection';
 import { uploadImageToCloudinary } from '@/services/common/cloudinary';
 import { toast } from 'react-toastify';
@@ -11,6 +11,7 @@ import Image from 'next/image';
 import KycVerificationStatus from './OrganizerKycVerification';
 import { FiXCircle } from 'react-icons/fi';
 import { SecurityTab } from './OrganizerPassword&security';
+import { setOrganizer } from '@/redux/slices/organizer/authSlice';
 
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security', 'Notifications'];
@@ -42,6 +43,7 @@ export default function OrganizerProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
+  const dispatch = useAppDispatch()
 
   const [profileFormData, setProfileFormData] = useState<ProfileFormData>({
     organizerId: '',
@@ -130,20 +132,19 @@ export default function OrganizerProfile() {
     }
   };
 
-  function isProfileEmpty(profile: typeof profileData) {
-    return !profile.organization && !profile.location && !profile.website && !profile.bio;
-  }
+   function isProfileEmpty(profile: typeof profileData) {
+     return !profile.organization && !profile.location && !profile.website && !profile.bio;
+   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      if (isProfileEmpty(profileFormData)) {
-        await profileService.createProfile(profileFormData);
-        toast.success('Profile created successfully');
-      } else {
-        await profileService.updateProfile(profileFormData.organizerId, profileFormData);
-        toast.success('Profile updated successfully');
-      }
+    
+        const result = await profileService.updateProfile(profileFormData.organizerId, profileFormData);
+        const userData= result.data?.data
+        console.log("result is , result", userData)
+         dispatch(setOrganizer( ({name:userData.name,email:userData.email} )))
+           toast.success('Profile updated successfully');
 
       setProfileData(profileFormData);
       setIsEditing(false);

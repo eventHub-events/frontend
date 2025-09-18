@@ -6,6 +6,9 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import { Tooltip } from "../ui/Tooltip";
 import { FaInfoCircle, FaLock } from "react-icons/fa";
 import { profileService } from "@/services/organizer/profileService";
+import { showError, showSuccess } from "@/utils/toastService";
+import { AxiosError } from "axios";
+
 
 interface SecurityTabProp{
   organizerId:string
@@ -16,20 +19,32 @@ export const SecurityTab = ({organizerId}:SecurityTabProp) => {
     register,
     handleSubmit,
     formState:{errors},
+    reset
 
   } = useForm<PasswordSchemaType>({
     resolver:zodResolver(passwordSchema)
   })
+ 
 
   const onSubmit = async (data: PasswordSchemaType ) => {
     try{
         console.log("submitted ", data);
+       
     const result = await profileService.updatePAssword(organizerId,data)
-    console.log(result)
-
+    if(result) {
+      showSuccess(result.data.message)
+    console.log("result is ",result)
+    reset()
+    }
     console.log(organizerId)
     }catch(err){
-      console.log("err",err)
+        if (err instanceof AxiosError && err.response?.data?.message) {
+    showError(err.response.data.message);
+  } else {
+    showError("Something went wrong");
+  }
+
+  console.log("err", err);
     }
    
 

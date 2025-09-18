@@ -1,37 +1,44 @@
 import { IOrganizer } from "@/types/authTypes";
-import { createSlice,PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-
-
- interface OrganizerAuthState{
-    organizer: IOrganizer | null
+interface OrganizerAuthState {
+  organizer: IOrganizer;
 }
 
-const initialState:OrganizerAuthState={
-  organizer:null
-}
+// Initialize with defaults to avoid null checks
+const initialState: OrganizerAuthState = {
+  organizer: {
+    id: "",
+    name: "",
+    email: "",
+    role: "organizer",
+    image: "",
+    isVerified: false,
+  },
+};
 
 const organizerAuthSlice = createSlice({
-  name:"organizerAuth",
+  name: "organizerAuth",
   initialState,
-  reducers:{
-     setOrganizer:(state,action:PayloadAction<IOrganizer>)=>{
-            state.organizer=action.payload
-             if(typeof window!== "undefined"){
-          localStorage.setItem("organizerInfo",JSON.stringify(action.payload))
+  reducers: {
+    // Accepts partial updates safely
+    setOrganizer: (state, action: PayloadAction<Partial<IOrganizer>>) => {
+      state.organizer = { ...state.organizer, ...action.payload };
 
-        }
-     },
-     organizerLogout:(state)=>{
-         state.organizer=null
-           if (typeof window !== "undefined") {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("organizerInfo", JSON.stringify(state.organizer));
+      }
+    },
+
+    // Reset to initial state
+    organizerLogout: (state) => {
+      state.organizer = initialState.organizer;
+      if (typeof window !== "undefined") {
         localStorage.removeItem("organizerInfo");
       }
-         
-     }
+    },
+  },
+});
 
-  }
-  
-})
-export const {setOrganizer,organizerLogout}= organizerAuthSlice.actions  
-export default organizerAuthSlice.reducer
+export const { setOrganizer, organizerLogout } = organizerAuthSlice.actions;
+export default organizerAuthSlice.reducer;
