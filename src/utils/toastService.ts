@@ -30,7 +30,8 @@ export const showError = (message: string) =>
       color: '#991b1b',
       borderLeft: '5px solid #ef4444',
     },
-    icon: "❌" as unknown as ToastIcon
+    icon: "❌" as unknown as ToastIcon,
+    transition: Slide,
   });
 
 export const showWarning = (message: string) =>

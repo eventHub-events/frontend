@@ -58,6 +58,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
     }
     else if(role==="user"){
       console.log("user data is",response)
+      console.log("user data",response.data.data)
        dispatch(setUser(response.data.data));
       router.push("/user/home");
     }else{

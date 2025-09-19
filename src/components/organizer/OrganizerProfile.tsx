@@ -11,6 +11,8 @@ import Image from 'next/image';
 import KycVerificationStatus from './OrganizerKycVerification';
 import { FiXCircle } from 'react-icons/fi';
 import { SecurityTab } from './OrganizerPassword&security';
+import axios from 'axios';
+import { showError } from '@/utils/toastService';
 import { setOrganizer } from '@/redux/slices/organizer/authSlice';
 
 
@@ -140,17 +142,39 @@ export default function OrganizerProfile() {
     e.preventDefault();
     try {
     
-        const result = await profileService.updateProfile(profileFormData.organizerId, profileFormData);
-        const userData= result.data?.data
-        console.log("result is , result", userData)
-         dispatch(setOrganizer( ({name:userData.name,email:userData.email} )))
+ const result = await profileService.updateProfile(profileFormData.organizerId, profileFormData);
+  const {id ,name ,email ,isVerified,isBlocked,role}  = result .data?.data
+  const userData = {id, name ,email ,isVerified , isBlocked ,role};
+  dispatch(setOrganizer(userData));
            toast.success('Profile updated successfully');
 
       setProfileData(profileFormData);
       setIsEditing(false);
     } catch (err: unknown) {
-      const error = err instanceof Error ? err.message : 'Failed to save profile';
-      toast.error(error);
+
+    if (axios.isAxiosError(err)) {
+    console.log("Axios error:", err);
+
+    const errors = err.response?.data?.errors;
+    const message = err.response?.data?.message;
+
+    if (Array.isArray(errors) && errors.length > 0) {
+      errors.forEach((e: string) => showError(e));
+      return;
+    }
+
+    if (message) {
+      showError(message);
+      return;
+    }
+
+    showError("Something went wrong. Please try again.");
+  } else if (err instanceof Error) {
+    showError(err.message);
+  } else {
+    showError("An unexpected error occurred.");
+  }
+    
     }
   };
 
@@ -244,7 +268,7 @@ export default function OrganizerProfile() {
               </button>
               {isProfileEmpty(profileData) && (
                 <p className="text-sm text-red-500 mt-2">
-                  Please complete your profile to continue using EventPro.
+                  Please complete your profile to continue using EventHub.
                 </p>
               )}
             </div>
