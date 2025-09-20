@@ -1,3 +1,4 @@
+import { KycStatus } from "@/types/admin/Enums/organizerVerificationEnum";
 import { IOrganizer } from "@/types/authTypes";
 import { createSlice,PayloadAction } from "@reduxjs/toolkit";
 
@@ -22,6 +23,15 @@ const organizerAuthSlice = createSlice({
 
         }
      },
+     updateKycStatus : (state ,action :PayloadAction<KycStatus>) => {
+          if(state.organizer) {
+             state.organizer.kycStatus = action .payload ;
+
+              if (typeof window !== "undefined") {
+          localStorage.setItem("organizerInfo", JSON.stringify(state.organizer));
+        }
+          }
+     },
      organizerLogout:(state)=>{
          state.organizer=null
            if (typeof window !== "undefined") {
@@ -33,5 +43,5 @@ const organizerAuthSlice = createSlice({
   }
   
 })
-export const {setOrganizer,organizerLogout}= organizerAuthSlice.actions  
+export const {setOrganizer,organizerLogout,updateKycStatus}= organizerAuthSlice.actions  
 export default organizerAuthSlice.reducer

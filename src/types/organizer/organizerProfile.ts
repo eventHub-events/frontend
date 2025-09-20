@@ -17,3 +17,5 @@ export  interface UpdatePasswordType{
  confirmNewPassword : string;
 
 }
+
+export type kycStatus = "Pending" | "Approved" |"Rejected" ;

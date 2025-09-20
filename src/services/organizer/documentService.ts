@@ -1,4 +1,6 @@
+import { kycStatus } from "@/types/organizer/organizerProfile";
 import { apiClient } from "../ApiClient";
+import { KycStatus } from "@/types/admin/Enums/organizerVerificationEnum";
 
 export const documentService={
   getDocuments:(organizerId:string)=>apiClient.get(`/api/organizer/uploaded-documents/${organizerId}`),
@@ -12,6 +14,10 @@ export const documentService={
   deleteDocument:(documentId:string)=>apiClient.delete(`/api/organizer/uploaded-document/${documentId}/deletion`,{
     withCredentials:true
   })
+  ,
+  sentVerificationRequest : (organizerId:string,data:{kycStatus : KycStatus }) => apiClient.patch(`/api/organizer/${organizerId}/verification-request`,data,{
+    withCredentials : true
+  }),
 
 
 

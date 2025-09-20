@@ -1,9 +1,13 @@
+import { useAppDispatch } from "@/redux/hooks";
+import { updateKycStatus } from "@/redux/slices/organizer/authSlice";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { documentService } from "@/services/organizer/documentService";
+import { KycStatus } from "@/types/admin/Enums/organizerVerificationEnum";
 import { documentTypes } from "@/types/organizer/organizerProfile";
+import { showWarning } from "@/utils/toastService";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FaCheckCircle, FaClock, FaCloudUploadAlt, FaTimesCircle, FaTimes } from "react-icons/fa";
+import { FaCheckCircle, FaClock, FaCloudUploadAlt, FaTimesCircle, FaTimes, FaPaperPlane } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 interface UploadDocument {
@@ -19,11 +23,16 @@ interface Props {
   organizerId: string;
 }
 
+
 export default function UploadDocumentSection({ organizerId }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState("");
   const [uploading, setUploading] = useState(false);
   const [documents, setDocuments] = useState<UploadDocument[]>([]);
+
+  const uploadedTypes = documents.map(doc => doc.type);
+  const dispatch  = useAppDispatch()
+
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -55,6 +64,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
         url: fileUrl,
         name: selectedFile.name,
       });
+     
 
       setDocuments((prev) => [...prev, { ...savedDoc.data.data, url: fileUrl }]);
       toast.success(`${documentType} upload successful`);
@@ -84,6 +94,26 @@ export default function UploadDocumentSection({ organizerId }: Props) {
     }
   };
 
+  const handleVerificationRequest = async () => {
+    try {
+              if(documents.length<3){
+                showWarning("Upload all the documents for verification");
+                return
+              }
+           const data = {
+            kycStatus: KycStatus.PENDING
+           }
+          const result = await documentService.sentVerificationRequest(organizerId,data) ;
+            if(result) {
+                 dispatch(updateKycStatus(data.kycStatus))
+            }
+
+           }catch( err ){
+
+           }
+
+  }
+
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold text-gray-800">
@@ -98,9 +128,10 @@ export default function UploadDocumentSection({ organizerId }: Props) {
           className="border border-gray-300 px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Document Type</option>
+          
           {documentTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
+            <option key={type} value={type} disabled={uploadedTypes.includes(type)}>
+              {type} {uploadedTypes.includes(type) ? "(Already uploaded)":""}
             </option>
           ))}
         </select>
@@ -114,14 +145,27 @@ export default function UploadDocumentSection({ organizerId }: Props) {
       </div>
 
       {/* Upload Button */}
-      <button
-        disabled={uploading}
-        onClick={handleUpload}
-        className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 flex items-center gap-2"
-      >
-        <FaCloudUploadAlt />
-        {uploading ? "Uploading..." : "Upload"}
-      </button>
+     <div className="flex justify-between items-center mt-4">
+  {/* Upload Button */}
+  <button
+    disabled={uploading || documents.length === 3}
+    onClick={handleUpload}
+    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 flex items-center gap-2"
+  >
+    <FaCloudUploadAlt />
+    {uploading ? "Uploading..." : "Upload"}
+  </button>
+
+  {/* Send Verification Request Button */}
+  <button
+    onClick={handleVerificationRequest}
+    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 flex items-center gap-2"
+    disabled={documents.length === 0} // disable if no documents uploaded
+  >
+    <FaPaperPlane />
+    Send Verification Request
+  </button>
+</div>
 
       {/* Uploaded Documents */}
       {documents.length > 0 && (

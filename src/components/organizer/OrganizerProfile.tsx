@@ -218,7 +218,7 @@ export default function OrganizerProfile() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-semibold">
-                    {organizer?.name?.charAt(0).toUpperCase() || 'U'}
+                    {profileFormData?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
                 <input
@@ -238,7 +238,7 @@ export default function OrganizerProfile() {
 
               <div>
                 <h3 className="text-lg font-semibold">{organizer?.name}</h3>
-                <p className="text-sm text-gray-600">TechEvents Inc</p>
+                <p className="text-sm text-gray-600">{profileData.organization}</p>
                 <div className="flex items-center text-sm mt-1 space-x-2">
    {organizer?.isVerified ? (
     <span className="text-green-600 flex items-center font-medium">
