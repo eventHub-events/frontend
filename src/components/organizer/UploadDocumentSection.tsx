@@ -31,6 +31,9 @@ export default function UploadDocumentSection({ organizerId }: Props) {
   const [documents, setDocuments] = useState<UploadDocument[]>([]);
 
   const uploadedTypes = documents.map(doc => doc.type);
+  const rejectedDocs  = documents. filter(doc => doc.status === "Rejected");
+  const [rejectedDocType ,setRejectedDocType] = useState("")
+  const [rejectedDocId, setRejectedDocId] = useState("") 
   const dispatch  = useAppDispatch()
 
 
@@ -46,38 +49,77 @@ export default function UploadDocumentSection({ organizerId }: Props) {
     fetchDocuments();
   }, [uploading, organizerId]);
 
-  const handleUpload = async () => {
-    if (!selectedFile || !documentType) {
-      toast.error("Please select a file and document type");
-      return;
-    }
+  const latestStatusMap: Record<string, string> = {};
+documents.forEach((doc) => {
+  latestStatusMap[doc.type] = doc.status;
+});
 
-    setUploading(true);
+ const handleUpload = async () => {
+  if (!selectedFile || !documentType) {
+    toast.error("Please select a file and document type");
+    return;
+  }
 
-    try {
-      const fileUrl = await uploadImageToCloudinary(selectedFile);
-      if (!fileUrl) return;
+  setUploading(true);
 
+  try {
+    const fileUrl = await uploadImageToCloudinary(selectedFile);
+    if (!fileUrl) return;
+
+    // let newDocData:UploadDocument | null = null;
+
+    if (rejectedDocType && documentType === rejectedDocType) {
+      // Re-upload case
+      const updatedData = await documentService.updateDocument(rejectedDocId, {
+        url: fileUrl,
+      });
+
+      if (updatedData) {
+        const newDocData = { ...updatedData.data.data, url: fileUrl };
+       
+       
+        // Replace the old document in state
+        setDocuments((prev) =>
+          prev.map((doc) =>
+            doc._id === rejectedDocId ? newDocData : doc
+          )
+        );
+
+        toast.success(`${documentType} re-upload successful`);
+      }
+
+      // Reset re-upload state
+      setRejectedDocId("");
+      setRejectedDocType("");
+    } else {
+      // Fresh upload case
       const savedDoc = await documentService.saveDocuments({
         organizerId,
         type: documentType,
         url: fileUrl,
         name: selectedFile.name,
       });
-     
 
-      setDocuments((prev) => [...prev, { ...savedDoc.data.data, url: fileUrl }]);
-      toast.success(`${documentType} upload successful`);
+      if (savedDoc) {
+       const  newDocData = { ...savedDoc.data.data, url: fileUrl };
+        setDocuments((prev) => [...prev, newDocData
+          
+        ]);
 
-      setSelectedFile(null);
-      setDocumentType("");
-    } catch (err) {
-      console.error("Upload error", err);
-      toast.error("Failed to upload document");
-    } finally {
-      setUploading(false);
+        toast.success(`${documentType} upload successful`);
+      }
     }
-  };
+
+    setSelectedFile(null);
+    setDocumentType("");
+  } catch (err) {
+    console.error("Upload error", err);
+    toast.error("Failed to upload document");
+  } finally {
+    setUploading(false);
+  }
+};
+
 
   const handleRemoveDocument = async (docId: string) => {
     try {
@@ -129,11 +171,20 @@ export default function UploadDocumentSection({ organizerId }: Props) {
         >
           <option value="">Select Document Type</option>
           
-          {documentTypes.map((type) => (
-            <option key={type} value={type} disabled={uploadedTypes.includes(type)}>
-              {type} {uploadedTypes.includes(type) ? "(Already uploaded)":""}
-            </option>
-          ))}
+        {documentTypes.map((type) => {
+  const status = latestStatusMap[type];
+
+  return (
+    <option
+      key={type}
+      value={type}
+      disabled ={status !== undefined && status !== "Rejected"} 
+    >
+      {type} {status && status !== "Rejected" ? "(Already uploaded)" : ""}
+    </option>
+  );
+})}
+
         </select>
 
         <input
@@ -248,7 +299,30 @@ export default function UploadDocumentSection({ organizerId }: Props) {
                       {status.icon}
                       {status.label}
                     </div>
+                   
                   </div>
+                     {doc.status === "Rejected" && (
+  <div className="p-4 pt-0">
+    <button
+      onClick={() => {
+        setDocumentType(doc.type);
+          setRejectedDocId(doc._id.toString())
+        setRejectedDocType(doc.type)
+        setSelectedFile(null); // Let user pick a new one
+        toast.info(`You can re-upload your ${doc.type}`);
+      }}
+      className="mt-2 inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 transition"
+    >
+      <FaCloudUploadAlt className="text-base" />
+      Re-upload
+    </button>
+  </div>
+)}
+
+
+                        
+                        
+                        
                 </div>
               );
             })}

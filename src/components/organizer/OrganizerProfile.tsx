@@ -12,7 +12,7 @@ import KycVerificationStatus from './OrganizerKycVerification';
 import { FiXCircle } from 'react-icons/fi';
 import { SecurityTab } from './OrganizerPassword&security';
 import axios from 'axios';
-import { showError } from '@/utils/toastService';
+import { showError, showInfo } from '@/utils/toastService';
 import { setOrganizer } from '@/redux/slices/organizer/authSlice';
 
 
@@ -110,29 +110,37 @@ export default function OrganizerProfile() {
   }, [organizerId]);
 
   const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    try {
-      const imageUrl = await uploadImageToCloudinary(file);
-      if (imageUrl) {
-        setProfileFormData((prev) => {
-          const updatedForm = {
-            ...prev,
-            profilePicture: imageUrl,
-          };
+  try {
+    const imageUrl = await uploadImageToCloudinary(file);
+    if (!imageUrl) return;
 
-          profileService.updateProfile(updatedForm.organizerId, updatedForm);
-          return updatedForm;
-        });
+    // First, get current form data
+    const updatedForm = {
+      ...profileFormData,
+      profilePicture: imageUrl,
+    };
 
-        toast.success('Profile image updated');
-      }
-    } catch (err: unknown) {
-      const error = err instanceof Error ? err.message : 'Failed to upload profile image';
-      toast.error(error);
+    // Check if profile is complete before updating
+    if (!updatedForm.organization || !updatedForm.bio) {
+      showInfo("Complete your profile before updating the profile picture!");
+      return;
     }
-  };
+
+    // Update profile
+    const result = await profileService.updateProfile(updatedForm.organizerId, updatedForm);
+    if (result) {
+      setProfileFormData(updatedForm);
+      toast.success("Profile image updated");
+    }
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : "Failed to upload profile image";
+    toast.error(error);
+  }
+};
+
 
    function isProfileEmpty(profile: typeof profileData) {
      return !profile.organization && !profile.location && !profile.website && !profile.bio;
