@@ -2,21 +2,22 @@ import { useAppDispatch } from "@/redux/hooks";
 import { updateKycStatus } from "@/redux/slices/organizer/authSlice";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { documentService } from "@/services/organizer/documentService";
-import { KycStatus } from "@/types/admin/Enums/organizerVerificationEnum";
+import { KycStatus, UploadDocumentStatus } from "@/types/admin/Enums/organizerVerificationEnum";
 import { documentTypes } from "@/types/organizer/organizerProfile";
 import { showWarning } from "@/utils/toastService";
+import { AxiosError, isAxiosError } from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaClock, FaCloudUploadAlt, FaTimesCircle, FaTimes, FaPaperPlane } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 interface UploadDocument {
-  _id: string;
+  id: string;
   name: string;
   url: string | null;
   type: string;
   uploadedAt: string;
-  status: string;
+  status: UploadDocumentStatus;
 }
 
 interface Props {
@@ -41,6 +42,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
     const fetchDocuments = async () => {
       try {
         const docs = await documentService.getDocuments(organizerId);
+        console.log("docs is",docs)
         setDocuments(docs.data.data);
       } catch (err) {
         console.error("Failed to fetch documents", err);
@@ -70,8 +72,9 @@ documents.forEach((doc) => {
 
     if (rejectedDocType && documentType === rejectedDocType) {
       // Re-upload case
-      const updatedData = await documentService.updateDocument(rejectedDocId, {
+      const updatedData = await documentService.updateDocumentDetails(rejectedDocId, {
         url: fileUrl,
+     status:UploadDocumentStatus.PENDING
       });
 
       if (updatedData) {
@@ -81,7 +84,7 @@ documents.forEach((doc) => {
         // Replace the old document in state
         setDocuments((prev) =>
           prev.map((doc) =>
-            doc._id === rejectedDocId ? newDocData : doc
+            doc.id === rejectedDocId ? newDocData : doc
           )
         );
 
@@ -113,8 +116,25 @@ documents.forEach((doc) => {
     setSelectedFile(null);
     setDocumentType("");
   } catch (err) {
-    console.error("Upload error", err);
-    toast.error("Failed to upload document");
+ if (isAxiosError(err)) {
+  const errors = err.response?.data?.errors;
+  const message = err.response?.data?.message;
+
+  if (Array.isArray(errors)) {
+    errors.forEach((msg: string) => {
+      const field = msg.split("-")[1].trim(); // "name"
+      console.log("Field causing error:", field);
+      toast.error(field); // Or customize message if needed
+    });
+  } else if (typeof message === "string") {
+    toast.error(message);
+  } else {
+    toast.error("Upload failed. Please try again.");
+  }
+} else {
+  toast.error("Unexpected upload error.");
+}
+
   } finally {
     setUploading(false);
   }
@@ -128,7 +148,7 @@ documents.forEach((doc) => {
       console.log("doc id",docId)
 
       // Remove from UI
-      setDocuments((prev) => prev.filter((d) => d._id !== docId));
+      setDocuments((prev) => prev.filter((d) => d.id !== docId));
       toast.success("Document removed successfully");
     } catch (err) {
       console.error("Failed to remove document", err);
@@ -258,13 +278,13 @@ documents.forEach((doc) => {
 
               return (
                 <div
-                  key={doc._id}
+                  key={doc.id}
                   className="relative rounded-lg border border-gray-200 shadow-sm bg-white overflow-hidden hover:shadow-md transition duration-200 flex flex-col"
                 >
                   {/* Close Button */}
                   {doc.status !== "Approved" && doc.status !=="Rejected"&&(
                     <button
-                      onClick={() => handleRemoveDocument(doc._id)}
+                      onClick={() => handleRemoveDocument(doc.id)}
                       className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
                     >
                       <FaTimes />
@@ -306,7 +326,7 @@ documents.forEach((doc) => {
     <button
       onClick={() => {
         setDocumentType(doc.type);
-          setRejectedDocId(doc._id.toString())
+          setRejectedDocId(doc.id.toString())
         setRejectedDocType(doc.type)
         setSelectedFile(null); // Let user pick a new one
         toast.info(`You can re-upload your ${doc.type}`);
