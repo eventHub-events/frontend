@@ -4,12 +4,12 @@ import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { documentService } from "@/services/organizer/documentService";
 import { KycStatus, UploadDocumentStatus } from "@/types/admin/Enums/organizerVerificationEnum";
 import { documentTypes } from "@/types/organizer/organizerProfile";
-import { showWarning } from "@/utils/toastService";
+import { showSuccess, showWarning } from "@/utils/toastService";
 import { AxiosError, isAxiosError } from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaClock, FaCloudUploadAlt, FaTimesCircle, FaTimes, FaPaperPlane } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 interface UploadDocument {
   id: string;
@@ -18,6 +18,13 @@ interface UploadDocument {
   type: string;
   uploadedAt: string;
   status: UploadDocumentStatus;
+}
+interface UserDataForUploadDocument {
+  id: string,
+  name : string,
+  isVerified: boolean,
+  kycStatus: KycStatus,
+  isKycResubmitted: boolean
 }
 
 interface Props {
@@ -30,11 +37,20 @@ export default function UploadDocumentSection({ organizerId }: Props) {
   const [documentType, setDocumentType] = useState("");
   const [uploading, setUploading] = useState(false);
   const [documents, setDocuments] = useState<UploadDocument[]>([]);
+  const [user, setUser]= useState<UserDataForUploadDocument>({
+    id:"",
+    name:"",
+    isVerified: false,
+    kycStatus :KycStatus.NOT_APPLICABLE,
+    isKycResubmitted: false
+
+  })
 
   const uploadedTypes = documents.map(doc => doc.type);
   const rejectedDocs  = documents. filter(doc => doc.status === "Rejected");
   const [rejectedDocType ,setRejectedDocType] = useState("")
   const [rejectedDocId, setRejectedDocId] = useState("") 
+  const[isUpdating, setIsUpdating] = useState(false)
   const dispatch  = useAppDispatch()
 
 
@@ -43,13 +59,20 @@ export default function UploadDocumentSection({ organizerId }: Props) {
       try {
         const docs = await documentService.getDocuments(organizerId);
         console.log("docs is",docs)
-        setDocuments(docs.data.data);
+        const {documents,...user} = docs.data.data
+        setDocuments(documents);
+        setUser(user)
+        console.log("rejectedDocs is",rejectedDocs)
+
+        console.log("user is",user);
+        console.log("documents", documents);
       } catch (err) {
         console.error("Failed to fetch documents", err);
       }
     };
     fetchDocuments();
-  }, [uploading, organizerId]);
+    setIsUpdating(false)
+  }, [uploading, organizerId,isUpdating]);
 
   const latestStatusMap: Record<string, string> = {};
 documents.forEach((doc) => {
@@ -166,12 +189,14 @@ documents.forEach((doc) => {
             kycStatus: KycStatus.PENDING
            }
           const result = await documentService.sentVerificationRequest(organizerId,data) ;
-            if(result) {
-                 dispatch(updateKycStatus(data.kycStatus))
+          if(result) {
+              showSuccess("Verification request  submitted successfully")
+                 dispatch(updateKycStatus(data.kycStatus));
+                 setIsUpdating(true)
             }
 
            }catch( err ){
-
+              setIsUpdating(false);
            }
 
   }
@@ -219,7 +244,7 @@ documents.forEach((doc) => {
      <div className="flex justify-between items-center mt-4">
   {/* Upload Button */}
   <button
-    disabled={uploading || documents.length === 3}
+    disabled={uploading || documents.length > 3}
     onClick={handleUpload}
     className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 flex items-center gap-2"
   >
@@ -231,10 +256,10 @@ documents.forEach((doc) => {
   <button
     onClick={handleVerificationRequest}
     className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 flex items-center gap-2"
-    disabled={documents.length === 0} // disable if no documents uploaded
+     disabled={documents.length === 0 || user.kycStatus === KycStatus.REJECTED && rejectedDocs.length>0 ||user.kycStatus === KycStatus.PENDING &&documents.length ===3 } // disable if no documents uploaded
   >
     <FaPaperPlane />
-    Send Verification Request
+   {user.kycStatus === KycStatus.REJECTED? "Send ReVerification Request":"Send Verification Request"} 
   </button>
 </div>
 

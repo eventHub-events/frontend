@@ -30,7 +30,7 @@ export const SecurityTab = ({organizerId}:SecurityTabProp) => {
     try{
         console.log("submitted ", data);
        
-    const result = await profileService.updatePAssword(organizerId,data)
+    const result = await profileService.updatePassword(organizerId,data)
     if(result) {
       showSuccess(result.data.message)
     console.log("result is ",result)

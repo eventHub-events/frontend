@@ -2,7 +2,7 @@ import { apiClient } from "../ApiClient";
 
 
 export const passwordService={
-  forgetPassword:<T>(userType:"user" |"organizer",payload:T)=>apiClient.post(`/api/${userType}/forgetPassWord`,payload,{
+  forgetPassword:<T>(userType:"user" |"organizer",payload:T)=>apiClient.post(`/api/${userType}/forgetPassword`,payload,{
      withCredentials: true,
       headers: { "Content-Type": "application/json" }
   }),

@@ -14,7 +14,7 @@ export const profileService={
   getProfile:(id:string)=>apiClient.get(`api/organizer/organizerProfile/${id}`,{
     withCredentials:true
   }),
-  updatePAssword:(id:string,passwordData:UpdatePasswordType)=> apiClient.patch(`/api/organizer/updatePassword/${id}`,passwordData,{
+  updatePassword:(id:string,passwordData:UpdatePasswordType)=> apiClient.patch(`/api/organizer/updatePassword/${id}`,passwordData,{
       withCredentials:true
   })
 

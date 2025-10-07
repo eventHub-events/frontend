@@ -4,6 +4,9 @@ import { KycStatus, UploadDocumentStatus } from "@/types/admin/Enums/organizerVe
 
 export const documentService={
   getDocuments:(organizerId:string)  => apiClient.get(`/api/organizer/uploaded-documents/${organizerId}`),
+  getDocumentsInPdf:(data: {imageUrl: string, docType:string}) => apiClient.post(`/api/admin/download-pdf`, data,{
+    responseType: "blob"
+  }),
 
   saveDocuments:(data:{
     organizerId:string;
