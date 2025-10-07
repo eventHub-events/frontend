@@ -11,9 +11,11 @@ import Image from "next/image";
 import { organizerVerificationService } from "@/services/admin/organizerVerificationService";
 import { OrganizerDetail, SelectedOrganizerDetail } from "@/types/admin/organizerVerification";
 import {
+  KycStatus,
   UploadDocumentStatus,
   UploadDocumentVerificationStatus
 } from "@/types/admin/Enums/organizerVerificationEnum";
+import { documentService } from "@/services/organizer/documentService";
 
 export default function OrganizerVerification() {
   const [organizers, setOrganizers] = useState<OrganizerDetail[]>([]);
@@ -44,6 +46,7 @@ export default function OrganizerVerification() {
       
       try {
         const res = await organizerVerificationService.fetchPendingOrganizers();
+        console.log("res",res)
         setOrganizers(res.data?.data || []);
       } catch (err) {
         console.error("Failed to fetch pending organizers", err);
@@ -66,6 +69,7 @@ export default function OrganizerVerification() {
 
   useEffect(() => {
     const fetchDetails = async () => {
+      console.log("selectedUd",selectedId)
       if (!selectedId) {
         setSelectedDetail(null);
         return;
@@ -76,6 +80,8 @@ export default function OrganizerVerification() {
       
       try {
         const res = await organizerVerificationService.fetchVerificationDetails(selectedId);
+        console.log("res doc,doc",res)
+        console.log("selectedDetail", res.data.data)
         setSelectedDetail(res.data?.data);
       } catch (err) {
         console.error("Failed to fetch organizer details", err);
@@ -135,6 +141,7 @@ export default function OrganizerVerification() {
   };
 
   const handleRejectSubmit = async () => {
+    
     if (!selectedDocId) return;
     await handleVerification(
       selectedDocId,
@@ -200,6 +207,24 @@ export default function OrganizerVerification() {
       }
     };
   }, []);
+  const handlePdfDownload = async (imageUrl: string,docType:string) => {
+    
+    const response = await documentService.getDocumentsInPdf({imageUrl,docType})
+    console.log("respo",response)
+     const blob = new Blob([response.data], { type: 'application/pdf' });
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'organizer-document.pdf'; // File name
+    a.style.display = 'none';
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+
+  }
 
   return (
     <div className="p-6 relative">
@@ -283,13 +308,13 @@ export default function OrganizerVerification() {
                 <h3 className="text-lg font-semibold">Verification Details</h3>
                 <span
                   className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm ${
-                    selectedDetail.kycVerified
+                    selectedDetail.organizerId.kycStatus !== KycStatus.PENDING
                       ? "bg-green-100 text-green-700"
                       : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
-                  {selectedDetail.kycVerified ? <FiCheckCircle /> : <FiClock />}
-                  {selectedDetail.kycVerified ? "Verified" : "Pending"}
+                  {selectedDetail.organizerId.kycStatus !== KycStatus.PENDING? <FiCheckCircle /> : <FiClock />}
+                  {selectedDetail.organizerId.kycStatus === KycStatus.PENDING? "Pending":"Verified"}
                 </span>
               </div>
 
@@ -306,7 +331,7 @@ export default function OrganizerVerification() {
               <h4 className="font-semibold mb-2">Submitted documents</h4>
               <div className="space-y-3 mb-6">
                 {selectedDetail.documents.map((doc) => (
-                  <div key={doc._id} className="border rounded p-3">
+                  <div key={doc.id} className="border rounded p-3">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <p className="font-medium">{doc.type}</p>
@@ -330,7 +355,7 @@ export default function OrganizerVerification() {
                         <button
                           onClick={() =>
                             !isLoading && handleVerification(
-                              doc._id,
+                              doc.id,
                               UploadDocumentStatus.APPROVED,
                               UploadDocumentVerificationStatus.VERIFIED
                             )
@@ -343,7 +368,7 @@ export default function OrganizerVerification() {
                         <button
                           onClick={() => {
                             if (!isLoading) {
-                              setSelectedDocId(doc._id);
+                              setSelectedDocId(doc.id);
                               setShowRejectModal(true);
                             }
                           }}
@@ -355,9 +380,9 @@ export default function OrganizerVerification() {
                         <a href={doc.url} target="_blank" rel="noopener noreferrer">
                           <FiEye className="cursor-pointer hover:text-blue-600" />
                         </a>
-                        <a href={doc.url} download>
-                          <FiDownload className="cursor-pointer hover:text-blue-600" />
-                        </a>
+                          <div>
+                                 <FiDownload onClick={() =>handlePdfDownload(doc.url, doc.type)}  className="cursor-pointer hover:text-blue-600" />
+                          </div>
                       </div>
                     </div>
 
@@ -368,7 +393,7 @@ export default function OrganizerVerification() {
                       </div>
                     )}
 
-                    {showRejectModal && selectedDocId === doc._id && (
+                    {showRejectModal && selectedDocId === doc.id && (
                       <div className="mt-4 bg-white border rounded shadow p-4 w-full">
                         <h3 className="text-sm font-semibold mb-2">Reason for Rejection</h3>
                         <textarea

@@ -1,3 +1,4 @@
+import { UpdatePasswordType } from "@/types/organizer/organizerProfile";
 import { apiClient } from "../ApiClient";
 
 export const profileService={
@@ -12,5 +13,9 @@ export const profileService={
 
   getProfile:(id:string)=>apiClient.get(`api/organizer/organizerProfile/${id}`,{
     withCredentials:true
+  }),
+  updatePassword:(id:string,passwordData:UpdatePasswordType)=> apiClient.patch(`/api/organizer/updatePassword/${id}`,passwordData,{
+      withCredentials:true
   })
+
 }

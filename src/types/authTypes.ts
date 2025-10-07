@@ -10,6 +10,7 @@ export interface IUser{
 export interface IOrganizer extends IUser{
 companyName?:string;
 kycStatus?:"Pending"|"Verified"|"Rejected";
+isKycResubmitted : boolean;
 
 }
 export interface IAdmin extends IUser{

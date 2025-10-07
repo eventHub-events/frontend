@@ -1,9 +1,12 @@
+import { KycStatus } from "./Enums/organizerVerificationEnum";
+
 export interface SelectedOrganizerDetail {
   organizerId: {
     _id: string;
     name: string;
     email: string;
     phone: number;
+    kycStatus: KycStatus
   };
   organization: string;
   bio: string;
@@ -17,7 +20,7 @@ export interface SelectedOrganizerDetail {
 }
 
 export interface OrganizerDocument {
-  _id: string;
+  id: string;
   type: string;
   url: string;
   status: "Pending" | "Approved" | "Rejected";

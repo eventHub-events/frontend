@@ -1,54 +1,124 @@
+import { useAppDispatch } from "@/redux/hooks";
+import { updateKycStatus } from "@/redux/slices/organizer/authSlice";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { documentService } from "@/services/organizer/documentService";
+import { KycStatus, UploadDocumentStatus } from "@/types/admin/Enums/organizerVerificationEnum";
 import { documentTypes } from "@/types/organizer/organizerProfile";
+import { showSuccess, showWarning } from "@/utils/toastService";
+import { AxiosError, isAxiosError } from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FaCheckCircle, FaClock, FaCloudUploadAlt, FaTimesCircle, FaTimes } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { FaCheckCircle, FaClock, FaCloudUploadAlt, FaTimesCircle, FaTimes, FaPaperPlane } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
 
 interface UploadDocument {
-  _id: string;
+  id: string;
   name: string;
   url: string | null;
   type: string;
   uploadedAt: string;
-  status: string;
+  status: UploadDocumentStatus;
+}
+interface UserDataForUploadDocument {
+  id: string,
+  name : string,
+  isVerified: boolean,
+  kycStatus: KycStatus,
+  isKycResubmitted: boolean
 }
 
 interface Props {
   organizerId: string;
 }
 
+
 export default function UploadDocumentSection({ organizerId }: Props) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState("");
   const [uploading, setUploading] = useState(false);
   const [documents, setDocuments] = useState<UploadDocument[]>([]);
+  const [user, setUser]= useState<UserDataForUploadDocument>({
+    id:"",
+    name:"",
+    isVerified: false,
+    kycStatus :KycStatus.NOT_APPLICABLE,
+    isKycResubmitted: false
+
+  })
+
+  const uploadedTypes = documents.map(doc => doc.type);
+  const rejectedDocs  = documents. filter(doc => doc.status === "Rejected");
+  const [rejectedDocType ,setRejectedDocType] = useState("")
+  const [rejectedDocId, setRejectedDocId] = useState("") 
+  const[isUpdating, setIsUpdating] = useState(false)
+  const dispatch  = useAppDispatch()
+
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const docs = await documentService.getDocuments(organizerId);
-        setDocuments(docs.data.data);
+        console.log("docs is",docs)
+        const {documents,...user} = docs.data.data
+        setDocuments(documents);
+        setUser(user)
+        console.log("rejectedDocs is",rejectedDocs)
+
+        console.log("user is",user);
+        console.log("documents", documents);
       } catch (err) {
         console.error("Failed to fetch documents", err);
       }
     };
     fetchDocuments();
-  }, [uploading, organizerId]);
+    setIsUpdating(false)
+  }, [uploading, organizerId,isUpdating]);
 
-  const handleUpload = async () => {
-    if (!selectedFile || !documentType) {
-      toast.error("Please select a file and document type");
-      return;
-    }
+  const latestStatusMap: Record<string, string> = {};
+documents.forEach((doc) => {
+  latestStatusMap[doc.type] = doc.status;
+});
 
-    setUploading(true);
+ const handleUpload = async () => {
+  if (!selectedFile || !documentType) {
+    toast.error("Please select a file and document type");
+    return;
+  }
 
-    try {
-      const fileUrl = await uploadImageToCloudinary(selectedFile);
-      if (!fileUrl) return;
+  setUploading(true);
 
+  try {
+    const fileUrl = await uploadImageToCloudinary(selectedFile);
+    if (!fileUrl) return;
+
+    // let newDocData:UploadDocument | null = null;
+
+    if (rejectedDocType && documentType === rejectedDocType) {
+      // Re-upload case
+      const updatedData = await documentService.updateDocumentDetails(rejectedDocId, {
+        url: fileUrl,
+     status:UploadDocumentStatus.PENDING
+      });
+
+      if (updatedData) {
+        const newDocData = { ...updatedData.data.data, url: fileUrl };
+       
+       
+        // Replace the old document in state
+        setDocuments((prev) =>
+          prev.map((doc) =>
+            doc.id === rejectedDocId ? newDocData : doc
+          )
+        );
+
+        toast.success(`${documentType} re-upload successful`);
+      }
+
+      // Reset re-upload state
+      setRejectedDocId("");
+      setRejectedDocType("");
+    } else {
+      // Fresh upload case
       const savedDoc = await documentService.saveDocuments({
         organizerId,
         type: documentType,
@@ -56,18 +126,43 @@ export default function UploadDocumentSection({ organizerId }: Props) {
         name: selectedFile.name,
       });
 
-      setDocuments((prev) => [...prev, { ...savedDoc.data.data, url: fileUrl }]);
-      toast.success(`${documentType} upload successful`);
+      if (savedDoc) {
+       const  newDocData = { ...savedDoc.data.data, url: fileUrl };
+        setDocuments((prev) => [...prev, newDocData
+          
+        ]);
 
-      setSelectedFile(null);
-      setDocumentType("");
-    } catch (err) {
-      console.error("Upload error", err);
-      toast.error("Failed to upload document");
-    } finally {
-      setUploading(false);
+        toast.success(`${documentType} upload successful`);
+      }
     }
-  };
+
+    setSelectedFile(null);
+    setDocumentType("");
+  } catch (err) {
+ if (isAxiosError(err)) {
+  const errors = err.response?.data?.errors;
+  const message = err.response?.data?.message;
+
+  if (Array.isArray(errors)) {
+    errors.forEach((msg: string) => {
+      const field = msg.split("-")[1].trim(); // "name"
+      console.log("Field causing error:", field);
+      toast.error(field); // Or customize message if needed
+    });
+  } else if (typeof message === "string") {
+    toast.error(message);
+  } else {
+    toast.error("Upload failed. Please try again.");
+  }
+} else {
+  toast.error("Unexpected upload error.");
+}
+
+  } finally {
+    setUploading(false);
+  }
+};
+
 
   const handleRemoveDocument = async (docId: string) => {
     try {
@@ -76,13 +171,35 @@ export default function UploadDocumentSection({ organizerId }: Props) {
       console.log("doc id",docId)
 
       // Remove from UI
-      setDocuments((prev) => prev.filter((d) => d._id !== docId));
+      setDocuments((prev) => prev.filter((d) => d.id !== docId));
       toast.success("Document removed successfully");
     } catch (err) {
       console.error("Failed to remove document", err);
       toast.error("Failed to remove document");
     }
   };
+
+  const handleVerificationRequest = async () => {
+    try {
+              if(documents.length<3){
+                showWarning("Upload all the documents for verification");
+                return
+              }
+           const data = {
+            kycStatus: KycStatus.PENDING
+           }
+          const result = await documentService.sentVerificationRequest(organizerId,data) ;
+          if(result) {
+              showSuccess("Verification request  submitted successfully")
+                 dispatch(updateKycStatus(data.kycStatus));
+                 setIsUpdating(true)
+            }
+
+           }catch( err ){
+              setIsUpdating(false);
+           }
+
+  }
 
   return (
     <div className="space-y-6">
@@ -98,11 +215,21 @@ export default function UploadDocumentSection({ organizerId }: Props) {
           className="border border-gray-300 px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Document Type</option>
-          {documentTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
+          
+        {documentTypes.map((type) => {
+  const status = latestStatusMap[type];
+
+  return (
+    <option
+      key={type}
+      value={type}
+      disabled ={status !== undefined && status !== "Rejected"} 
+    >
+      {type} {status && status !== "Rejected" ? "(Already uploaded)" : ""}
+    </option>
+  );
+})}
+
         </select>
 
         <input
@@ -114,14 +241,27 @@ export default function UploadDocumentSection({ organizerId }: Props) {
       </div>
 
       {/* Upload Button */}
-      <button
-        disabled={uploading}
-        onClick={handleUpload}
-        className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 flex items-center gap-2"
-      >
-        <FaCloudUploadAlt />
-        {uploading ? "Uploading..." : "Upload"}
-      </button>
+     <div className="flex justify-between items-center mt-4">
+  {/* Upload Button */}
+  <button
+    disabled={uploading || documents.length > 3}
+    onClick={handleUpload}
+    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 flex items-center gap-2"
+  >
+    <FaCloudUploadAlt />
+    {uploading ? "Uploading..." : "Upload"}
+  </button>
+
+  {/* Send Verification Request Button */}
+  <button
+    onClick={handleVerificationRequest}
+    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 flex items-center gap-2"
+     disabled={documents.length === 0 || user.kycStatus === KycStatus.REJECTED && rejectedDocs.length>0 ||user.kycStatus === KycStatus.PENDING &&documents.length ===3 } // disable if no documents uploaded
+  >
+    <FaPaperPlane />
+   {user.kycStatus === KycStatus.REJECTED? "Send ReVerification Request":"Send Verification Request"} 
+  </button>
+</div>
 
       {/* Uploaded Documents */}
       {documents.length > 0 && (
@@ -163,13 +303,13 @@ export default function UploadDocumentSection({ organizerId }: Props) {
 
               return (
                 <div
-                  key={doc._id}
+                  key={doc.id}
                   className="relative rounded-lg border border-gray-200 shadow-sm bg-white overflow-hidden hover:shadow-md transition duration-200 flex flex-col"
                 >
                   {/* Close Button */}
                   {doc.status !== "Approved" && doc.status !=="Rejected"&&(
                     <button
-                      onClick={() => handleRemoveDocument(doc._id)}
+                      onClick={() => handleRemoveDocument(doc.id)}
                       className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
                     >
                       <FaTimes />
@@ -204,7 +344,30 @@ export default function UploadDocumentSection({ organizerId }: Props) {
                       {status.icon}
                       {status.label}
                     </div>
+                   
                   </div>
+                     {doc.status === "Rejected" && (
+  <div className="p-4 pt-0">
+    <button
+      onClick={() => {
+        setDocumentType(doc.type);
+          setRejectedDocId(doc.id.toString())
+        setRejectedDocType(doc.type)
+        setSelectedFile(null); // Let user pick a new one
+        toast.info(`You can re-upload your ${doc.type}`);
+      }}
+      className="mt-2 inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 transition"
+    >
+      <FaCloudUploadAlt className="text-base" />
+      Re-upload
+    </button>
+  </div>
+)}
+
+
+                        
+                        
+                        
                 </div>
               );
             })}

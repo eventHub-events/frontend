@@ -3,7 +3,7 @@
 import { FaCheckCircle, FaStar, FaCamera } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { profileService } from '@/services/organizer/profileService';
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import UploadDocumentSection from './UploadDocumentSection';
 import { uploadImageToCloudinary } from '@/services/common/cloudinary';
 import { toast } from 'react-toastify';
@@ -11,6 +11,9 @@ import Image from 'next/image';
 import KycVerificationStatus from './OrganizerKycVerification';
 import { FiXCircle } from 'react-icons/fi';
 import { SecurityTab } from './OrganizerPassword&security';
+import axios from 'axios';
+import { showError, showInfo } from '@/utils/toastService';
+import { setOrganizer } from '@/redux/slices/organizer/authSlice';
 
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security', 'Notifications'];
@@ -42,6 +45,7 @@ export default function OrganizerProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
+  const dispatch = useAppDispatch()
 
   const [profileFormData, setProfileFormData] = useState<ProfileFormData>({
     organizerId: '',
@@ -106,50 +110,79 @@ export default function OrganizerProfile() {
   }, [organizerId]);
 
   const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    try {
-      const imageUrl = await uploadImageToCloudinary(file);
-      if (imageUrl) {
-        setProfileFormData((prev) => {
-          const updatedForm = {
-            ...prev,
-            profilePicture: imageUrl,
-          };
+  try {
+    const imageUrl = await uploadImageToCloudinary(file);
+    if (!imageUrl) return;
 
-          profileService.updateProfile(updatedForm.organizerId, updatedForm);
-          return updatedForm;
-        });
+    // First, get current form data
+    const updatedForm = {
+      ...profileFormData,
+      profilePicture: imageUrl,
+    };
 
-        toast.success('Profile image updated');
-      }
-    } catch (err: unknown) {
-      const error = err instanceof Error ? err.message : 'Failed to upload profile image';
-      toast.error(error);
+    // Check if profile is complete before updating
+    if (!updatedForm.organization || !updatedForm.bio) {
+      showInfo("Complete your profile before updating the profile picture!");
+      return;
     }
-  };
 
-  function isProfileEmpty(profile: typeof profileData) {
-    return !profile.organization && !profile.location && !profile.website && !profile.bio;
+    // Update profile
+    const result = await profileService.updateProfile(updatedForm.organizerId, updatedForm);
+    if (result) {
+      setProfileFormData(updatedForm);
+      toast.success("Profile image updated");
+    }
+  } catch (err: unknown) {
+    const error = err instanceof Error ? err.message : "Failed to upload profile image";
+    toast.error(error);
   }
+};
+
+
+   function isProfileEmpty(profile: typeof profileData) {
+     return !profile.organization && !profile.location && !profile.website && !profile.bio;
+   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      if (isProfileEmpty(profileFormData)) {
-        await profileService.createProfile(profileFormData);
-        toast.success('Profile created successfully');
-      } else {
-        await profileService.updateProfile(profileFormData.organizerId, profileFormData);
-        toast.success('Profile updated successfully');
-      }
+    
+ const result = await profileService.updateProfile(profileFormData.organizerId, profileFormData);
+  const {id ,name ,email ,isVerified,isBlocked,role}  = result .data?.data
+  const userData = {id, name ,email ,isVerified , isBlocked ,role};
+  dispatch(setOrganizer(userData));
+           toast.success('Profile updated successfully');
 
       setProfileData(profileFormData);
       setIsEditing(false);
     } catch (err: unknown) {
-      const error = err instanceof Error ? err.message : 'Failed to save profile';
-      toast.error(error);
+
+    if (axios.isAxiosError(err)) {
+    console.log("Axios error:", err);
+
+    const errors = err.response?.data?.errors;
+    const message = err.response?.data?.message;
+
+    if (Array.isArray(errors) && errors.length > 0) {
+      errors.forEach((e: string) => showError(e));
+      return;
+    }
+
+    if (message) {
+      showError(message);
+      return;
+    }
+
+    showError("Something went wrong. Please try again.");
+  } else if (err instanceof Error) {
+    showError(err.message);
+  } else {
+    showError("An unexpected error occurred.");
+  }
+    
     }
   };
 
@@ -193,7 +226,7 @@ export default function OrganizerProfile() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-semibold">
-                    {organizer?.name?.charAt(0).toUpperCase() || 'U'}
+                    {profileFormData?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
                 <input
@@ -213,7 +246,7 @@ export default function OrganizerProfile() {
 
               <div>
                 <h3 className="text-lg font-semibold">{organizer?.name}</h3>
-                <p className="text-sm text-gray-600">TechEvents Inc</p>
+                <p className="text-sm text-gray-600">{profileData.organization}</p>
                 <div className="flex items-center text-sm mt-1 space-x-2">
    {organizer?.isVerified ? (
     <span className="text-green-600 flex items-center font-medium">
@@ -243,7 +276,7 @@ export default function OrganizerProfile() {
               </button>
               {isProfileEmpty(profileData) && (
                 <p className="text-sm text-red-500 mt-2">
-                  Please complete your profile to continue using EventPro.
+                  Please complete your profile to continue using EventHub.
                 </p>
               )}
             </div>
@@ -328,7 +361,7 @@ export default function OrganizerProfile() {
         </div>
       )}
 
-      {activeTab !== 'Profile' && activeTab!=="Verification" && activeTab !== 'Documents' && (
+      {activeTab === "Notifications" && (
         <div className="text-gray-500 text-sm py-10 text-center">
           {activeTab} section content goes here.
         </div>

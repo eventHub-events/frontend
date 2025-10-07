@@ -11,3 +11,11 @@ export interface DocumentVerifiedType{
   reviewedAt:Date;
   reason:string;
 }
+export  interface UpdatePasswordType{
+ currentPassword : string;
+ newPassword :string ;
+ confirmNewPassword : string;
+
+}
+
+export type kycStatus = "Pending" | "Approved" |"Rejected" ;
