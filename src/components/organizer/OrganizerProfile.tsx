@@ -151,8 +151,8 @@ export default function OrganizerProfile() {
     try {
     
  const result = await profileService.updateProfile(profileFormData.organizerId, profileFormData);
-  const {id ,name ,email ,isVerified,isBlocked,role}  = result .data?.data
-  const userData = {id, name ,email ,isVerified , isBlocked ,role};
+  const {id ,name ,email ,isVerified,isBlocked,role, isKycResubmitted}  = result .data?.data
+  const userData = {id, name ,email ,isVerified , isBlocked ,role, isKycResubmitted};
   dispatch(setOrganizer(userData));
            toast.success('Profile updated successfully');
 
