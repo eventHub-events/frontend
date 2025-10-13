@@ -15,6 +15,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { userProfileSchema, UserProfileFormData } from "@/validation/user/schemas/userProfileSchema";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { Address, FormFieldName, UserProfileData } from "@/types/user/profile/profileUpdateType";
+import { SecurityTab } from "./component/Security";
+
 
 interface Booking {
   id: string;
@@ -34,8 +36,7 @@ const UserProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [user, setUser] = useState<UserProfileData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
-  const [showPassword, setShowPassword] = useState(false);
+ 
   const [twoFA, setTwoFA] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
@@ -203,9 +204,14 @@ const UserProfile: React.FC = () => {
       console.log("image url", imageUrl)
       const updatedUser = { ...user, image: imageUrl };
       setUser(updatedUser);
-          
+          console.log("userId", userId)
+           const userData = {
+          name: updatedUser.name,
+          phone: updatedUser.phone,
+          userId
+      }
       // Update backend profile image only
-      await userProfileService.updateProfile(user.profileId, { user: {name: user.name,phone: user.phone, userId}, profile: { image: imageUrl } });
+      await userProfileService.updateProfile(user.profileId, { user:userData, profile: { image: imageUrl } });
      
       toast.success("Profile image updated successfully!");
     } catch (err) {
@@ -226,14 +232,7 @@ const UserProfile: React.FC = () => {
     setEditMode(false);
   };
 
-  const handlePasswordChange = () => {
-    if (!passwords.new || passwords.new !== passwords.confirm) {
-      toast.error("Passwords do not match");
-      return;
-    }
-    toast.success("Password updated successfully!");
-    setPasswords({ current: "", new: "", confirm: "" });
-  };
+ 
 
   // ✅ Updated type-safe getErrorMessage
   const getErrorMessage = (fieldName: FormFieldName): string | undefined => {
@@ -478,64 +477,9 @@ const UserProfile: React.FC = () => {
 
           {/* Security Tab */}
           {activeTab === "security" && (
-            <div className="max-w-2xl space-y-8">
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  Change Password
-                </h2>
-                <div className="space-y-4">
-                  {[
-                    { type: "current", label: "Current Password", placeholder: "Enter current password" },
-                    { type: "new", label: "New Password", placeholder: "Enter new password" },
-                    { type: "confirm", label: "Confirm Password", placeholder: "Confirm new password" },
-                  ].map((field) => (
-                    <div key={field.type} className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">{field.label}</label>
-                      <div className="relative">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          placeholder={field.placeholder}
-                          value={passwords[field.type as keyof typeof passwords]}
-                          onChange={(e) => setPasswords({ ...passwords, [field.type]: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-all duration-200 shadow-sm"
-                        />
-                        <button
-                          type="button"
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={handlePasswordChange}
-                  className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-semibold"
-                >
-                  Update Password
-                </button>
-              </div>
+          
+              <SecurityTab twoFA={twoFA} setTwoFA={setTwoFA} userId={userId!} />
 
-              <div className="border-t border-gray-200 pt-8">
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100">
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-gray-900">Two-Factor Authentication</h3>
-                    <p className="text-sm text-gray-600">Add an extra layer of security to your account</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={twoFA} 
-                      onChange={() => setTwoFA(!twoFA)} 
-                      className="sr-only peer" 
-                    />
-                    <div className="w-12 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-purple-500 peer-checked:to-blue-500"></div>
-                  </label>
-                </div>
-              </div>
-            </div>
           )}
 
           {/* Bookings Tab */}
