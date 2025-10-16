@@ -1,19 +1,20 @@
 import { Category } from "@/components/admin/category/CategoryManagement";
 import { apiClient } from "../ApiClient";
+import { CategoryFormData } from "@/components/admin/category/CategoryModal";
 
 export const categoryService = {
   fetchAllCategories: () => apiClient.get(`/api/admin/categories`,{
     withCredentials: true
   }),
-  createCategory: (data: Category) => apiClient.post(`/api/admin/categories`, data,{
+  createCategory: (data: CategoryFormData) => apiClient.post(`/api/admin/categories`, data,{
      withCredentials: true
   }),
     
-  editCategory: (categoryId: string, data: Category) => apiClient.patch(`/api/admin/categories/${categoryId}`,data,{
+  editCategory: (categoryId: string, data: CategoryFormData | {isBlocked: boolean}) => apiClient.patch(`/api/admin/categories/${categoryId}`,data,{
     withCredentials: true
   }),
 
-  deleteCategory: (categoryId: string,data:{isDeleted: boolean}) => apiClient.patch(`/api/admin/categories/${categoryId}`, data,{
+  deleteCategory: (categoryId: string) => apiClient.patch(`/api/admin/categories/${categoryId}/soft-delete`,{
        withCredentials: true
   }),
   fetchCategory :(categoryId: string) => apiClient.get(`/api/admin/categories/${categoryId}`,{

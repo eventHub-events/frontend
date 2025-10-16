@@ -1,58 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit, Trash2, Lock, Unlock } from "lucide-react";
 import { motion } from "framer-motion";
 import CategoryModal, { CategoryFormData } from "./CategoryModal";
+import { categoryService } from "@/services/admin/categoryService";
+import { showError, showSuccess } from "@/utils/toastService";
+import { AxiosError } from "axios";
+import { ValidationError } from "yup";
+import { toast } from "react-toastify";
 
-// ---------------- DUMMY DATA ----------------
-const dummyCategories = [
-  {
-    id: "7",
-    name: "Technology",
-    description: "Tech conferences, workshops, and innovation events",
-    color: "#3B82F6",
-    tags: ["Tech", "Innovation", "Software"],
-    isBlocked: false,
-  },
-  {
-    id: "56",
-    name: "Business",
-    description:
-      "Business conferences, networking, and professional development",
-    color: "#22C55E",
-    tags: ["Business", "Networking", "Leadership"],
-    isBlocked: false,
-  },
-  {
-    id: "4",
-    name: "Arts & Culture",
-    description: "Art exhibitions, cultural events, and creative workshops",
-    color: "#EAB308",
-    tags: ["Art", "Culture", "Music"],
-    isBlocked: false,
-  },
-  {
-    id: "3",
-    name: "Health & Wellness",
-    description: "Health seminars, wellness workshops, and fitness events",
-    color: "#EF4444",
-    tags: ["Health", "Wellness", "Fitness"],
-    isBlocked: false,
-  },
-  {
-    id: "2",
-    name: "Education",
-    description:
-      "Educational workshops, training sessions, and academic events",
-    color: "#A855F7",
-    tags: ["Education", "Training", "Academic"],
-    isBlocked: false,
-  },
-];
 
 export interface Category {
   id: string;
@@ -64,13 +24,24 @@ export interface Category {
 }
 
 export default function CategoriesTagsManagement() {
-  const [categories, setCategories] = useState<Category[]>(dummyCategories);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
+   const [categoryName,  setCategoryName]=  useState([""]);
 
+    useEffect(() => {
+       const fetchCategories = async () => {
+          const result=  await categoryService.fetchAllCategories();
+          console.log("cat", result)
+           setCategories(result.data.data)
+           const names = result.data.data?.map((cat: Category) => cat.name)
+           setCategoryName(names)
+       }
+       fetchCategories()
+    },[isModalOpen])
   // ---------------- HANDLERS ----------------
   const handleAddCategory = () => {
     setSelectedCategory(null);
@@ -82,37 +53,123 @@ export default function CategoriesTagsManagement() {
     setIsModalOpen(true);
   };
 
-  const handleModalSubmit = (data: CategoryFormData) => {
-    if (selectedCategory) {
+  const handleModalSubmit = async (data: CategoryFormData) => {
+
+    try{ 
+             
+        
+
+        if (selectedCategory) {
+          const existing = categoryName.filter((name) => name!== selectedCategory.name)
+           if(existing.includes(data.name)){
+              showError("Category  already  exists");
+              return
+           }
       // Update existing
+      const categoryId= selectedCategory.id;
+  const result = await categoryService.editCategory(categoryId, data);
+
+   if(result){
       setCategories((prev) =>
         prev.map((cat) =>
           cat.id === selectedCategory.id ? { ...cat, ...data } : cat
         )
+
         
       );
+       showSuccess("Category Edited successfully")
+   }
+     
     } else {
-      // Add new
-      const newCategory: Category = {
-        id: (categories.length + 1).toString(),
-        ...data,
-        isBlocked: false,
-      };
-      setCategories((prev) => [...prev, newCategory]);
+       if(categoryName.includes(data.name)){
+            showError("Category  already  exists ")
+            return
+        }
+     const result =  await categoryService.createCategory(data)
+      if(result){
+         showSuccess("category  added successfully")
+         setCategories(prev=> [...prev, result.data.data]);
+      }
+      
     }
-    setIsModalOpen(false);
+    
+    }catch(err){
+     const axiosError = err as AxiosError<{  errors: string[] }>;
+
+    if (axiosError.response?.data?.errors) {
+      // Show all messages joined
+      const allErrors = axiosError.response.data.errors;
+       const delay = 1500;
+        allErrors.forEach((message, index) => {
+      setTimeout(() => {
+        toast.error(message);
+      }, index * delay);
+    });
+ 
+    } else if (axiosError.request) {
+      toast.error("No response from server. Please try again.");
+    } else {
+      toast.error(axiosError.message);
+    }
+
+    }finally {
+        setIsModalOpen(false);
+    }
+   
   };
 
-  const handleDeleteCategory = (id: string) => {
-    setCategories((prev) => prev.filter((cat) => cat.id !== id));
+  const handleDeleteCategory = async (id: string) => {
+    try{
+       
+    const  result = await categoryService.deleteCategory(id);
+    if(result){
+       showSuccess("Category  deleted successfully");
+      setCategories((prev) => prev.filter((cat) => cat.id !== id));
+    }
+    }catch(err){
+      console.log(err)
+    }
+
+   
   };
 
-  const handleBlockToggle = (id: string) => {
-    setCategories((prev) =>
-      prev.map((cat) =>
+  const handleBlockToggle =  async (id: string) => {
+
+    try{
+       const category = categories.find((c) => c.id === id)
+        if(category) {
+          const result =  await categoryService.editCategory(id,{isBlocked: !category.isBlocked});
+          if(result){
+            
+             const status = category.isBlocked ? "Unblocked":"Blocked";
+             showSuccess(`category ${status} successfully`);
+             
+        setCategories((prev) =>
+        prev.map((cat) =>
         cat.id === id ? { ...cat, isBlocked: !cat.isBlocked } : cat
       )
     );
+          }
+        }
+
+
+    }catch(err) {
+         const axiosError = err as AxiosError<{ errors: ValidationError[] }>;
+
+    if (axiosError.response?.data?.errors) {
+      // Show all messages joined
+      const allMessages = axiosError.response.data.errors.join(", ");
+   
+      toast.error(allMessages);
+    } else if (axiosError.request) {
+      toast.error("No response from server. Please try again.");
+    } else {
+      toast.error(axiosError.message);
+    }
+    }
+
+
+   
   };
 
   const filtered = categories.filter((c) =>
