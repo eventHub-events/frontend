@@ -11,3 +11,16 @@ export enum TicketStatus {
   Inactive = "Inactive"
 
 }
+export enum EventStatus {
+  Draft = "draft",
+  Upcoming = "upcoming",
+  Active = "active",
+  Completed = "completed",
+  Cancelled = "cancelled",
+  Flagged = "flagged",
+}
+export enum EventVisibility{
+      Public = "public",
+   Private = "private",
+   InviteOnly = "invite-only"
+}

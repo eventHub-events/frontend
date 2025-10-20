@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { EventType, TicketStatus } from "@/enums/organizer/events";
+import { EventType, EventVisibility } from "@/enums/organizer/events";
 import { EventCreationForm } from "@/types/organizer/events";
 
 import { categoryService } from "@/services/admin/categoryService";
@@ -11,7 +11,6 @@ import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { showSuccess, showWarning } from "@/utils/toastService";
 import { eventService } from "@/services/organizer/eventServices";
 import { useRouter } from "next/navigation";
-
 
 interface Category {
   id: string;
@@ -24,11 +23,11 @@ export default function AddEventPage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
-  const[selectedCategory, setSelectedCategory] = useState("")
+
   const [mapUrl, setMapUrl] = useState<string>("");
-  const organizer = useAppSelector((state) => state.organizerAuth?.organizer );
+  const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
-  const router = useRouter()
+  const router = useRouter();
 
   const {
     register,
@@ -39,10 +38,8 @@ export default function AddEventPage() {
     formState: { errors, isSubmitting },
   } = useForm<EventCreationForm & { tagsInput: string; startAmPm: string; endAmPm: string }>({
     defaultValues: {
-      tickets: [],
       tagsInput: "",
       featured: false,
-      waitingListEnabled: false,
       location: {
         venue: "",
         address: "",
@@ -51,22 +48,15 @@ export default function AddEventPage() {
         country: "",
       },
       totalCapacity: 1,
+      visibility: EventVisibility.Public,
     },
-  });
-
-  const { fields: ticketFields, append, remove } = useFieldArray({
-    control,
-    name: "tickets",
   });
 
   // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       const response = await categoryService.fetchAllCategories();
-      setCategories(response.data.data)
-      console.log("response",response)
-      
-    
+      setCategories(response.data.data);
     };
     fetchCategories();
   }, []);
@@ -76,15 +66,16 @@ export default function AddEventPage() {
     const files = e.target.files;
     if (!files) return;
     const fileArray = Array.from(files);
-     const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
+    const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
     setImageFiles((prev) => [...prev, ...fileArray]);
-  setImagePreviews((prev) => [...prev, ...newPreviews]);
+    setImagePreviews((prev) => [...prev, ...newPreviews]);
   };
+
   // remove single image
-   const removeImage = (index: number) => {
-  setImageFiles((prev) => prev.filter((_, i) => i !== index));
-  setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-};
+  const removeImage = (index: number) => {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // Upload images to Cloudinary
   const uploadImagesToCloudinary = async () => {
@@ -97,20 +88,12 @@ export default function AddEventPage() {
     const uploadedUrls: string[] = [];
     try {
       for (const file of imageFiles) {
-        // const formData = new FormData();
-        // formData.append("file", file);
-        // formData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // replace
-        // const res = await axios.post(
-        //   "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
-        //   formData
-        // );
-         const imageUrl = await uploadImageToCloudinary(file);
-            if (!imageUrl) return;
+        const imageUrl = await uploadImageToCloudinary(file);
+        if (!imageUrl) return;
         uploadedUrls.push(imageUrl);
       }
       setUploadedImages(uploadedUrls);
       showSuccess("Images uploaded successfully!");
-      console.log("Uploaded Images",uploadedImages)
     } catch (err) {
       console.error(err);
       alert("Upload failed");
@@ -138,21 +121,17 @@ export default function AddEventPage() {
       const payload: EventCreationForm = {
         ...data,
         organizerId: organizerId,
-      
         images: uploadedImages,
         startTime,
         endTime,
         tags: data.tagsInput ? data.tagsInput.split(",").map((t: string) => t.trim()) : [],
       };
 
-      console.log("Submitting event:", payload);
       const response = await eventService.createEvent(payload);
-      if(response){
-         showSuccess("event created successfully");
-         router.push("/organizer/events")
+      if (response) {
+        showSuccess("Event created successfully");
+        router.push("/organizer/events");
       }
-       console.log("resoposne",response)
-      // await axios.post("/api/events", payload);
     } catch (err) {
       console.error(err);
     }
@@ -172,7 +151,7 @@ export default function AddEventPage() {
             {/* Basic Information Section */}
             <section className="bg-gray-50 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Event Title */}
                 <div className="md:col-span-2">
@@ -185,9 +164,7 @@ export default function AddEventPage() {
                     placeholder="Enter event title"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
-                  {errors.title && (
-                    <p className="mt-1 text-sm text-red-600">Title is required</p>
-                  )}
+                  {errors.title && <p className="mt-1 text-sm text-red-600">Title is required</p>}
                 </div>
 
                 {/* Event Type & Category */}
@@ -195,8 +172,8 @@ export default function AddEventPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Event Type <span className="text-red-500">*</span>
                   </label>
-                  <select 
-                    {...register("type", { required: true })} 
+                  <select
+                    {...register("type", { required: true })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     {Object.values(EventType).map((type) => (
@@ -211,8 +188,8 @@ export default function AddEventPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Category <span className="text-red-500">*</span>
                   </label>
-                  <select 
-                    {...register("categoryId", { required: true })} 
+                  <select
+                    {...register("categoryId", { required: true })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Select Category</option>
@@ -229,7 +206,7 @@ export default function AddEventPage() {
             {/* Location Section */}
             <section className="bg-gray-50 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Location Details</h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {(["venue", "address", "city", "state", "country"] as const).map((field) => (
                   <div key={field} className={field === "address" ? "md:col-span-2" : ""}>
@@ -246,7 +223,6 @@ export default function AddEventPage() {
                 ))}
               </div>
 
-              {/* Google Maps iframe */}
               {mapUrl && (
                 <div className="w-full h-64 rounded-lg overflow-hidden border border-gray-300">
                   <iframe src={mapUrl} className="w-full h-full" loading="lazy" />
@@ -257,35 +233,35 @@ export default function AddEventPage() {
             {/* Date & Time Section */}
             <section className="bg-gray-50 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Date & Time</h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                  <input 
-                    type="date" 
-                    {...register("startDate")} 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                  <input
+                    type="date"
+                    {...register("startDate")}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                  <input 
-                    type="date" 
-                    {...register("endDate")} 
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                  <input
+                    type="date"
+                    {...register("endDate")}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
                   <div className="flex gap-2">
-                    <input 
-                      type="time" 
-                      {...register("startTime")} 
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                    <input
+                      type="time"
+                      {...register("startTime")}
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     />
-                    <select 
-                      {...register("startAmPm")} 
+                    <select
+                      {...register("startAmPm")}
                       className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
                       <option>AM</option>
@@ -293,17 +269,17 @@ export default function AddEventPage() {
                     </select>
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
                   <div className="flex gap-2">
-                    <input 
-                      type="time" 
-                      {...register("endTime")} 
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                    <input
+                      type="time"
+                      {...register("endTime")}
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     />
-                    <select 
-                      {...register("endAmPm")} 
+                    <select
+                      {...register("endAmPm")}
                       className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
                       <option>AM</option>
@@ -317,7 +293,7 @@ export default function AddEventPage() {
             {/* Capacity & Settings */}
             <section className="bg-gray-50 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Capacity & Settings</h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -333,182 +309,36 @@ export default function AddEventPage() {
 
                 <div className="flex items-center space-x-4">
                   <label className="flex items-center space-x-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      {...register("featured")} 
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" 
+                    <input
+                      type="checkbox"
+                      {...register("featured")}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
                     <span className="text-sm font-medium text-gray-700">Featured Event</span>
                   </label>
                 </div>
 
-                <div className="flex items-center space-x-4">
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      {...register("waitingListEnabled")} 
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" 
-                    />
-                    <span className="text-sm font-medium text-gray-700">Enable Waiting List</span>
-                  </label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
+                  <select
+                    {...register("visibility")}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  >
+                    {Object.values(EventVisibility).map((v) => (
+                      <option key={v} value={v}>
+                        {v.charAt(0).toUpperCase() + v.slice(1).replace("-", " ")}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </div>
-            </section>
-
-            {/* Ticket Tiers */}
-            <section className="bg-gray-50 rounded-xl p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">Ticket Tiers</h2>
-                <button
-                  type="button"
-                  onClick={() =>
-                    append({
-                      name: "",
-                      price: 0,
-                      totalSeats: 1,
-                      benefits: [],
-                      status: TicketStatus.Active,
-                      isRefundable: false,
-                    })
-                  }
-                  className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors duration-200 flex items-center space-x-2"
-                >
-                  <span>+</span>
-                  <span>Add Ticket</span>
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {ticketFields.map((ticket, index) => (
-                  <div key={ticket.id} className="border border-gray-200 rounded-xl p-6 bg-white relative hover:shadow-md transition-shadow duration-200">
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="absolute top-4 right-4 text-red-500 hover:text-red-700 transition-colors duration-200 p-1 rounded-full hover:bg-red-50"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                    
-                    <h4 className="font-semibold text-lg text-gray-800 mb-4">Ticket Tier {index + 1}</h4>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Ticket Name</label>
-                        <input
-                          type="text"
-                          {...register(`tickets.${index}.name` as const, { required: true })}
-                          placeholder="e.g., VIP, General Admission"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
-                        <input
-                          type="number"
-                          {...register(`tickets.${index}.price` as const, { required: true, min: 0 })}
-                          placeholder="Enter price in USD"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Total Seats</label>
-                        <input
-                          type="number"
-                          {...register(`tickets.${index}.totalSeats` as const, { required: true, min: 1 })}
-                          placeholder="Number of seats available"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Max Tickets Per User</label>
-                        <input
-                          type="number"
-                          {...register(`tickets.${index}.maxTicketPerUser` as const)}
-                          placeholder="Maximum tickets a user can buy"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        />
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Benefits</label>
-                        <input
-                          type="text"
-                          {...register(`tickets.${index}.benefits` as const)}
-                          placeholder="e.g., Free drinks, Backstage pass"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        />
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <input
-                          type="text"
-                          {...register(`tickets.${index}.description` as const)}
-                          placeholder="Short description of ticket"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        />
-                      </div>
-
-                      <div className="flex flex-wrap gap-4 items-center">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                          <select 
-                            {...register(`tickets.${index}.status` as const)} 
-                            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                          >
-                            {Object.values(TicketStatus).map((s) => (
-                              <option key={s} value={s}>
-                                {s}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <label className="flex items-center space-x-2 cursor-pointer mt-6">
-                          <input 
-                            type="checkbox" 
-                            {...register(`tickets.${index}.isRefundable` as const)} 
-                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" 
-                          />
-                          <span className="text-sm font-medium text-gray-700">Refundable</span>
-                        </label>
-                      </div>
-
-                      <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Sale Start Date</label>
-                          <input 
-                            type="date" 
-                            {...register(`tickets.${index}.saleStartDate` as const)} 
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Sale End Date</label>
-                          <input 
-                            type="date" 
-                            {...register(`tickets.${index}.saleEndDate` as const)} 
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
               </div>
             </section>
 
             {/* Tags & Images */}
             <section className="bg-gray-50 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Additional Details</h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Tags */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
                   <input
@@ -519,68 +349,60 @@ export default function AddEventPage() {
                   />
                 </div>
 
-             {/* Image Upload */}
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-2">Event Images</label>
-  <input
-    type="file"
-    multiple
-    accept="image/*"
-    onChange={handleImageChange}
-    className="w-full px-4 py-3 border border-gray-300 rounded-lg 
-      file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 
-      file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 
-      hover:file:bg-blue-100 transition-all duration-200"
-  />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Event Images</label>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all duration-200"
+                  />
 
-  {/* Image Previews */}
-  {imagePreviews.length > 0 && (
-    <div className="flex gap-3 mt-3 overflow-x-auto pb-2">
-      {imagePreviews.map((src, idx) => (
-        <div key={idx} className="relative w-24 h-24">
-          <img
-            src={src}
-            alt={`preview-${idx}`}
-            className="w-full h-full object-cover rounded-lg border border-gray-300"
-          />
-          <button
-            type="button"
-            onClick={() => removeImage(idx)}
-            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow hover:bg-red-600 transition"
-          >
-            ✕
-          </button>
-        </div>
-      ))}
-    </div>
-  )}
+                  {imagePreviews.length > 0 && (
+                    <div className="flex gap-3 mt-3 overflow-x-auto pb-2">
+                      {imagePreviews.map((src, idx) => (
+                        <div key={idx} className="relative w-24 h-24">
+                          <img
+                            src={src}
+                            alt={`preview-${idx}`}
+                            className="w-full h-full object-cover rounded-lg border border-gray-300"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(idx)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow hover:bg-red-600 transition"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-  {/* Upload Button */}
-  <button
-    type="button"
-    onClick={uploadImagesToCloudinary}
-    disabled={uploading || imageFiles.length === 0}
-    className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 
-      disabled:bg-gray-400 disabled:cursor-not-allowed transition flex items-center space-x-2"
-  >
-    {uploading ? (
-      <>
-        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-        <span>Uploading...</span>
-      </>
-    ) : (
-      <span>Upload Images</span>
-    )}
-  </button>
-</div>
-
+                  <button
+                    type="button"
+                    onClick={uploadImagesToCloudinary}
+                    disabled={uploading || imageFiles.length === 0}
+                    className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition flex items-center space-x-2"
+                  >
+                    {uploading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Uploading...</span>
+                      </>
+                    ) : (
+                      <span>Upload Images</span>
+                    )}
+                  </button>
+                </div>
               </div>
             </section>
 
             {/* Submit Button */}
             <div className="flex justify-center pt-4">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isSubmitting}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >

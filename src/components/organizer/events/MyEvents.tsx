@@ -7,61 +7,72 @@ import { Input } from "@/components/ui/input";
 import { FaPlus, FaSearch } from "react-icons/fa";
 
 import Link from "next/link";
+import { eventService } from "@/services/organizer/eventServices";
+import { useAppSelector } from "@/redux/hooks";
+import { EventData } from "@/types/organizer/events";
+import { showSuccess } from "@/utils/toastService";
+import { toast } from "react-toastify";
+import { AxiosError } from "axios";
+import { EventStatus } from "@/enums/organizer/events";
 
-interface EventType {
-  _id: string;
-  title: string;
-  description: string;
-  location: { address: string; city: string };
-  eventTime: { startDate: string; startTime: string };
-  imageUrls: string[];
-  capacity: number;
-  ticketsSold: number;
-  revenue: number;
-  status: "Draft" | "Upcoming" | "Completed" | "Cancelled";
-}
+
 
 export const MyEvents: React.FC = () => {
-  const [events, setEvents] = useState<EventType[]>([]);
+  const [events, setEvents] = useState<EventData[]>([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
-
+  const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+  const organizerId = organizer?.id;
+ 
 
   useEffect(() => {
     // Simulate fetch (replace with actual API)
-    const dummyEvents: EventType[] = [
-      {
-        _id: "1",
-        title: "Tech Conference 2024",
-        description: "Annual tech conference featuring the latest innovations",
-        location: { address: "Convention Center", city: "New York" },
-        eventTime: { startDate: "2024-02-15", startTime: "09:00 AM" },
-        imageUrls: ["/images/event1.jpg"],
-        capacity: 200,
-        ticketsSold: 150,
-        revenue: 7500,
-        status: "Upcoming",
-      },
-      {
-        _id: "2",
-        title: "Music Festival Summer",
-        description: "Three-day music festival with top artists",
-        location: { address: "Central Park", city: "New York" },
-        eventTime: { startDate: "2024-01-28", startTime: "02:00 PM" },
-        imageUrls: ["/images/event2.jpg"],
-        capacity: 350,
-        ticketsSold: 320,
-        revenue: 16000,
-        status: "Completed",
-      },
-    ];
-    setEvents(dummyEvents);
-  }, []);
+   const fetchEvents = async () => {
+     try{
+         console.log("organizerId", organizerId)
+        const  response =  await eventService.fetchEvents(organizerId!);
+        setEvents(response?.data.data);
+        
+     }catch(err){
+        console.log(err)
+     }
+     
+   }
+   fetchEvents()
+    
+    
+  }, [organizerId]);
 
   const handleEdit = (id: string) => console.log("Edit", id);
   const handleView = (id: string) => console.log("View", id);
-  const handleDelete = (id: string) => console.log("Delete", id);
-  const handleCancel = (id: string) => console.log("Cancel", id);
+  const handleDelete = async (id: string) => {
+           try{
+            console.log("event id", id)
+              const response =  await eventService.deleteEvent(id)
+              if(response){
+                 showSuccess("Event deleted successfully")
+              }
+              console.log(response)
+           }catch(err){
+               toast.error(err instanceof AxiosError?err.message:"Error in  deleting event")
+           }
+  } 
+  const handleCancel =  async (id: string) => {
+        try{
+            console.log("event id", id)
+              const response =  await eventService.cancelEvent(id)
+              if(response){
+                 showSuccess("Event cancelled successfully");
+                const updated = events.map((e) =>
+  e.eventId === id ? { ...e, status: EventStatus.Cancelled } : e
+);
+setEvents(updated);
+              }
+              console.log(response)
+           }catch(err){
+               toast.error(err instanceof AxiosError?err.message:"Error in  cancelling event")
+           }
+  }
   
 
   const filteredEvents = events.filter(
@@ -112,7 +123,7 @@ export const MyEvents: React.FC = () => {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredEvents.map((event) => (
           <EventCard
-            key={event._id}
+            key={event.eventId}
             event={event}
             onEdit={handleEdit}
             onView={handleView}

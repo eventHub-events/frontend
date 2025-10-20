@@ -4,7 +4,6 @@ import { FaBell, FaUserCircle } from "react-icons/fa";
 import { MdVerified, MdKeyboardArrowDown } from "react-icons/md";
 import { HiSearch, HiSparkles } from "react-icons/hi";
 import { BiLogOut } from "react-icons/bi";
-import { RiVipCrownFill } from "react-icons/ri";
 import { toast } from "react-toastify";
 import { authService } from "@/services/authService";
 import Image from "next/image";

@@ -1,26 +1,28 @@
 "use client";
 
-import { FaCalendarAlt, FaMapMarkerAlt, FaUsers, FaDollarSign, FaEdit, FaEye, FaTrash, FaBan } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaUsers,
+  FaDollarSign,
+  FaEdit,
+  FaEye,
+  FaTrash,
+  FaBan,
+} from "react-icons/fa";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { EventData } from "@/types/organizer/events";
 
 interface EventCardProps {
-  event: {
-    _id: string;
-    title: string;
-    description: string;
-    location: { address: string; city: string };
-    eventTime: { startDate: string; startTime: string };
-    imageUrls: string[];
-    capacity: number;
-    ticketsSold: number;
-    revenue: number;
-    status: "Draft" | "Upcoming" | "Completed" | "Cancelled";
-  };
+  event: EventData;
   onEdit: (id: string) => void;
   onView: (id: string) => void;
   onDelete: (id: string) => void;
   onCancel: (id: string) => void;
+  // 👇 optional props coming from ticket aggregation or separate API
+  totalTicketsSold?: number;
+  totalRevenue?: number;
 }
 
 export const EventCard: React.FC<EventCardProps> = ({
@@ -29,9 +31,11 @@ export const EventCard: React.FC<EventCardProps> = ({
   onView,
   onDelete,
   onCancel,
+  totalTicketsSold = 0,
+  totalRevenue = 0,
 }) => {
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+  const getStatusColor = (status?: string) => {
+    switch (status?.toLowerCase()) {
       case "upcoming":
         return "bg-blue-100 text-blue-700";
       case "completed":
@@ -49,7 +53,7 @@ export const EventCard: React.FC<EventCardProps> = ({
     <div className="bg-white shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition">
       <div className="relative h-44 w-full">
         <Image
-          src={event.imageUrls[0] || "/placeholder.jpg"}
+          src={event.images?.[0] || "/placeholder.jpg"}
           alt={event.title}
           fill
           className="object-cover"
@@ -59,43 +63,45 @@ export const EventCard: React.FC<EventCardProps> = ({
             event.status
           )}`}
         >
-          {event.status.toUpperCase()}
+          {event.status?.toUpperCase()}
         </span>
       </div>
 
       <div className="p-4 space-y-2">
         <h3 className="text-lg font-semibold">{event.title}</h3>
-        <p className="text-sm text-gray-500 line-clamp-2">{event.description}</p>
+        <p className="text-sm text-gray-500 line-clamp-2">
+          {event.description}
+        </p>
 
         <div className="flex items-center text-sm text-gray-600 mt-2">
           <FaCalendarAlt className="mr-2 text-gray-400" />
           <span>
-            {new Date(event.eventTime.startDate).toLocaleDateString()} @{" "}
-            {event.eventTime.startTime}
+            {new Date(event.startDate).toLocaleDateString()}{" "}
+            {event.startTime || ""}
           </span>
         </div>
 
         <div className="flex items-center text-sm text-gray-600">
           <FaMapMarkerAlt className="mr-2 text-gray-400" />
-          <span>{event.location.city}</span>
+          <span>{event.location?.city}</span>
         </div>
 
         <div className="flex justify-between items-center text-sm text-gray-700 mt-2 border-t pt-2">
           <div className="flex items-center space-x-1">
             <FaUsers className="text-gray-400" />
             <span>
-              {event.ticketsSold}/{event.capacity}
+              {totalTicketsSold}/{event.totalCapacity}
             </span>
           </div>
           <div className="flex items-center space-x-1">
             <FaDollarSign className="text-gray-400" />
-            <span>{event.revenue}</span>
+            <span>{totalRevenue}</span>
           </div>
         </div>
 
         <div className="flex justify-between mt-3">
           <Button
-            onClick={() => onEdit(event._id)}
+            onClick={() => onEdit(event.eventId!)}
             variant="outline"
             size="sm"
             className="flex items-center space-x-1"
@@ -105,15 +111,15 @@ export const EventCard: React.FC<EventCardProps> = ({
           </Button>
           <div className="flex items-center space-x-2">
             <FaEye
-              onClick={() => onView(event._id)}
+              onClick={() => onView(event.eventId!)}
               className="cursor-pointer text-gray-500 hover:text-blue-600"
             />
             <FaBan
-              onClick={() => onCancel(event._id)}
+              onClick={() => onCancel(event.eventId!)}
               className="cursor-pointer text-red-500 hover:text-red-700"
             />
             <FaTrash
-              onClick={() => onDelete(event._id)}
+              onClick={() => onDelete(event.eventId!)}
               className="cursor-pointer text-gray-500 hover:text-red-600"
             />
           </div>

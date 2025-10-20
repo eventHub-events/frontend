@@ -1,4 +1,4 @@
-import { EventType, TicketStatus } from "@/enums/organizer/events";
+import { EventStatus, EventType, EventVisibility, TicketStatus } from "@/enums/organizer/events";
 
 export interface EventCreationForm {
     organizerId: string;
@@ -17,7 +17,9 @@ export interface EventCreationForm {
     featured?: boolean;
     createdBy?: string;
     tags?:string[];
-    waitingListEnabled?: boolean;
+    organizerEmail?:string;
+    visibility: EventVisibility
+
 }
 
 export interface ILocation {
@@ -46,5 +48,29 @@ export interface ITicketTier {
   isRefundable?: boolean
 
 }
+ export interface EventData {
+   organizerId: string;
+  title: string;
+  type: EventType;
+  categoryId: string;
+  description: string;
+  location: ILocation;
+  totalCapacity: number;
+  startDate: Date;
+  eventId?:string;
+  endDate: Date;
+  images: string[];
+  startTime?: string;
+  endTime?: string;
+ 
+  featured?: boolean;
+  approved?: boolean;
+ 
+ 
+  tags?: string[];
+  status?: EventStatus;
+  visibility : EventVisibility;
+  organizerEmail?: string
+ }
 
 
