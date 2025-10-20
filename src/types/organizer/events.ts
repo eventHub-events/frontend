@@ -1,7 +1,7 @@
 import { EventStatus, EventType, EventVisibility, TicketStatus } from "@/enums/organizer/events";
 
 export interface EventCreationForm {
-    organizerId: string;
+    organizerId?: string;
     title: string;
     type: EventType;
     categoryId: string;
@@ -72,5 +72,7 @@ export interface ITicketTier {
   visibility : EventVisibility;
   organizerEmail?: string
  }
+
+ export type EventFormValues = EventCreationForm & { tagsInput: string; startAmPm: string; endAmPm: string };
 
 

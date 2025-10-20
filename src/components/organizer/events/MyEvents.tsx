@@ -14,6 +14,7 @@ import { showSuccess } from "@/utils/toastService";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import { EventStatus } from "@/enums/organizer/events";
+import { useRouter } from "next/navigation";
 
 
 
@@ -23,7 +24,7 @@ export const MyEvents: React.FC = () => {
   const [filter, setFilter] = useState("All");
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
   const organizerId = organizer?.id;
- 
+  const router = useRouter()
 
   useEffect(() => {
     // Simulate fetch (replace with actual API)
@@ -36,14 +37,16 @@ export const MyEvents: React.FC = () => {
      }catch(err){
         console.log(err)
      }
-     
+
    }
    fetchEvents()
     
     
   }, [organizerId]);
 
-  const handleEdit = (id: string) => console.log("Edit", id);
+  const handleEdit = (id: string) => {
+       router.push(`/organizer/events/edit/${id}`);
+  };
   const handleView = (id: string) => console.log("View", id);
   const handleDelete = async (id: string) => {
            try{

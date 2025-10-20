@@ -1,6 +1,7 @@
 import { EventCreationForm } from "@/types/organizer/events";
 import { apiClient } from "../ApiClient";
 
+
 export const eventService = {
   createEvent: (data: EventCreationForm) => apiClient.post(`/api/organizer/events`,data,{
     withCredentials: true
@@ -13,6 +14,12 @@ export const eventService = {
     withCredentials: true
   }),
   cancelEvent: (eventId: string) => apiClient.patch(`/api/organizer/events/${eventId}/cancel`,{},{
+    withCredentials: true
+  }),
+  fetchEventById : (eventId: string) => apiClient.get(`/api/organizer/events/${eventId}`,{
+    withCredentials : true
+  }),
+  updateEvent :(eventId: string, payload: EventCreationForm) => apiClient.patch(`/api/organizer/events/${eventId}`,payload,{
     withCredentials: true
   })
 

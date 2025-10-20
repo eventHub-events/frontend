@@ -1,40 +1,41 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { EventType, EventVisibility } from "@/enums/organizer/events";
-import { EventCreationForm } from "@/types/organizer/events";
-
+import { EventCreationForm, EventFormValues } from "@/types/organizer/events";
 import { categoryService } from "@/services/admin/categoryService";
 import { useAppSelector } from "@/redux/hooks";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { showSuccess, showWarning } from "@/utils/toastService";
 import { eventService } from "@/services/organizer/eventServices";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 interface Category {
   id: string;
   name: string;
 }
 
-export default function AddEventPage() {
+export default function EventFormPage() {
+  const { eventId } = useParams();
+  const isEditMode = !!eventId;
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
-
   const [mapUrl, setMapUrl] = useState<string>("");
+
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
   const router = useRouter();
 
   const {
     register,
-    control,
     handleSubmit,
     watch,
-    setValue,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<EventCreationForm & { tagsInput: string; startAmPm: string; endAmPm: string }>({
     defaultValues: {
@@ -52,7 +53,7 @@ export default function AddEventPage() {
     },
   });
 
-  // Fetch categories
+  // 🔹 Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       const response = await categoryService.fetchAllCategories();
@@ -61,7 +62,46 @@ export default function AddEventPage() {
     fetchCategories();
   }, []);
 
-  // Handle image selection & preview
+  // 🔹 If editing, fetch event details and populate form
+  useEffect(() => {
+    const fetchEvent = async () => {
+      if (!isEditMode) return;
+      try {
+        const response = await eventService.fetchEventById(eventId as string);
+        const eventData = response.data.data;
+        console.log("response is", response)
+
+        // convert backend data to form-compatible structure
+        reset({
+          ...eventData,
+         startDate: eventData.startDate ? eventData.startDate.split("T")[0] : "",
+         endDate: eventData.endDate ? eventData.endDate.split("T")[0] : "",
+         tagsInput: eventData.tags?.join(", ") || "",
+         startAmPm: eventData.startTime?.includes("PM") ? "PM" : "AM",
+         endAmPm: eventData.endTime?.includes("PM") ? "PM" : "AM",
+        });
+
+        if (eventData.images?.length) {
+          setUploadedImages(eventData.images);
+          setImagePreviews(eventData.images);
+        }
+
+        const loc = eventData.location;
+        if (loc?.address || loc?.city) {
+          const query = encodeURIComponent(
+            `${loc.venue} ${loc.address} ${loc.city} ${loc.state} ${loc.country}`
+          );
+          setMapUrl(`https://maps.google.com/maps?q=${query}&output=embed`);
+        }
+      } catch (err) {
+        console.error("Failed to fetch event", err);
+      }
+    };
+
+    fetchEvent();
+  }, [isEditMode, eventId, reset]);
+
+  // 🔹 Handle image selection & preview
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -71,13 +111,14 @@ export default function AddEventPage() {
     setImagePreviews((prev) => [...prev, ...newPreviews]);
   };
 
-  // remove single image
+  // 🔹 Remove single image
   const removeImage = (index: number) => {
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Upload images to Cloudinary
+  // 🔹 Upload images to Cloudinary
   const uploadImagesToCloudinary = async () => {
     if (imageFiles.length === 0) {
       showWarning("Please select images first");
@@ -89,20 +130,19 @@ export default function AddEventPage() {
     try {
       for (const file of imageFiles) {
         const imageUrl = await uploadImageToCloudinary(file);
-        if (!imageUrl) return;
-        uploadedUrls.push(imageUrl);
+        if (imageUrl) uploadedUrls.push(imageUrl);
       }
-      setUploadedImages(uploadedUrls);
+      const allImages = [...uploadedImages, ...uploadedUrls];
+      setUploadedImages(allImages);
       showSuccess("Images uploaded successfully!");
     } catch (err) {
       console.error(err);
-      alert("Upload failed");
     } finally {
       setUploading(false);
     }
   };
 
-  // Update Google Maps iframe
+  // 🔹 Update Google Maps iframe
   const updateMap = () => {
     const location = watch("location");
     if (location.address || location.city) {
@@ -113,7 +153,8 @@ export default function AddEventPage() {
     }
   };
 
-  const onSubmit = async (data: any) => {
+  // 🔹 Handle Create / Update
+  const onSubmit = async (data: EventFormValues) => {
     try {
       const startTime = data.startTime ? `${data.startTime} ${data.startAmPm}` : "";
       const endTime = data.endTime ? `${data.endTime} ${data.endAmPm}` : "";
@@ -127,27 +168,42 @@ export default function AddEventPage() {
         tags: data.tagsInput ? data.tagsInput.split(",").map((t: string) => t.trim()) : [],
       };
 
-      const response = await eventService.createEvent(payload);
-      if (response) {
-        showSuccess("Event created successfully");
-        router.push("/organizer/events");
+      if (isEditMode) {
+        const res = await eventService.updateEvent(eventId as string, payload);
+        if (res) {
+          showSuccess("Event updated successfully");
+          router.push("/organizer/events");
+        }
+      } else {
+        const res = await eventService.createEvent(payload);
+        if (res) {
+          showSuccess("Event created successfully");
+          router.push("/organizer/events");
+        }
       }
     } catch (err) {
       console.error(err);
     }
   };
 
+  // 🔹 JSX (unchanged styling)
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-          {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Event</h1>
-            <p className="text-gray-600">Fill in the details below to create your amazing event</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {isEditMode ? "Edit Event" : "Create New Event"}
+            </h1>
+            <p className="text-gray-600">
+              {isEditMode
+                ? "Update your existing event details below"
+                : "Fill in the details below to create your amazing event"}
+            </p>
           </div>
 
           <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+              
             {/* Basic Information Section */}
             <section className="bg-gray-50 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
@@ -398,15 +454,19 @@ export default function AddEventPage() {
                 </div>
               </div>
             </section>
-
-            {/* Submit Button */}
             <div className="flex justify-center pt-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
-                {isSubmitting ? "Creating Event..." : "Create Event"}
+                {isSubmitting
+                  ? isEditMode
+                    ? "Updating Event..."
+                    : "Creating Event..."
+                  : isEditMode
+                  ? "Update Event"
+                  : "Create Event"}
               </button>
             </div>
           </form>
