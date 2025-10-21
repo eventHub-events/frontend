@@ -3,7 +3,7 @@ import OrganizerProfile from "@/components/organizer/OrganizerProfile";
 
 export default function ProfilePage() {
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="ml-64 p-6"> 
       <OrganizerProfile />
     </div>
   );
