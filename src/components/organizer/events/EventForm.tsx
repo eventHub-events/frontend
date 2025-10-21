@@ -178,7 +178,7 @@ export default function EventFormPage() {
         const res = await eventService.createEvent(payload);
         if (res) {
           showSuccess("Event created successfully");
-          router.push("/organizer/events");
+          router.push(`/organizer/events/${res.data.data.eventId}/tickets`);
         }
       }
     } catch (err) {

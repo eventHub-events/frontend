@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { EventTicketingModel } from "@/models/EventTicketingModel"; // Replace with your service import
-import { TicketStatus } from "@/enums/organizer/events"; // Define Active/Inactive
-import { ITicketTier } from "@/types/organizer/events"; // your type for ticket tier
+import { TicketStatus } from "@/enums/organizer/events";
+import { ITicketTier } from "@/types/organizer/events";
 import { showSuccess, showWarning } from "@/utils/toastService";
+import { ticketingService } from "@/services/organizer/ticketingService";
+import { AxiosError } from "axios";
+import { useAppSelector } from "@/redux/hooks";
 
-interface TicketForm {
+export interface TicketForm {
   tickets: ITicketTier[];
-  saleStartDate: string;
-  saleEndDate: string;
-  waitingListEnabled: boolean;
+  saleStartDate?: string;
+  saleEndDate?: string;
+  waitingListEnabled?: boolean;
 }
 
 interface TicketManagementPageProps {
@@ -22,8 +24,12 @@ interface TicketManagementPageProps {
 export default function TicketManagementPage({ eventId }: TicketManagementPageProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [isExistingTicketing, setIsExistingTicketing] = useState(false);
+  const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+  const organizerId = organizer?.id;
+  const fetchedRef = useRef(false);
 
-  const { register, control, handleSubmit, setValue, watch } = useForm<TicketForm>({
+  const { register, control, handleSubmit, setValue } = useForm<TicketForm>({
     defaultValues: {
       tickets: [],
       saleStartDate: "",
@@ -37,51 +43,85 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
     name: "tickets",
   });
 
-  // Fetch existing ticketing data
+  // Fetch ticketing data
   useEffect(() => {
     const fetchTicketing = async () => {
+      if (fetchedRef.current) return;
+      fetchedRef.current = true;
+
       try {
         setLoading(true);
-        const res = await fetch(`/api/event-ticketing/${eventId}`);
-        const data = await res.json();
-        if (data?.tickets) {
+        const res = await ticketingService.fetchTicketingDetailsByEvent(eventId);
+        const data = res.data.data;
+
+        if (data?.tickets && data.tickets.length > 0) {
+          setIsExistingTicketing(true);
           setValue("tickets", data.tickets);
           setValue("saleStartDate", data.saleStartDate?.slice(0, 10) || "");
           setValue("saleEndDate", data.saleEndDate?.slice(0, 10) || "");
-          setValue("waitingListEnabled", data.waitingListEnabled);
+          setValue("waitingListEnabled", data.waitingListEnabled || false);
+        } else {
+          // No existing tickets: initialize with 1 ticket
+          append({
+            name: "",
+            price: 0,
+            totalSeats: 1,
+            benefits: [],
+            status: TicketStatus.Active,
+            isRefundable: false,
+            description: "",
+            maxTicketPerUser: 1,
+          });
         }
       } catch (err) {
-        console.error(err);
+        if (err instanceof AxiosError && err.response?.status === 404) {
+          // First-time creation
+          setIsExistingTicketing(false);
+          append({
+            name: "",
+            price: 0,
+            totalSeats: 1,
+            benefits: [],
+            status: TicketStatus.Active,
+            isRefundable: false,
+            description: "",
+            maxTicketPerUser: 1,
+          });
+        } else {
+          showWarning("Failed to load ticketing data. Please try again.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchTicketing();
-  }, [eventId, setValue]);
+  }, [eventId, setValue, append]);
 
   const onSubmit = async (formData: TicketForm) => {
     try {
       setLoading(true);
       const payload = {
         eventId,
+        organizerId,
         tickets: formData.tickets,
         saleStartDate: formData.saleStartDate,
         saleEndDate: formData.saleEndDate,
         waitingListEnabled: formData.waitingListEnabled,
       };
 
-      const res = await fetch(`/api/event-ticketing/${eventId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        showSuccess("Ticket tiers updated successfully!");
-        router.push(`/organizer/events/${eventId}`);
+      let res;
+      if (isExistingTicketing) {
+        res = await ticketingService.updateTicketingDetails(eventId, payload);
       } else {
-        showWarning("Failed to update ticket tiers.");
+        res = await ticketingService.createTicketingDetails(payload);
+      }
+
+      if (res) {
+        showSuccess("Ticket tiers saved successfully!");
+        router.push(`/organizer/events`);
+      } else {
+        showWarning("Failed to save ticket tiers.");
       }
     } catch (err) {
       console.error(err);
@@ -122,7 +162,10 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
 
             <div className="space-y-4">
               {ticketFields.map((ticket, index) => (
-                <div key={ticket.id} className="border border-gray-200 p-4 rounded-lg relative">
+                <div
+                  key={ticket.id}
+                  className="border border-gray-200 p-4 rounded-lg relative"
+                >
                   <button
                     type="button"
                     onClick={() => remove(index)}
@@ -143,7 +186,7 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
                     </div>
 
                     <div>
-                      <label className="block mb-1 text-sm font-medium">Price ($)</label>
+                      <label className="block mb-1 text-sm font-medium">Price (₹)</label>
                       <input
                         type="number"
                         {...register(`tickets.${index}.price` as const, { required: true, min: 0 })}
@@ -194,10 +237,7 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
 
                     <div className="flex items-center gap-4">
                       <label className="block text-sm font-medium">Status</label>
-                      <select
-                        {...register(`tickets.${index}.status` as const)}
-                        className="px-3 py-2 border rounded-lg"
-                      >
+                      <select {...register(`tickets.${index}.status` as const)} className="px-3 py-2 border rounded-lg">
                         {Object.values(TicketStatus).map((status) => (
                           <option key={status} value={status}>
                             {status}
@@ -256,7 +296,7 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
               disabled={loading}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
             >
-              {loading ? "Saving..." : "Save Ticket Tiers"}
+              {loading ? "Saving..." : isExistingTicketing ? "Update Ticket Tiers" : "Create Ticket Tiers"}
             </button>
           </div>
         </form>

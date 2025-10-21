@@ -20,7 +20,7 @@ interface EventCardProps {
   onView: (id: string) => void;
   onDelete: (id: string) => void;
   onCancel: (id: string) => void;
-  // 👇 optional props coming from ticket aggregation or separate API
+  onManageTickets?: (id: string) => void;
   totalTicketsSold?: number;
   totalRevenue?: number;
 }
@@ -31,6 +31,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   onView,
   onDelete,
   onCancel,
+  onManageTickets,
   totalTicketsSold = 0,
   totalRevenue = 0,
 }) => {
@@ -109,6 +110,15 @@ export const EventCard: React.FC<EventCardProps> = ({
             <FaEdit />
             <span>Edit</span>
           </Button>
+          <Button
+               onClick={() => onManageTickets?.(event.eventId!)}
+               variant="secondary"
+               size="sm"
+               className="flex items-center space-x-1"
+>
+          <FaDollarSign />
+         <span>Tickets</span>
+         </Button>
           <div className="flex items-center space-x-2">
             <FaEye
               onClick={() => onView(event.eventId!)}

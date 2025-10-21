@@ -53,7 +53,9 @@ export const MyEvents: React.FC = () => {
             console.log("event id", id)
               const response =  await eventService.deleteEvent(id)
               if(response){
-                 showSuccess("Event deleted successfully")
+                 showSuccess("Event deleted successfully");
+            setEvents((prev) => prev.filter((e) => e.eventId !== id));
+                 
               }
               console.log(response)
            }catch(err){
@@ -132,6 +134,7 @@ setEvents(updated);
             onView={handleView}
             onDelete={handleDelete}
             onCancel={handleCancel}
+             onManageTickets={(id) => router.push(`/organizer/events/${id}/tickets`)}
           />
         ))}
       </div>
