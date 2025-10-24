@@ -18,7 +18,7 @@ const links = [
   { name: "Dashboard", path: "/admin/dashboard", icon: RiDashboardLine },
   { name: "User Management", path: "/admin/user-organizer", icon: RiUserSettingsLine },
   { name: "Organizer Verification", path: "/admin/organizer-verification", icon: RiShieldCheckLine },
-  { name: "Event Management", path: "/dashboard/event-management", icon: RiCalendarEventLine },
+  { name: "Event Management", path: "/admin/events", icon: RiCalendarEventLine },
   { name: "Finance & Payments", path: "/dashboard/finance", icon: RiMoneyDollarCircleLine },
   { name: "Promo Codes", path: "/dashboard/promo-codes", icon: RiCoupon3Line },
   { name: "Categories & Tags", path: "/admin/categories", icon: RiPriceTag3Line },

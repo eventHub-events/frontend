@@ -2,12 +2,12 @@
 import type { AxiosError } from "axios";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { authService } from "../../services/authService"; // shared login API
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setUser } from "@/redux/slices/user/authSlice";
 // import { GiConsoleController } from "react-icons/gi";
 import { setOrganizer } from "@/redux/slices/organizer/authSlice";
@@ -26,7 +26,21 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const dispatch= useAppDispatch()
+  const dispatch= useAppDispatch();
+  const user= useAppSelector((state) => state.auth.user);
+  const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+  const active = user? user: organizer;
+  
+  useEffect(() =>{
+      if(active) {
+          if(active === user){
+
+             router.push("/user/home")
+          }else{
+            router.push("/organizer/dashboard")
+          }
+      }
+  })
 
   // Handle login
  const handleSubmit = async (e: React.FormEvent) => {
@@ -68,6 +82,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
       
 
   } catch (err: unknown) {
+    console.log(err)
     const axiosErr = err as AxiosError<{ message: string }>;
     console.log("axios error",axiosErr)
     toast.error(axiosErr.response?.data?.message || "Login failed");

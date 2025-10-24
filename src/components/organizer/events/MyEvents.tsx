@@ -32,6 +32,7 @@ export const MyEvents: React.FC = () => {
      try{
          console.log("organizerId", organizerId)
         const  response =  await eventService.fetchEvents(organizerId!);
+        console.log("ress", response)
         setEvents(response?.data.data);
         
      }catch(err){
