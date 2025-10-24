@@ -1,4 +1,4 @@
-import { Category } from "@/components/admin/category/CategoryManagement";
+
 import { apiClient } from "../ApiClient";
 import { CategoryFormData } from "@/components/admin/category/CategoryModal";
 

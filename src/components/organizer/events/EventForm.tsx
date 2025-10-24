@@ -162,6 +162,7 @@ export default function EventFormPage() {
       const payload: EventCreationForm = {
         ...data,
         organizerId: organizerId,
+        organizerEmail:organizer?.email,
         images: uploadedImages,
         startTime,
         endTime,
@@ -224,7 +225,7 @@ export default function EventFormPage() {
                 </div>
 
                 {/* Event Type & Category */}
-                <div>
+            <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Event Type <span className="text-red-500">*</span>
                   </label>
@@ -232,6 +233,7 @@ export default function EventFormPage() {
                     {...register("type", { required: true })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
+                    <option value="">Select Type</option>
                     {Object.values(EventType).map((type) => (
                       <option key={type} value={type}>
                         {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -239,7 +241,6 @@ export default function EventFormPage() {
                     ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Category <span className="text-red-500">*</span>
@@ -256,6 +257,24 @@ export default function EventFormPage() {
                     ))}
                   </select>
                 </div>
+
+                 {/* 🔹 Description Field */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    {...register("description", { required: true })}
+                    placeholder="Enter event description..."
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                  {errors.description && (
+                    <p className="mt-1 text-sm text-red-600">Description is required</p>
+                  )}
+                </div>
+                 
+
               </div>
             </section>
 

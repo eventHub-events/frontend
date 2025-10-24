@@ -36,18 +36,20 @@ export const EventCard: React.FC<EventCardProps> = ({
   totalRevenue = 0,
 }) => {
   const getStatusColor = (status?: string) => {
-    switch (status?.toLowerCase()) {
-      case "upcoming":
-        return "bg-blue-100 text-blue-700";
-      case "completed":
-        return "bg-green-100 text-green-700";
-      case "cancelled":
-        return "bg-red-100 text-red-700";
-      case "draft":
-        return "bg-gray-200 text-gray-700";
-      default:
-        return "";
-    }
+   switch (status?.toLowerCase()) {
+  case "upcoming":
+    return "bg-blue-100 text-blue-700";
+  case "active":
+    return "bg-yellow-100 text-yellow-700";
+  case "completed":
+    return "bg-green-100 text-green-700";
+  case "cancelled":
+    return "bg-red-100 text-red-700";
+  case "draft":
+    return "bg-gray-200 text-gray-700";
+  default:
+    return "";
+}
   };
 
   return (

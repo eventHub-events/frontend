@@ -88,7 +88,7 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
             maxTicketPerUser: 1,
           });
         } else {
-          showWarning("Failed to load ticketing data. Please try again.");
+          // showWarning("Failed to load ticketing data. Please try again.");
         }
       } finally {
         setLoading(false);

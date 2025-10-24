@@ -24,3 +24,8 @@ export enum EventVisibility{
    Private = "private",
    InviteOnly = "invite-only"
 }
+export enum EventApprovalStatus {
+    Rejected= "rejected",
+    Approved = "approved",
+    Blocked = "blocked"
+}

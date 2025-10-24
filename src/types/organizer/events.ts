@@ -66,7 +66,7 @@ export interface ITicketTier {
   featured?: boolean;
   approved?: boolean;
  
- 
+ approvedStatus?: string;
   tags?: string[];
   status?: EventStatus;
   visibility : EventVisibility;
