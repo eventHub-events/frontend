@@ -63,23 +63,24 @@ const Header: React.FC = () => {
   }, [user]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/60 shadow-sm">
+    <header className="sticky top-0 z-50 bg-black backdrop-blur-xl border-b border-gray-200/60 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
+          {/* Enhanced Logo with Attractive Font and Colors */}
           <Link href="/" className="flex items-center space-x-3 group flex-shrink-0">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <div className="text-white font-bold text-lg tracking-tighter">EH</div>
+              <div className="w-12 h-12 bg-gradient-to-br from-white via-red-600 to-yellow-500 rounded-2xl flex items-center justify-center shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+                <div className="text-white font-black text-xl tracking-tighter drop-shadow-lg">EH</div>
               </div>
-              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+              <div className="absolute -inset-2 bg-gradient-to-r from-indigo-600 to-pink-500 rounded-2xl blur-xl opacity-30 group-hover:opacity-40 transition-all duration-1000 group-hover:duration-300"></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-400 to-pink-400 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-all duration-700"></div>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-black bg-gradient-to-r from-gray-900 via-purple-600 to-blue-600 bg-clip-text text-transparent tracking-tight">
+              <span className="text-3xl font-black bg-gradient-to-r from-red-900 via-yellow-600 to-pink-500 bg-clip-text text-transparent tracking-tight drop-shadow-sm">
                 EventHub
               </span>
-              <span className="text-[10px] text-gray-500 font-medium tracking-wider">
-                DISCOVER • BOOK • ENJOY
+              <span className="text-[10px] font-semibold bg-gradient-to-r from-yellow-600 to-red-400 bg-clip-text text-transparent tracking-widest uppercase mt-0.5">
+                Experience • Connect • Celebrate
               </span>
             </div>
           </Link>
@@ -265,7 +266,7 @@ const Header: React.FC = () => {
                     setIsOpen(true);
                     setMode("signup");
                   }}
-                  className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  className="px-6 py-2.5 bg-gradient-to-r from-yellow-600 to-red-800 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
                   Get Started
                 </button>
