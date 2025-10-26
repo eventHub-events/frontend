@@ -9,11 +9,13 @@ import HeroSection from "../HeroSection"
 
 
 
+
 export  const UserHome=()=>{
   return (
     <div>
       <main>
-        <HeroSection/>
+         
+    <HeroSection/>
     <FeaturedEvents/>
     <Categories/>
     <EventsList/>
