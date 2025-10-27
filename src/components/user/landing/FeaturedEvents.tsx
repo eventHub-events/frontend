@@ -12,6 +12,8 @@ import { HiTicket, HiTicket as TicketIcon } from "react-icons/hi";
 import { GiWineBottle } from "react-icons/gi";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
+import { useRouter } from "next/navigation";
+import { id } from "zod/v4/locales";
 
 interface FeaturedEvent {
   id: string;
@@ -32,6 +34,7 @@ interface FeaturedEvent {
 
 const FeaturedEvents = () => {
   const [featuredEvents, setFeaturedEvents] = useState<FeaturedEvent[]>([]);
+  const router = useRouter();
 
   // Star rating component
   const renderStars = (rating: number) => {
@@ -175,7 +178,7 @@ const FeaturedEvents = () => {
 
                 {/* Book Now Button */}
                 <div className="mb-4 flex-shrink-0">
-                  <button className="w-full group relative px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm">
+                  <button onClick={() => router.push(`/user/events/${event.id}`) } className="w-full group relative px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm">
                     <HiTicket className="text-white" size={16} />
                     Book Now
                     <FiArrowRight
