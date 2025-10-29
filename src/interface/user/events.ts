@@ -7,3 +7,10 @@ export interface FeaturedEvent {
   location: string;
 
 }
+export interface EventFilterParams {
+  title?: string;
+  location?: string;
+  category?: string;
+  page?: number;
+  limit?: number;
+}

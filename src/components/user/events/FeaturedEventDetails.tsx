@@ -66,13 +66,14 @@ const FeaturedEventsDetails = () => {
     const getFeaturedEvents = async () => {
       try {
         setLoading(true);
-        const res = await eventDisplayService.fetchFeaturedEvents({
+        const res = await eventDisplayService.fetchAllFeaturedEvents({
           ...filters,
           page,
           limit,
         });
-        setFeaturedEvents(res.data.data);
-        setTotalPages(res.data.totalPages || 1);
+        console.log("res", res)
+        setFeaturedEvents(res.data.data.data);
+        setTotalPages(res.data.data.totalPages || 1);
       } catch (err) {
         console.error("Error fetching featured events:", err);
       } finally {
