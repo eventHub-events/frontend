@@ -221,7 +221,7 @@ const FeaturedEvents = () => {
 
         {/* CTA Section */}
         <div className="text-center mt-16">
-          <button className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-green-600 hover:from-orange-600 hover:to-green-700 text-white font-semibold rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+          <button onClick={() => router.push("/user/events/featured-events")} className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-green-600 hover:from-orange-600 hover:to-green-700 text-white font-semibold rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
             Explore All Events
             <FiArrowRight
               className="group-hover:translate-x-1 transition-transform duration-200"
