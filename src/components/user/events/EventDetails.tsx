@@ -49,6 +49,7 @@ interface EventDetailsData {
   tags?: string[];
   tickets: TicketData[];
   totalCapacity: number;
+  organizerId: string;
   venue: string;
   organizerName: string;
   category: string;
@@ -158,9 +159,12 @@ const EventDetails: React.FC = () => {
      userId: user.id,
      eventTitle: event.title,
      eventDate: event.startDate,
+     userName : user.name,
      organizerName: event.organizerName,
      eventVenue: event.venue,
-     tickets: selectedTickets
+     tickets: selectedTickets,
+     organizerId: event.organizerId
+     
 
   };
 

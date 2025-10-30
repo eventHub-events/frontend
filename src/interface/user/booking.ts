@@ -19,6 +19,8 @@ export interface BookingPayload {
         eventDate : string;
         organizerName: string;
         eventVenue : string;
+        userName: string;
+        organizerId: string;
 
 }
 

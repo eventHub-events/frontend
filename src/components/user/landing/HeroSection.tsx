@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Image from "next/image";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
+import { useRouter } from "next/navigation";
 
 interface TrendingEvent {
   id: string;
@@ -22,6 +23,8 @@ const EventPosterCarousel = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [trendingEvents, setTrendingEvents] = useState<TrendingEvent[]>([]);
+
+  const router= useRouter()
 
   const scrollToIndex = (index: number) => {
     if (!carouselRef.current) return;
@@ -209,7 +212,7 @@ const EventPosterCarousel = () => {
                     </div>
 
                     {/* CTA */}
-                    <button className="w-full py-3 bg-gradient-to-r from-red-600 to-yellow-600 hover:from-yellow-500 hover:to-pink-500 rounded-lg text-sm font-bold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <button  onClick={() => router.push(`/user/events/${event.id}`)} className="w-full py-3 bg-gradient-to-r from-red-600 to-yellow-600 hover:from-yellow-500 hover:to-pink-500 rounded-lg text-sm font-bold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                       {"Book Tickets"}
                     </button>
                   </div>

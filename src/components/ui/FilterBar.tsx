@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 interface FilterOption {
   label: string;
   name: string;
-  type: "text" | "select";
+  type: "text" | "select" | "date";
   options?: string[];
 }
 
 interface FilterBarProps {
-  filters: FilterOption[];
+  filters?: FilterOption[];
   onApply: (query: Record<string, string>) => void;
 }
 
@@ -21,16 +21,22 @@ export function FilterBar({ filters, onApply }: FilterBarProps) {
   const handleChange = (name: string, value: string) => {
     setFilterValues((prev) => ({ ...prev, [name]: value }));
 
-    const filterType = filters.find((f) => f.name === name)?.type;
+    const filterType = filters?.find((f) => f.name === name)?.type;
     if (filterType === "text") {
-      setDebouncedFilterValues((prev) => ({ ...prev, [name]: value }));
+     setFilterValues((prev) => ({ ...prev, [name]: value }));
+    setDebouncedFilterValues((prev) => ({ ...prev, [name]: value }));
+    } else if (filterType === "date") {
+       const updated = { ...filterValues, [name]: value };
+        setFilterValues(updated);
+        onApply(updated);
     }
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (Object.keys(debouncedFilterValues).length > 0) {
-        onApply({ ...filterValues, ...debouncedFilterValues });
+       const merged = { ...filterValues, ...debouncedFilterValues };
+      onApply(merged);
       }
     }, 500);
 
@@ -41,26 +47,28 @@ export function FilterBar({ filters, onApply }: FilterBarProps) {
     onApply(filterValues);
   };
 
+  if (!filters || filters.length === 0) return null;
+
   return (
     <div className="relative">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 via-purple-50/20 to-pink-50/30 rounded-2xl blur-xl"></div>
 
       <div className="relative backdrop-blur-sm bg-white/70 border border-white/20 rounded-2xl p-6 shadow-2xl shadow-blue-500/10">
         <div className="flex flex-wrap items-end justify-between gap-6">
-
-          {/* Search input (larger) */}
-          {filters.map((filter) =>
-            filter.type === "text" ? (
+          {filters?.map((filter) =>
+            filter.type === "text" || filter.type === "date" ? (
               <div key={filter.name} className="group">
                 <label className="block text-sm font-medium text-slate-700 mb-2 group-hover:text-slate-900 transition-colors duration-200">
                   {filter.label}
                 </label>
                 <input
-                  type="text"
+                  type={filter.type}
                   value={filterValues[filter.name] || ""}
                   onChange={(e) => handleChange(filter.name, e.target.value)}
-                  placeholder="Enter value..."
-                  className="w-120 h-12 px-4 py-3 bg-white/90 backdrop-blur-sm border-2 border-slate-200/50 rounded-xl text-slate-700 font-medium placeholder-slate-400 shadow-lg shadow-slate-200/20 focus:border-blue-400 focus:ring-4 focus:ring-blue-100/50 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 ease-out"
+                  placeholder={filter.type === "text" ? "Enter value..." : undefined}
+                  className={`w-52 h-12 px-4 py-3 bg-white/90 backdrop-blur-sm border-2 border-slate-200/50 rounded-xl text-slate-700 font-medium placeholder-slate-400 shadow-lg shadow-slate-200/20 focus:border-blue-400 focus:ring-4 focus:ring-blue-100/50 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300 ease-out ${
+                    filter.type === "date" ? "cursor-pointer" : ""
+                  }`}
                 />
               </div>
             ) : null
@@ -68,7 +76,7 @@ export function FilterBar({ filters, onApply }: FilterBarProps) {
 
           {/* Right aligned selects + button */}
           <div className="flex gap-6 items-end ml-auto">
-            {filters.map((filter) =>
+            {filters?.map((filter) =>
               filter.type === "select" ? (
                 <div key={filter.name} className="group">
                   <label className="block text-sm font-medium text-slate-700 mb-2 group-hover:text-slate-900 transition-colors duration-200">
@@ -95,7 +103,6 @@ export function FilterBar({ filters, onApply }: FilterBarProps) {
               ) : null
             )}
 
-            {/* Apply Filters Button */}
             <button
               onClick={applyFilters}
               className="relative group h-12 px-8 py-3 bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white font-semibold rounded-xl shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 active:scale-95 transition-all duration-300 ease-out overflow-hidden"

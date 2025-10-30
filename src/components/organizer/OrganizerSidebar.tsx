@@ -20,6 +20,7 @@ import { useState } from "react";
 const menuItems = [
   { name: "Dashboard", icon: <MdDashboard />, href: "/organizer/dashboard" },
   { name: "My Events", icon: <MdEvent />, href: "/organizer/events" },
+  { name: "Bookings", icon: <MdPayments />, href: "/organizer/bookings" },
   { name: "Check-In", icon: <MdQrCodeScanner />, href: "/organizer/check-in" },
   { name: "Promo Codes", icon: <MdLocalOffer />, href: "/organizer/promo-codes" },
   { name: "Feedback", icon: <MdFeedback />, href: "/organizer/feedback" },
