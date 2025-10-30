@@ -17,6 +17,11 @@ import {
 import { HiPlus, HiMinus } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
+import { showError, showSuccess } from "@/utils/toastService";
+import { bookingService } from "@/services/user/bookingService";
+import { BookedTickets, BookingPayload } from "@/interface/user/booking";
+import { useAppSelector } from "@/redux/hooks";
+import Swal from "sweetalert2";
 
 interface TicketData {
   name: string;
@@ -51,7 +56,7 @@ interface EventDetailsData {
 
 const EventDetails: React.FC = () => {
   const params = useParams();
-  const eventId = params.id;
+  const eventId = params.id as string ;
 
   const [event, setEvent] = useState<EventDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,6 +64,8 @@ const EventDetails: React.FC = () => {
     { ticket: TicketData; count: number }[]
   >([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const user = useAppSelector((state) => state.auth.user);
+  const userId = user?.id;
 
   useEffect(() => {
     if (!eventId) return;
@@ -132,6 +139,66 @@ const EventDetails: React.FC = () => {
 
   const startingPrice = Math.min(...event.tickets.map((t) => t.price));
   const totalTicketsSelected = ticketSelections.reduce((sum, item) => sum + item.count, 0);
+
+  const handleBooking = async () => {
+   if (!event ) return;
+   if(!user) return
+  
+
+  const selectedTickets: BookedTickets[] = ticketSelections
+    .filter((item) => item.count > 0)
+    .map((item) => ({
+      name: item.ticket.name,
+      quantity: item.count,
+      price: item.ticket.price,
+    }));
+
+  const payload:BookingPayload = {
+     eventId,
+     userId: user.id,
+     eventTitle: event.title,
+     eventDate: event.startDate,
+     organizerName: event.organizerName,
+     eventVenue: event.venue,
+     tickets: selectedTickets
+
+  };
+
+  try {
+    const res = await bookingService.bookTicket(event.id, payload);
+    if(res) {
+       Swal.fire({
+  html: `
+    <div class="flex flex-col justify-center items-center">
+      <div class="relative w-24 h-24 border-amber-700 rounded-full bg-white flex items-center justify-center shadow-lg animate-[pulse_1.5s_ease-in-out_infinite]">
+        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h2 class="mt-5 text-2xl font-bold text-black tracking-wide">Booking Successful!</h2>
+      <p class="mt-2 text-gray-900 text-sm">Your tickets have been booked successfully 🎟️</p>
+    </div>
+  `,
+  showConfirmButton: false,
+  background: "transparent", 
+  backdrop: "transparent",  
+  width: "auto",
+  padding: "0",
+  timer: 2000,
+  customClass: {
+    popup: "shadow-none p-0",
+  },
+});
+
+    }
+    // showSuccess("Tickets booked successfully!");
+
+   
+  } catch (err) {
+    console.error("Booking failed:", err);
+    showError("Failed to book tickets. Please try again.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50/30">
@@ -268,7 +335,7 @@ const EventDetails: React.FC = () => {
                               ₹{item.ticket.price}
                             </div>
                             <div className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                              {item.ticket.totalSeats - item.ticket.bookedSeats} seats left
+                              {item.ticket.totalSeats - item.ticket.bookedSeats-(ticketSelections.find(t => t.ticket.name === item.ticket.name)?.count || 0)} seats left
                             </div>
                           </div>
                         </div>
@@ -474,7 +541,7 @@ const EventDetails: React.FC = () => {
                   </AnimatePresence>
 
                   {/* Book Now Button */}
-                   <button 
+                   <button  onClick={ handleBooking}
                     className={`w-full py-4 rounded-xl font-bold text-white transition-all duration-300 shadow-lg ${
                       totalTicketsSelected > 0
                         ? 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 hover:shadow-xl hover:scale-105 active:scale-95'

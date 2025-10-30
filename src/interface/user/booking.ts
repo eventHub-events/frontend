@@ -2,7 +2,7 @@
 
 
 
-interface BookedTickets {
+export interface BookedTickets {
     name: string;
     quantity: number;
     price: number;
