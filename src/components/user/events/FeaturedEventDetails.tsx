@@ -72,7 +72,7 @@ const FeaturedEventsDetails = () => {
           limit,
         });
         console.log("res", res)
-        setFeaturedEvents(res.data.data.data);
+        setFeaturedEvents(res.data.data.events);
         setTotalPages(res.data.data.totalPages || 1);
       } catch (err) {
         console.error("Error fetching featured events:", err);
