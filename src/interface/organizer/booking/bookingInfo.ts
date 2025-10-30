@@ -1,3 +1,4 @@
+import { BookingStatus } from "@/enums/organizer/booking";
 import { BookedTickets } from "@/interface/user/booking";
 
 export interface BookingInfo {
@@ -9,7 +10,19 @@ export interface BookingInfo {
   totalAmount: number;
   status: string;
   createdAt: string;
-  tickets: BookedTickets[]
+  tickets: BookedTickets[];
+  userName: string;
 }
 
+
+export interface BookingFilter {
+   title?: string;
+  userName?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: BookingStatus;
+  page?: number;
+  limit?: number
+
+}
 
