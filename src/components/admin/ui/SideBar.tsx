@@ -12,6 +12,7 @@ import {
   RiPriceTag3Line,
   RiMailLine,
   RiVipCrownLine,
+  RiBook2Line, // ✅ added icon for bookings
 } from "react-icons/ri";
 
 const links = [
@@ -19,6 +20,8 @@ const links = [
   { name: "User Management", path: "/admin/user-organizer", icon: RiUserSettingsLine },
   { name: "Organizer Verification", path: "/admin/organizer-verification", icon: RiShieldCheckLine },
   { name: "Event Management", path: "/admin/events", icon: RiCalendarEventLine },
+  // ✅ New Bookings Tab
+  { name: "Bookings", path: "/admin/bookings", icon: RiBook2Line },
   { name: "Finance & Payments", path: "/dashboard/finance", icon: RiMoneyDollarCircleLine },
   { name: "Promo Codes", path: "/dashboard/promo-codes", icon: RiCoupon3Line },
   { name: "Categories & Tags", path: "/admin/categories", icon: RiPriceTag3Line },
@@ -38,7 +41,9 @@ export default function Sidebar() {
             <FaRegCalendarCheck className="text-2xl text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">EventHub</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
+              EventHub
+            </span>
             <span className="text-xs text-indigo-400 font-semibold">Admin Portal</span>
           </div>
         </div>
@@ -50,7 +55,7 @@ export default function Sidebar() {
           {links.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.path;
-            
+
             return (
               <Link
                 key={link.path}
@@ -67,13 +72,17 @@ export default function Sidebar() {
                 {isActive && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 bg-white rounded-r-full shadow-sm" />
                 )}
-                
+
                 {/* Icon */}
-                <Icon className={`text-xl flex-shrink-0 transition-transform duration-200 ${isActive ? "" : "group-hover:scale-110 group-hover:text-indigo-600"}`} />
-                
+                <Icon
+                  className={`text-xl flex-shrink-0 transition-transform duration-200 ${
+                    isActive ? "" : "group-hover:scale-110 group-hover:text-indigo-600"
+                  }`}
+                />
+
                 {/* Text */}
                 <span className="text-sm font-semibold truncate">{link.name}</span>
-                
+
                 {/* Subtle hover glow */}
                 {!isActive && (
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/5 to-indigo-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
