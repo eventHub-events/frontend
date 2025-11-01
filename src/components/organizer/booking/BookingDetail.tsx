@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookingDetailsInfo } from "@/interface/organizer/booking/bookingInfo";
+import { useAppSelector } from "@/redux/hooks";
+import { bookingService_organizer } from "@/services/organizer/bookingService";
 import { Loader2, SeparatorHorizontal } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,12 +14,17 @@ export default function BookingDetails () {
   const { bookingId} = useParams();
   const[details, setDetails] = useState<BookingDetailsInfo | null>(null);
   const[loading, setLoading] = useState(true);
+  const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+  const organizerId =  organizer?.id;
 
   useEffect(() => {
       if(!bookingId) return ;
     const fetchBookingDetails = async () => {
        try{
-          setDetails(data)
+              if(!organizerId) return 
+             const  res = await bookingService_organizer.fetchBookingsById(organizerId, bookingId as string);
+             console.log("resss", res)
+          setDetails(res.data.data)
        }catch(err){
          console.log(err)
        }finally{
@@ -26,7 +33,7 @@ export default function BookingDetails () {
     }
     fetchBookingDetails();
   
-  },[bookingId])
+  },[bookingId, organizerId])
 
    if(loading){
      return (
@@ -70,7 +77,7 @@ export default function BookingDetails () {
                 className={`px-2 py-1 rounded-md text-xs font-semibold ${
                   bookingStatus === "confirmed"
                     ? "bg-green-100 text-green-700"
-                    : bookingStatus === "pending"
+                    : bookingStatus === "pending-payment"
                     ? "bg-yellow-100 text-yellow-700"
                     : "bg-red-100 text-red-700"
                 }`}
@@ -79,7 +86,7 @@ export default function BookingDetails () {
               </span>
             </p>
             <p>
-              <span className="font-medium">Date:</span>{" "}
+              <span className="font-medium">Date & Time :</span>{" "}
               {new Date(bookingDate).toLocaleString()}
             </p>
             <p>
@@ -159,11 +166,11 @@ export default function BookingDetails () {
                     key={index}
                     className="border-b last:border-none hover:bg-gray-50"
                   >
-                    <td className="py-2 px-3">{ticket.tierName}</td>
+                    <td className="py-2 px-3">{ticket.name}</td>
                     <td className="py-2 px-3">{ticket.quantity}</td>
                     <td className="py-2 px-3">₹{ticket.price}</td>
                     <td className="py-2 px-3 text-right font-medium">
-                      ₹{ticket.subtotal}
+                      ₹{ticket.subTotal}
                     </td>
                   </tr>
                 ))}

@@ -43,13 +43,13 @@ export interface BookingFilter {
     event : {
        eventId : string;
        title :string;
-       data: string;
-       time :string;
+       date: string;
+       time? :string;
        venue: string;
      },
      user : {
        name: string;
-       email: string;
+       email?: string;
        phone?: string;
      }
  }

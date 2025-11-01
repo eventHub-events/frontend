@@ -5,6 +5,7 @@ import { BookingInfo } from "@/interface/organizer/booking/bookingInfo";
 import { BookedTickets } from "@/interface/user/booking";
 import { useAppSelector } from "@/redux/hooks";
 import { bookingService_organizer } from "@/services/organizer/bookingService";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { 
   FiEye, 
@@ -34,6 +35,7 @@ export default function OrganizerBookingList() {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 8;
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+  const router = useRouter()
 
   useEffect(() => {
     const delay = setTimeout(() => {
@@ -100,8 +102,8 @@ export default function OrganizerBookingList() {
     },
   ];
 
-  const handleViewDetails = (booking: BookingInfo) => {
-    console.log("View booking details:", booking);
+  const handleViewDetails = (bookingId: string) => {
+      router.push(`/organizer/bookings/${bookingId}`)
   };
 
   const getStatusStyles = (status: string) => {
@@ -310,7 +312,7 @@ export default function OrganizerBookingList() {
                                 {formatStatusText(booking.status)}
                               </span>
                               <button
-                                onClick={() => handleViewDetails(booking)}
+                                onClick={() => handleViewDetails(booking.id)}
                                 className="inline-flex items-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                                 title="View details"
                               >
