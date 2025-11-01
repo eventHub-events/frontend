@@ -108,7 +108,7 @@ export default function OrganizerBookingList() {
     switch (status) {
       case "CONFIRMED":
         return "bg-green-100 text-green-800 border border-green-200";
-      case "PENDING_PAYMENT":
+      case "pending-payment":
         return "bg-yellow-100 text-yellow-800 border border-yellow-200";
       case "CANCELLED":
         return "bg-red-100 text-red-800 border border-red-200";
