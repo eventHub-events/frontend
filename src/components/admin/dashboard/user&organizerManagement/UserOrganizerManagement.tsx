@@ -41,8 +41,8 @@ useEffect(() => {
         role: roleFilter,
         status: statusFilter,
       });
-
-      setUsers(usersList.data?.data.users);
+       console.log("res", usersList)
+      setUsers(usersList.data?.data.usersList);
       setTotalPages(Math.ceil(usersList.data?.data.total / 5));
       setIsUpdated(false);
     } catch (err: unknown) {
@@ -109,14 +109,14 @@ useEffect(() => {
             </tr>
           </thead>
           <tbody>
-            {users.length === 0 ? (
+            {users?.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center py-6 text-gray-500">
                   No {roleFilter==="organizer"?"organizer":"user"} found.
                 </td>
               </tr>
             ) : (
-              users.map((user, i) => (
+              users?.map((user, i) => (
                 <tr key={i} className="border-b hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 flex items-center gap-3">
                     <Image

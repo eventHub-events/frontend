@@ -1,3 +1,4 @@
+import { GoogleLogin } from "@react-oauth/google";
 import { apiClient } from "./ApiClient";
 
 export const authService = {
@@ -56,4 +57,7 @@ export const authService = {
       }
     );
   },
+   googleLogin: (data: { token: string, role:string }) => apiClient.post("/api/user/google-login", data,{
+    withCredentials: true
+   }),
 };
