@@ -5,9 +5,9 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { TicketStatus } from "@/enums/organizer/events";
 import { ITicketTier } from "@/types/organizer/events";
-import { showSuccess, showWarning } from "@/utils/toastService";
+import { showError, showSuccess, showWarning } from "@/utils/toastService";
 import { ticketingService } from "@/services/organizer/ticketingService";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { useAppSelector } from "@/redux/hooks";
 
 export interface TicketForm {
@@ -124,7 +124,14 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
         showWarning("Failed to save ticket tiers.");
       }
     } catch (err) {
-      console.error(err);
+       if (axios.isAxiosError(err)) {
+        const errors = err.response?.data?.errors;
+        if (Array.isArray(errors)) {
+          errors.forEach((msg: string) => showError(msg));
+        } else {
+          showError(err.response?.data?.message || "Something went wrong");
+        }
+      }
     } finally {
       setLoading(false);
     }
