@@ -1,9 +1,10 @@
 "use client";
 import type { AxiosError } from "axios";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+// import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { authService } from "../../services/authService"; // shared login API
@@ -92,7 +93,41 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
     setLoading(false);
   }
 };
+ 
+ const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+  try {
+    const token = credentialResponse.credential;
+    if (!token) {
+      toast.error("Google authentication failed");
+      return;
+    }
 
+    // Call backend API
+    const response = await authService.googleLogin({ token, role: userType });
+    console.log("reee", response)
+    const { data } = response.data;
+
+    // Decide based on role
+    if (data.role === "user") {
+      dispatch(setUser(data));
+      router.push("/user/home");
+    } else if (data.role === "organizer") {
+      dispatch(setOrganizer(data));
+      router.push("/organizer/dashboard");
+    }
+
+    toast.success("Google login successful!");
+  } catch (error: unknown) {
+    console.error("Google login error", error);
+
+    const axiosError = error as AxiosError<{ message: string }>;
+    toast.error(axiosError.response?.data?.message || "Google login failed");
+  }
+};
+
+const handleGoogleError = () => {
+  toast.error("Google authentication was cancelled or failed.");
+};
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -167,10 +202,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
           <span className="text-xs text-gray-400">or continue with</span>
           <div className="h-[1px] bg-gray-300 flex-1"></div>
         </div>
-        <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2">
-          <FcGoogle />
-          <span>Continue with Google</span>
-        </button>
+       <div className="flex justify-center">
+         <GoogleLogin
+         onSuccess={handleGoogleSuccess}
+         onError={handleGoogleError}
+         useOneTap
+          />
+      </div>
 
         <p className="text-xs text-center mt-4">
           {"Don't have an account? "}

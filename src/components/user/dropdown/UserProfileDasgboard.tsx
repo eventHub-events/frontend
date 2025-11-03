@@ -96,6 +96,7 @@ const UserProfile: React.FC = () => {
         setLoading(true);
         const result = await userProfileService.fetchProfile(userId);
         const profile = result.data.data;
+        console.log("rewsult", result)
        
 
         setUser((prev) => {
@@ -124,6 +125,7 @@ const UserProfile: React.FC = () => {
         });
       } catch (err) {
         console.error(err);
+        console.log(err)
         toast.error("Failed to fetch profile");
       } finally {
         setLoading(false);
