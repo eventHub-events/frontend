@@ -7,9 +7,11 @@ import { EventCreationForm, EventFormValues } from "@/types/organizer/events";
 import { categoryService } from "@/services/admin/categoryService";
 import { useAppSelector } from "@/redux/hooks";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
-import { showSuccess, showWarning } from "@/utils/toastService";
+import { showError, showSuccess, showWarning } from "@/utils/toastService";
 import { eventService } from "@/services/organizer/eventServices";
 import { useParams, useRouter } from "next/navigation";
+import axios from "axios";
+
 
 interface Category {
   id: string;
@@ -55,6 +57,13 @@ export default function EventFormPage() {
 
   // 🔹 Fetch categories
   useEffect(() => {
+     
+     
+     if(!organizer?.isVerified) {
+       showWarning("you are not verified ,add Verification details");
+       router.push("/organizer/profile")
+       return
+     }
     const fetchCategories = async () => {
       const response = await categoryService.fetchAllCategories();
       setCategories(response.data.data);
@@ -183,7 +192,14 @@ export default function EventFormPage() {
         }
       }
     } catch (err) {
-      console.error(err);
+     console.error("Error:", err);
+
+    const errorMessage = axios.isAxiosError(err)
+       ? err.response?.data?.message || "Event creation failed"
+       : "Unexpected error";
+
+  showError(errorMessage);
+  console.log("Error Message:", errorMessage);
     }
   };
 
