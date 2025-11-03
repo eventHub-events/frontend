@@ -30,6 +30,7 @@ export default function EventFormPage() {
 
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
+  console.log("organizeeeerr", organizer)
   const router = useRouter();
 
   const {
@@ -177,7 +178,8 @@ export default function EventFormPage() {
         endTime,
         tags: data.tagsInput ? data.tagsInput.split(",").map((t: string) => t.trim()) : [],
       };
-
+       console.log("ppppp", payload);
+      
       if (isEditMode) {
         const res = await eventService.updateEvent(eventId as string, payload);
         if (res) {

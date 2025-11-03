@@ -124,6 +124,7 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
         showWarning("Failed to save ticket tiers.");
       }
     } catch (err) {
+        console.log(axios.isAxiosError)
        if (axios.isAxiosError(err)) {
         const errors = err.response?.data?.errors;
         if (Array.isArray(errors)) {
@@ -131,8 +132,13 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
         } else {
           showError(err.response?.data?.message || "Something went wrong");
         }
-      }
-    } finally {
+      }else {
+          //   // const errors = err.response?.data?.errors;
+          //   if (Array.isArray(errors)) {
+          // errors.forEach((msg: string) => showError(msg));
+        }
+        }
+    finally {
       setLoading(false);
     }
   };
