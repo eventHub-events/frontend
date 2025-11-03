@@ -1,6 +1,6 @@
 "use client";
 import type { AxiosError } from "axios";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -94,7 +94,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
   }
 };
  
- const handleGoogleSuccess = async (credentialResponse: any) => {
+ const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
   try {
     const token = credentialResponse.credential;
     if (!token) {
@@ -117,9 +117,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
     }
 
     toast.success("Google login successful!");
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Google login error", error);
-    toast.error(error.response?.data?.message || "Google login failed");
+
+    const axiosError = error as AxiosError<{ message: string }>;
+    toast.error(axiosError.response?.data?.message || "Google login failed");
   }
 };
 
