@@ -2,7 +2,7 @@ export enum KycStatus {
   PENDING = "Pending",
   VERIFIED = "Verified",
   REJECTED = "Rejected",
-  NOT_APPLICABLE = "N/A"
+   NOT_APPLICABLE = "N/A"
 }
 export enum UploadDocumentStatus{
    PENDING="Pending",

@@ -5,11 +5,11 @@ import { documentService } from "@/services/organizer/documentService";
 import { KycStatus, UploadDocumentStatus } from "@/types/admin/Enums/organizerVerificationEnum";
 import { documentTypes } from "@/types/organizer/organizerProfile";
 import { showSuccess, showWarning } from "@/utils/toastService";
-import { AxiosError, isAxiosError } from "axios";
+import {  isAxiosError } from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaClock, FaCloudUploadAlt, FaTimesCircle, FaTimes, FaPaperPlane } from "react-icons/fa";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 interface UploadDocument {
   id: string;
@@ -72,7 +72,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
     };
     fetchDocuments();
     setIsUpdating(false)
-  }, [uploading, organizerId,isUpdating]);
+  }, [uploading, organizerId,isUpdating, rejectedDocs]);
 
   const latestStatusMap: Record<string, string> = {};
 documents.forEach((doc) => {
@@ -90,7 +90,7 @@ documents.forEach((doc) => {
   try {
     const fileUrl = await uploadImageToCloudinary(selectedFile);
     if (!fileUrl) return;
-
+      console.log("file url", fileUrl)
     // let newDocData:UploadDocument | null = null;
 
     if (rejectedDocType && documentType === rejectedDocType) {
@@ -196,6 +196,7 @@ documents.forEach((doc) => {
             }
 
            }catch( err ){
+             console.log(err)
               setIsUpdating(false);
            }
 
