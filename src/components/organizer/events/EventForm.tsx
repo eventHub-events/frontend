@@ -10,8 +10,7 @@ import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { showError, showSuccess, showWarning } from "@/utils/toastService";
 import { eventService } from "@/services/organizer/eventServices";
 import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
-
+import axios, { AxiosError } from "axios";
 
 interface Category {
   id: string;
@@ -57,8 +56,9 @@ export default function EventFormPage() {
 
   // 🔹 Fetch categories
   useEffect(() => {
-     
-     
+      let ran = false;
+     if (ran) return;
+      ran = true;
      if(!organizer?.isVerified) {
        showWarning("you are not verified ,add Verification details");
        router.push("/organizer/profile")
@@ -192,14 +192,14 @@ export default function EventFormPage() {
         }
       }
     } catch (err) {
-     console.error("Error:", err);
-
-    const errorMessage = axios.isAxiosError(err)
-       ? err.response?.data?.message || "Event creation failed"
-       : "Unexpected error";
-
-  showError(errorMessage);
-  console.log("Error Message:", errorMessage);
+     if (axios.isAxiosError(err)) {
+        const errors = err.response?.data?.errors;
+        if (Array.isArray(errors)) {
+          errors.forEach((msg: string) => showError(msg));
+        } else {
+          showError(err.response?.data?.message || "Something went wrong");
+        }
+      }
     }
   };
 
