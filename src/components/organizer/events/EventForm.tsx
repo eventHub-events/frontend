@@ -7,9 +7,10 @@ import { EventCreationForm, EventFormValues } from "@/types/organizer/events";
 import { categoryService } from "@/services/admin/categoryService";
 import { useAppSelector } from "@/redux/hooks";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
-import { showSuccess, showWarning } from "@/utils/toastService";
+import { showError, showSuccess, showWarning } from "@/utils/toastService";
 import { eventService } from "@/services/organizer/eventServices";
 import { useParams, useRouter } from "next/navigation";
+import axios, { AxiosError } from "axios";
 
 interface Category {
   id: string;
@@ -29,6 +30,7 @@ export default function EventFormPage() {
 
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
+  console.log("organizeeeerr", organizer)
   const router = useRouter();
 
   const {
@@ -55,6 +57,14 @@ export default function EventFormPage() {
 
   // 🔹 Fetch categories
   useEffect(() => {
+      let ran = false;
+     if (ran) return;
+      ran = true;
+     if(!organizer?.isVerified) {
+       showWarning("you are not verified ,add Verification details");
+       router.push("/organizer/profile")
+       return
+     }
     const fetchCategories = async () => {
       const response = await categoryService.fetchAllCategories();
       setCategories(response.data.data);
@@ -168,7 +178,8 @@ export default function EventFormPage() {
         endTime,
         tags: data.tagsInput ? data.tagsInput.split(",").map((t: string) => t.trim()) : [],
       };
-
+       console.log("ppppp", payload);
+      
       if (isEditMode) {
         const res = await eventService.updateEvent(eventId as string, payload);
         if (res) {
@@ -183,7 +194,14 @@ export default function EventFormPage() {
         }
       }
     } catch (err) {
-      console.error(err);
+     if (axios.isAxiosError(err)) {
+        const errors = err.response?.data?.errors;
+        if (Array.isArray(errors)) {
+          errors.forEach((msg: string) => showError(msg));
+        } else {
+          showError(err.response?.data?.message || "Something went wrong");
+        }
+      }
     }
   };
 

@@ -1,9 +1,7 @@
 export enum EventType  {
-     Conference  = 'conference',
-     Workshop   = "workshop",
-     Sports   = "sports",
-     Other  = "other",
-     Online  = "online"
+    
+     Online  = "online",
+     Offline = "offline"
 }
 export enum TicketStatus {
   
