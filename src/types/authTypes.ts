@@ -1,3 +1,5 @@
+import { KycStatus } from "./admin/Enums/organizerVerificationEnum";
+
 export interface IUser{
   id:string;
   name:string;
@@ -9,7 +11,7 @@ export interface IUser{
 
 export interface IOrganizer extends IUser{
 companyName?:string;
-kycStatus?:"Pending"|"Verified"|"Rejected";
+kycStatus?: KycStatus
 isKycResubmitted : boolean;
 
 }

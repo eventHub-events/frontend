@@ -80,6 +80,7 @@ export default function OrganizerProfile() {
       try {
         if (!organizerId) return;
         const response = await profileService.getProfile(organizerId);
+        console.log("ress", response)
 
         if (response?.data?.data) {
           const flatData: ProfileFormData = {
@@ -248,7 +249,7 @@ export default function OrganizerProfile() {
                 <h3 className="text-lg font-semibold">{organizer?.name}</h3>
                 <p className="text-sm text-gray-600">{profileData.organization}</p>
                 <div className="flex items-center text-sm mt-1 space-x-2">
-   {organizer?.isVerified ? (
+   {profileData?.isVerified ? (
     <span className="text-green-600 flex items-center font-medium">
       <FaCheckCircle className="mr-1" /> Verified Organizer
     </span>
