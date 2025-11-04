@@ -13,7 +13,7 @@ import { FiXCircle } from 'react-icons/fi';
 import { SecurityTab } from './OrganizerPassword&security';
 import axios from 'axios';
 import { showError, showInfo } from '@/utils/toastService';
-import { setOrganizer } from '@/redux/slices/organizer/authSlice';
+import { setOrganizer, updateKycAndVerificationStatus } from '@/redux/slices/organizer/authSlice';
 
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security', 'Notifications'];
@@ -100,6 +100,13 @@ export default function OrganizerProfile() {
 
           setProfileData(flatData);
           setProfileFormData(flatData);
+          dispatch(
+            updateKycAndVerificationStatus({
+              kycStatus: response.data.data.organizerId.kycStatus,
+              isVerified: response.data.data.organizerId.isVerified,
+            })
+          );
+
         }
       } catch (error: unknown) {
         const err = error instanceof Error ? error.message : 'Failed to fetch profile';

@@ -32,6 +32,20 @@ const organizerAuthSlice = createSlice({
         }
           }
      },
+      updateKycAndVerificationStatus: (
+      state,
+      action: PayloadAction<{ kycStatus: KycStatus; isVerified: boolean }>
+    ) => {
+      if (state.organizer) {
+        state.organizer.kycStatus = action.payload.kycStatus;
+        state.organizer.isVerified = action.payload.isVerified;
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("organizerInfo", JSON.stringify(state.organizer));
+        }
+      }
+    },
+
      organizerLogout:(state)=>{
          state.organizer=null
            if (typeof window !== "undefined") {
@@ -43,5 +57,5 @@ const organizerAuthSlice = createSlice({
   }
   
 })
-export const {setOrganizer,organizerLogout,updateKycStatus}= organizerAuthSlice.actions  
+export const {setOrganizer,organizerLogout,updateKycStatus, updateKycAndVerificationStatus}= organizerAuthSlice.actions  
 export default organizerAuthSlice.reducer

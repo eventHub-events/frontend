@@ -13,7 +13,7 @@ import { GiWineBottle } from "react-icons/gi";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
 import { useRouter } from "next/navigation";
-import { id } from "zod/v4/locales";
+
 
 interface FeaturedEvent {
   id: string;
@@ -55,6 +55,7 @@ const FeaturedEvents = () => {
     try {
       const getFeaturedEvents = async () => {
         const res = await eventDisplayService.fetchFeaturedEvents();
+        console.log("rseses", res)
         setFeaturedEvents(res.data.data);
       };
       getFeaturedEvents();

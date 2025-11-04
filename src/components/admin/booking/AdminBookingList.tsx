@@ -8,7 +8,7 @@ import { bookingService_admin } from "@/services/admin/bookingService-admin";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FiCalendar, FiSearch, FiUser, FiUsers } from "react-icons/fi";
-import { GiConsoleController } from "react-icons/gi";
+
 interface BookingAdmin {
    id: string;
    eventTitle: string;
@@ -60,7 +60,7 @@ export default function AdminBookingList () {
          setBookings(res.data.data.bookings);
          setTotalPages(res.data.data.totalPages);
     }catch(err){
-
+         console.log(err)
     }finally{
        setLoading(false)
     }

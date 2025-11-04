@@ -18,6 +18,8 @@ export default function KycVerificationStatus({
 }: KycVerificationStatusProps) {
   const [documents, setDocuments] = useState<DocumentVerifiedType[]>([]);
 
+ 
+
   useEffect(() => {
     const fetchDocs = async () => {
       try {

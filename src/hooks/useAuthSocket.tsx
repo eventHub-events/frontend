@@ -55,7 +55,7 @@ console.log("connected to  webSocket for user:",activeAccount?.id,activeAccount.
       socketRef.current=null;
       console.log("🔌 WebSocket disconnected");
     };
-  },[activeAccount?.id,role,router])
+  },[activeAccount?.name,activeAccount?.id,role,router,dispatch])
 
   const blockUser=(userId:string)=>{
     if(!socketRef.current)return

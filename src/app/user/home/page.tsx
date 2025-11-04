@@ -1,5 +1,5 @@
 import {UserHome} from "@/components/user/landing/homePage/UserHome";
 
-export default function UserhomePage(){
+export default function UserHomePage(){
   return <UserHome/>
-}8
+}
