@@ -73,6 +73,7 @@ export default function SignupPage({ userType }: SignupPageProps) {
     email: validateEmail(form.email),
     phone: validatePhone(form.phone),
     password: validatePassword(form.password),
+    
     confirmPassword: validateConfirmPassword(form.confirmPassword, form.password),
   };
 
@@ -86,6 +87,7 @@ export default function SignupPage({ userType }: SignupPageProps) {
 
   // continue with signup
   try {
+    console.log("form is",  form)
     setLoading(true);
     await authService.signup(form);
     toast.success("Please verify your email/OTP.");

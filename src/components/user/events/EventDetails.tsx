@@ -17,7 +17,7 @@ import {
 import { HiPlus, HiMinus } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
-import { showError, showSuccess } from "@/utils/toastService";
+import { showError } from "@/utils/toastService";
 import { bookingService } from "@/services/user/bookingService";
 import { BookedTickets, BookingPayload } from "@/interface/user/booking";
 import { useAppSelector } from "@/redux/hooks";
@@ -66,7 +66,7 @@ const EventDetails: React.FC = () => {
   >([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
-  const userId = user?.id;
+ 
 
   useEffect(() => {
     if (!eventId) return;

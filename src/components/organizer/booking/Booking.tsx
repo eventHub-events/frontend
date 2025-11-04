@@ -12,8 +12,6 @@ import {
   FiDollarSign,
   FiLoader,
   FiSearch,
-  FiFilter,
-  FiChevronRight,
   FiUsers,
   FiCalendar,
   FiMapPin,

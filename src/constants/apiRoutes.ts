@@ -1,4 +1,4 @@
-import { BookingFilter } from "@/interface/organizer/booking/bookingInfo";
+
 
 export const API_ROUTES = {
   BOOK_TICKET : (eventId: string) => `/api/user/events/${eventId}/book`,

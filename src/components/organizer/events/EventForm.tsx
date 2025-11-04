@@ -10,7 +10,7 @@ import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { showError, showSuccess, showWarning } from "@/utils/toastService";
 import { eventService } from "@/services/organizer/eventServices";
 import { useParams, useRouter } from "next/navigation";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 interface Category {
   id: string;
