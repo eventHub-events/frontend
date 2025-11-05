@@ -1,3 +1,4 @@
+import { BookingStatus } from "@/enums/organizer/booking";
 
 
 
@@ -22,5 +23,15 @@ export interface BookingPayload {
         userName: string;
         organizerId: string;
 
+}
+
+export interface BookingsFilter {
+    title?: string;
+    startDate?: string;
+  endDate?: string;
+  status?: BookingStatus;
+   page?: number;
+  limit?: number;
+  organizerName?: string;
 }
 
