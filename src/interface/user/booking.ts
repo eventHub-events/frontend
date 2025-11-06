@@ -22,6 +22,7 @@ export interface BookingPayload {
         eventVenue : string;
         userName: string;
         organizerId: string;
+        eventImages: string[];
 
 }
 
@@ -29,7 +30,7 @@ export interface BookingsFilter {
     title?: string;
     startDate?: string;
   endDate?: string;
-  status?: BookingStatus;
+  status?: string;
    page?: number;
   limit?: number;
   organizerName?: string;

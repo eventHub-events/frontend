@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import EventHubIcon from "../../ui/EventHubIcon";
-import GetStartedModal from "./GetStartedModal";
-import { toast } from "react-toastify";
 import Link from "next/link";
+import Image from "next/image";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 import { useAppSelector, useAppDispatch } from "../../../redux/hooks";
+import { userLogout } from "@/redux/slices/user/authSlice";
+import { authService } from "@/services/authService";
 import {
   FaUserCircle,
   FaSignOutAlt,
@@ -13,11 +15,9 @@ import {
   FaUser,
   FaKey,
   FaSearch,
+  FaTicketAlt, // 🎟️ icon for Bookings
 } from "react-icons/fa";
-import { userLogout } from "@/redux/slices/user/authSlice";
-import { useRouter } from "next/navigation";
-import { authService } from "@/services/authService";
-import Image from "next/image";
+import GetStartedModal from "./GetStartedModal";
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,7 +66,7 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-50 bg-black backdrop-blur-xl border-b border-gray-200/60 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Enhanced Logo with Attractive Font and Colors */}
+          {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group flex-shrink-0">
             <div className="relative">
               <div className="w-12 h-12 bg-gradient-to-br from-white via-red-600 to-yellow-500 rounded-2xl flex items-center justify-center shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
@@ -85,41 +85,34 @@ const Header: React.FC = () => {
             </div>
           </Link>
 
-          {/* Centered Search Bar */}
+          {/* Search Bar */}
           <div className="flex-1 max-w-2xl mx-8">
             <form onSubmit={handleSearch} className="relative">
-              <div className="relative">
-                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
-                <input
-                  type="text"
-                  placeholder="Search events, concerts, conferences..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:bg-white transition-all duration-200 text-sm"
-                />
-              </div>
+              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
+              <input
+                type="text"
+                placeholder="Search events, concerts, conferences..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:bg-white transition-all duration-200 text-sm"
+              />
             </form>
           </div>
 
-          {/* Right Side Actions */}
+          {/* Right Section */}
           <div className="flex items-center gap-3 flex-shrink-0">
             {user ? (
-              <div
-                className="relative flex items-center space-x-3"
-                ref={dropdownRef}
-              >
-                {/* User Profile */}
+              <div className="relative flex items-center space-x-3" ref={dropdownRef}>
+                {/* Profile Button */}
                 <button
                   onClick={() => setDropdownOpen((prev) => !prev)}
                   className="flex items-center space-x-3 p-1 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200"
                 >
                   <div className="flex flex-col items-end">
-                    <span className="text-sm font-semibold text-gray-900">
-                      {user.name}
-                    </span>
+                    <span className="text-sm font-semibold text-gray-900">{user.name}</span>
                     <span className="text-xs text-gray-500">Member</span>
                   </div>
-                  
+
                   <div className="relative">
                     {user.image ? (
                       <Image
@@ -138,10 +131,10 @@ const Header: React.FC = () => {
                   </div>
                 </button>
 
-                {/* Enhanced Dropdown Menu */}
+                {/* Dropdown Menu */}
                 {isDropdownOpen && (
                   <div className="absolute right-0 top-14 w-72 bg-white/95 backdrop-blur-xl border border-gray-200/60 rounded-2xl shadow-2xl z-50 overflow-hidden">
-                    {/* User Header */}
+                    {/* User Info */}
                     <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-200/60">
                       <div className="flex items-center gap-3">
                         {user.image ? (
@@ -158,12 +151,8 @@ const Header: React.FC = () => {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-gray-900 truncate">
-                            {user.name}
-                          </p>
-                          <p className="text-xs text-gray-600 truncate">
-                            {user.email}
-                          </p>
+                          <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                          <p className="text-xs text-gray-600 truncate">{user.email}</p>
                           <div className="flex items-center gap-1 mt-1">
                             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                             <span className="text-xs text-gray-500">Online</span>
@@ -204,7 +193,21 @@ const Header: React.FC = () => {
                           <p className="text-xs text-gray-500">Your bookings & events</p>
                         </div>
                       </Link>
-                      
+
+                      {/* 🎟️ New Bookings Link */}
+                      <Link
+                        href="/user/bookings"
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-pink-50 rounded-xl transition-all duration-200 group"
+                      >
+                        <div className="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center group-hover:bg-pink-200 transition-colors">
+                          <FaTicketAlt className="text-pink-600" size={14} />
+                        </div>
+                        <div>
+                          <p className="font-semibold">Bookings</p>
+                          <p className="text-xs text-gray-500">View your booked events</p>
+                        </div>
+                      </Link>
+
                       <Link
                         href="/user/profile"
                         className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-blue-50 rounded-xl transition-all duration-200 group"
@@ -217,7 +220,7 @@ const Header: React.FC = () => {
                           <p className="text-xs text-gray-500">Edit your profile</p>
                         </div>
                       </Link>
-                      
+
                       <Link
                         href="/change-password"
                         className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-green-50 rounded-xl transition-all duration-200 group"
@@ -232,7 +235,7 @@ const Header: React.FC = () => {
                       </Link>
                     </div>
 
-                    {/* Logout Section */}
+                    {/* Logout */}
                     <div className="border-t border-gray-200/60 p-2">
                       <button
                         onClick={handleLogout}

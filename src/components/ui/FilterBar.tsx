@@ -11,10 +11,11 @@ interface FilterOption {
 
 interface FilterBarProps {
   filters?: FilterOption[];
+  values?: Record<string, string>;
   onApply: (query: Record<string, string>) => void;
 }
 
-export function FilterBar({ filters, onApply }: FilterBarProps) {
+export function FilterBar({ filters, onApply,values }: FilterBarProps) {
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
   const [debouncedFilterValues, setDebouncedFilterValues] = useState<Record<string, string>>({});
 
@@ -31,6 +32,11 @@ export function FilterBar({ filters, onApply }: FilterBarProps) {
         onApply(updated);
     }
   };
+  useEffect(() => {
+  if (values) {
+    setFilterValues(values);
+  }
+}, [values]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

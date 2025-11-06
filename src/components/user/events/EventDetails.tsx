@@ -163,11 +163,12 @@ const EventDetails: React.FC = () => {
      organizerName: event.organizerName,
      eventVenue: event.venue,
      tickets: selectedTickets,
-     organizerId: event.organizerId
+     organizerId: event.organizerId,
+     eventImages : event.images
      
 
   };
-
+   console.log("payload", payload)
   try {
     const res = await bookingService.bookTicket(event.id, payload);
     if(res) {
