@@ -26,7 +26,7 @@ const links = [
   { name: "Promo Codes", path: "/dashboard/promo-codes", icon: RiCoupon3Line },
   { name: "Categories & Tags", path: "/admin/categories", icon: RiPriceTag3Line },
   { name: "Communication", path: "/dashboard/communication", icon: RiMailLine },
-  { name: "Subscription Plans", path: "/dashboard/subscriptions", icon: RiVipCrownLine },
+  { name: "Subscription Plans", path: "/admin/subscription-plans", icon: RiVipCrownLine },
 ];
 
 export default function Sidebar() {
