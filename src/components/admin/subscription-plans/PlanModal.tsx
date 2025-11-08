@@ -1,13 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { PlanFormData, planSchema } from "@/validation/admin/subscriptionPlanSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Label } from "@radix-ui/react-select";
+
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { ISubscriptionPlan } from "./SubscriptionPlansManagement";
+import { Label } from "@radix-ui/react-label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+type PayoutFrequency = "within-1-week" | "within-2-weeks" | "within-1-month";
 
 interface PlanModalProps {
   open: boolean;
@@ -17,12 +27,13 @@ interface PlanModalProps {
 }
 export const PlanModal = ({open, onClose, onSave,plan}: PlanModalProps) => {
     const form = useForm<PlanFormData>({
-       resolver : zodResolver(planSchema),
+       resolver : zodResolver(planSchema) as Resolver<PlanFormData>,
        defaultValues : {
             id:"",
             name: "",
             price:0,
             durationInDays: 30,
+            description: "",
             privileges: {
                maxActiveEvents: 3,
                maxFeaturedEvents: 1,
@@ -77,7 +88,7 @@ export const PlanModal = ({open, onClose, onSave,plan}: PlanModalProps) => {
 
             <div>
               <Label>Price (₹)</Label>
-              <Input type="number" {...form.register("price")} />
+              <Input type="number" {...form.register("price",{valueAsNumber: true})} />
               {form.formState.errors.price && (
                 <p className="text-sm text-red-500 mt-1">
                   {form.formState.errors.price.message}
@@ -87,7 +98,7 @@ export const PlanModal = ({open, onClose, onSave,plan}: PlanModalProps) => {
 
             <div>
               <Label>Duration (Days)</Label>
-              <Input type="number" {...form.register("durationInDays")} />
+              <Input type="number" {...form.register("durationInDays",{valueAsNumber: true})} />
               {form.formState.errors.durationInDays && (
                 <p className="text-sm text-red-500 mt-1">
                   {form.formState.errors.durationInDays.message}
@@ -114,7 +125,7 @@ export const PlanModal = ({open, onClose, onSave,plan}: PlanModalProps) => {
                 <Label>Max Active Events</Label>
                 <Input
                   type="number"
-                  {...form.register("privileges.maxActiveEvents")}
+                  {...form.register("privileges.maxActiveEvents",{valueAsNumber: true})}
                 />
                 {form.formState.errors.privileges?.maxActiveEvents && (
                   <p className="text-sm text-red-500 mt-1">
@@ -127,7 +138,7 @@ export const PlanModal = ({open, onClose, onSave,plan}: PlanModalProps) => {
                 <Label>Max Featured Events</Label>
                 <Input
                   type="number"
-                  {...form.register("privileges.maxFeaturedEvents")}
+                  {...form.register("privileges.maxFeaturedEvents",{valueAsNumber: true})}
                 />
               </div>
 
@@ -135,7 +146,7 @@ export const PlanModal = ({open, onClose, onSave,plan}: PlanModalProps) => {
                 <Label>Commission Rate (%)</Label>
                 <Input
                   type="number"
-                  {...form.register("privileges.commissionRate")}
+                  {...form.register("privileges.commissionRate",{valueAsNumber: true})}
                 />
               </div>
 
@@ -161,7 +172,7 @@ export const PlanModal = ({open, onClose, onSave,plan}: PlanModalProps) => {
                 <Label>Payout Frequency</Label>
                 <Select
                   onValueChange={(val) =>
-                    form.setValue("privileges.payout.frequency", val as any)
+                    form.setValue("privileges.payout.frequency", val as PayoutFrequency)
                   }
                   defaultValue={form.getValues("privileges.payout.frequency")}
                 >
@@ -180,7 +191,7 @@ export const PlanModal = ({open, onClose, onSave,plan}: PlanModalProps) => {
                 <Label>Payout Delay (days)</Label>
                 <Input
                   type="number"
-                  {...form.register("privileges.payout.delayDays")}
+                  {...form.register("privileges.payout.delayDays",{valueAsNumber: true})}
                 />
               </div>
             </div>
