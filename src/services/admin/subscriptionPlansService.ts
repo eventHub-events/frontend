@@ -11,6 +11,7 @@ export const subscriptionPlansService =  {
    }),
    fetchAllSubscription: () => apiClient.get(ADMIN_API_ROUTES.SUBSCRIPTION_PLANS.FETCH_ALL,{
        withCredentials: true
-   })
+   }),
+  
 
 }

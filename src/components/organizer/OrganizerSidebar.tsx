@@ -13,7 +13,8 @@ import {
   MdChevronLeft,
   MdChevronRight,
   MdRocket,
-  MdTrendingUp
+  MdTrendingUp,
+  MdSubscriptions
 } from "react-icons/md";
 import { useState } from "react";
 
@@ -26,6 +27,7 @@ const menuItems = [
   { name: "Feedback", icon: <MdFeedback />, href: "/organizer/feedback" },
   { name: "Media Gallery", icon: <MdPhotoLibrary />, href: "/organizer/media" },
   { name: "Payouts", icon: <MdPayments />, href: "/organizer/payouts" },
+  { name: "Subscription Plans", icon: <MdSubscriptions />, href: "/organizer/subscription-plans" },
   { name: "Profile", icon: <MdPerson />, href: "/organizer/profile" },
 ];
 
