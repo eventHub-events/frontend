@@ -14,9 +14,10 @@ import { SecurityTab } from './OrganizerPassword&security';
 import axios from 'axios';
 import { showError, showInfo } from '@/utils/toastService';
 import { setOrganizer, updateKycAndVerificationStatus } from '@/redux/slices/organizer/authSlice';
+import OrganizerPaymentsSection from './payments/OrganizerPaymentsSection';
 
 
-const tabs = ['Profile', 'Documents', 'Verification', 'Security', 'Notifications'];
+const tabs = ['Profile', 'Documents', 'Verification', 'Security',"Payments", 'Notifications'];
 
 type ProfileFormData = {
   organizerId: string;
@@ -79,6 +80,7 @@ export default function OrganizerProfile() {
     const fetchProfile = async () => {
       try {
         if (!organizerId) return;
+        console.log("organ", organizer);
         const response = await profileService.getProfile(organizerId);
         console.log("ress", response)
 
@@ -366,6 +368,11 @@ export default function OrganizerProfile() {
       {activeTab === 'Security' && organizerId && (
         <div className="mt-4">
           <SecurityTab organizerId={organizerId}  />
+        </div>
+      )}
+      {activeTab === 'Payments' && organizerId && (
+        <div className="mt-4">
+             <OrganizerPaymentsSection organizer= {organizer} />
         </div>
       )}
 
