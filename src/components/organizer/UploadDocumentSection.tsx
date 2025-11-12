@@ -72,7 +72,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
     };
     fetchDocuments();
     setIsUpdating(false)
-  }, [uploading, organizerId,isUpdating, rejectedDocs]);
+  }, [uploading, organizerId,isUpdating]);
 
   const latestStatusMap: Record<string, string> = {};
 documents.forEach((doc) => {

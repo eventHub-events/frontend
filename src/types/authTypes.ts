@@ -6,7 +6,8 @@ export interface IUser{
   email:string;
   role: "user"|"organizer"|"admin";
   image?:string,
-  isVerified?:boolean
+  isVerified?:boolean,
+  stripeOnboarded?: boolean 
 }
 
 export interface IOrganizer extends IUser{
