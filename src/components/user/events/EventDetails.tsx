@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   FiCalendar,
@@ -66,6 +66,7 @@ const EventDetails: React.FC = () => {
   >([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
+  const router = useRouter();
  
 
   useEffect(() => {
@@ -168,9 +169,11 @@ const EventDetails: React.FC = () => {
      
 
   };
-   console.log("payload", payload)
+   
   try {
     const res = await bookingService.bookTicket(event.id, payload);
+    console.log("rseeee", res)
+    const bookingId = res.data.data.id;
     if(res) {
        Swal.fire({
   html: `
@@ -194,7 +197,8 @@ const EventDetails: React.FC = () => {
     popup: "shadow-none p-0",
   },
 });
-
+      
+     router.push(`/user/make-payment/${bookingId}`)
     }
     // showSuccess("Tickets booked successfully!");
 

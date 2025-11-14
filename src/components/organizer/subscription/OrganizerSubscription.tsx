@@ -92,6 +92,7 @@ export default function OrganizerSubscription() {
       durationInDays: plan.durationInDays,
       organizerName: organizer?.name!,
       organizerEmail : organizer?.email!,
+      payoutDelayDays: plan.privileges.payout.delayDays,
       subscriptionType : currentPlan?"upgrade":"new"
     });
      console.log("rseses", response);

@@ -71,7 +71,7 @@ const FeaturedEventsDetails = () => {
           page,
           limit,
         });
-        console.log("res", res)
+        
         setFeaturedEvents(res.data.data.events);
         setTotalPages(res.data.data.totalPages || 1);
       } catch (err) {
