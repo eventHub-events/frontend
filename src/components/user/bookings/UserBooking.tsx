@@ -155,6 +155,7 @@ export default function UserBookings() {
           title: appliedFilters.title,
         };
         const res = await bookingService.fetchAllBookings(user.id, payload);
+        console.log("bookings", res)
         const bookingsList = res.data.data.bookingsList || [];
         setBookings(bookingsList);
         setTotalPages(res.data.data.totalPages || 1);
@@ -449,7 +450,7 @@ export default function UserBookings() {
                   </Button>
                   <Button className="flex items-center gap-2 bg-primary text-white hover:bg-primary/90">
                     <Download className="w-4 h-4" />
-                    Download Invoice
+                    Download Tickets
                   </Button>
                 </div>
               </motion.div>
