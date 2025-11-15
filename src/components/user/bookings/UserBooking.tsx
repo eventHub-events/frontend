@@ -22,6 +22,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 
 
 interface Booking {
@@ -38,6 +45,7 @@ interface Booking {
   paymentStatus: string;
   paymentMethod: string;
   bookingDate: string;
+  ticketUrls: string[];
 }
 
 interface TicketInfo {
@@ -135,6 +143,8 @@ export default function UserBookings() {
   });
   const [loading, setLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
+  const [showTicketViewer, setShowTicketViewer] = useState(false);
+
 
   const user = useAppSelector((state) => state.auth.user);
   const pageLimit = 5;
@@ -448,10 +458,20 @@ export default function UserBookings() {
                     <Eye className="w-4 h-4 text-blue-600" />
                     View Event
                   </Button>
-                  <Button className="flex items-center gap-2 bg-primary text-white hover:bg-primary/90">
-                    <Download className="w-4 h-4" />
-                    Download Tickets
-                  </Button>
+                  <Button
+  onClick={() => {
+    if (!selectedBooking?.ticketUrls?.length) {
+      alert("Tickets are still being generated… Please try again in a moment.");
+      return;
+    }
+    setShowTicketViewer(true);
+  }}
+  className="flex items-center gap-2 bg-primary text-white hover:bg-primary/90"
+>
+  <Eye className="w-4 h-4" />
+  View Tickets
+</Button>
+
                 </div>
               </motion.div>
             ) : (
@@ -470,6 +490,50 @@ export default function UserBookings() {
           </AnimatePresence>
         </div>
       </div>
+      <Dialog open={showTicketViewer} onOpenChange={setShowTicketViewer}>
+  <DialogContent className="max-w-lg">
+    <DialogHeader>
+      <DialogTitle className="text-xl font-semibold">
+        Your Tickets
+      </DialogTitle>
+    </DialogHeader>
+
+    {selectedBooking?.ticketUrls?.map((url, index) => (
+      <div
+        key={index}
+        className="flex justify-between items-center p-3 border rounded-lg mb-3 bg-muted/30"
+      >
+        <div>
+          <p className="font-medium">
+            {selectedBooking.tickets[index].name} Ticket
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Price ₹{selectedBooking.tickets[index].price} ×{" "}
+            {selectedBooking.tickets[index].quantity}
+          </p>
+        </div>
+
+        <a
+          href={url}
+          target="_blank"
+          download={`ticket-${selectedBooking.tickets[index].name}.pdf`}
+          className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          <Download className="w-4 h-4" />
+        </a>
+      </div>
+    ))}
+
+    {(!selectedBooking?.ticketUrls ||
+      selectedBooking.ticketUrls.length === 0) && (
+      <p className="text-center text-sm text-muted-foreground">
+        Tickets are still being generated…
+      </p>
+    )}
+  </DialogContent>
+</Dialog>
+
     </div>
+     
   );
 }
