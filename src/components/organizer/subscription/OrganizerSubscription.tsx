@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ISubscriptionPlan } from "@/components/admin/subscription-plans/SubscriptionPlansManagement";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { subscriptionPlansService } from "@/services/admin/subscriptionPlansService";
 import { Badge, Check } from "lucide-react";
 import { subscriptionService } from "@/services/organizer/subscriptionService";
 import { useAppSelector } from "@/redux/hooks";
@@ -22,6 +21,7 @@ export interface ICurrentPlan {
           planId: string,
           planName: string,
           startDate?: Date,
+          price?:number,
           endDate?: Date,
           status:SubscriptionStatus,
           paymentId?: string,
@@ -41,7 +41,7 @@ export default function OrganizerSubscription() {
 
   const fetchPlans = async () => {
     try {
-      const res = await subscriptionPlansService.fetchAllSubscription();
+      const res = await subscriptionService.fetchAllSubscriptionPlans();
       setPlans(res.data.data);
       setIsLoading(false);
     } catch (err) {
@@ -254,7 +254,7 @@ export default function OrganizerSubscription() {
                       disabled={isLoading}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      {currentPlan
+                      {currentPlan && currentPlan.price! < plan.price
                         ? `Upgrade to ${plan.name}`
                         : `Purchase ${plan.name}`}
                     </Button>

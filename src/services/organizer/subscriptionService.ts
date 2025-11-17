@@ -1,3 +1,4 @@
+import { ORGANIZER_API_ROUTES } from "@/constants/organizer/organizerApiRoutes";
 import { apiClient } from "../ApiClient";
 
 export const subscriptionService  = {
@@ -6,5 +7,6 @@ export const subscriptionService  = {
   }),
   fetchCurrentSubscription : (organizerId : string) => apiClient.get(`/api/organizer/${organizerId}/subscription`,{
     withCredentials: true
-  })
+  }),
+  fetchAllSubscriptionPlans :()=> apiClient.get(ORGANIZER_API_ROUTES.SUBSCRIPTION.FETCH_ALL_PLANS,{withCredentials: true})
 }

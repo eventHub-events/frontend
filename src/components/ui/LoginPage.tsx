@@ -104,8 +104,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
     // Call backend API
     const response = await authService.googleLogin({ token, role: userType });
-    console.log("reee", response)
+  
     const { data } = response.data;
+    
 
     // Decide based on role
     if (data.role === "user") {

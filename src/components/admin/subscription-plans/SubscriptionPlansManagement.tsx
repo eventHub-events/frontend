@@ -7,7 +7,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { subscriptionPlansService } from "@/services/admin/subscriptionPlansService";
 import { PlanModal } from "./PlanModal";
-import { GiConsoleController } from "react-icons/gi";
+import { showSuccess } from "@/utils/toastService";
+
 
 
 interface IPrivileges {
@@ -89,6 +90,29 @@ export default function SubscriptionPlansManagement() {
       setLoading(false);
     }
   };
+  const handleStatus = async (id: string, status: string) => {
+      try{
+         
+       const res = await subscriptionPlansService.updateSubscriptionStatus(id, status);
+          if(res) {
+            const actionText =
+        status === "block"
+          ? "blocked"
+          : status === "unblock"
+          ? "unblocked"
+          : status === "activate"
+          ? "activated"
+          : "deactivated";
+
+      showSuccess(`Subscription Plan ${actionText} successfully`);
+           const updated = plans.map((p) =>
+                p.id === id ? { ...p, isActive: !p.isActive } : p);
+            setPlans(updated)
+          }
+      }catch(err){
+         console.log(err)
+      }
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-gray-50 min-h-screen">
@@ -179,9 +203,10 @@ export default function SubscriptionPlansManagement() {
                     Edit
                   </Button>
                   <Button
+                    onClick={()=>handleStatus(plan.id!,plan.isActive?"block":"unblock")}
                     variant="destructive"
                     className="w-1/2 ml-2"
-                    disabled={!plan.isActive}
+                    // disabled={!plan.isActive}
                   >
                     {plan.isActive ? "Deactivate" : "Activate"}
                   </Button>

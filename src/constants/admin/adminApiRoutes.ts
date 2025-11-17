@@ -7,6 +7,7 @@ export const ADMIN_API_ROUTES = {
   SUBSCRIPTION_PLANS: {
       CREATE: `/api/admin/plans`,
       UPDATE:(id:string) =>  `/api/admin/plans/${id}`,
-      FETCH_ALL: `/api/admin/plans`
+      FETCH_ALL: `/api/admin/plans`,
+      UPDATE_STATUS : (id: string) => `/api/admin/plans/${id}/status`,
   }
 }

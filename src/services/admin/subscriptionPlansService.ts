@@ -12,6 +12,6 @@ export const subscriptionPlansService =  {
    fetchAllSubscription: () => apiClient.get(ADMIN_API_ROUTES.SUBSCRIPTION_PLANS.FETCH_ALL,{
        withCredentials: true
    }),
-  
+  updateSubscriptionStatus: (id: string, status: string) => apiClient.patch(ADMIN_API_ROUTES.SUBSCRIPTION_PLANS.UPDATE_STATUS(id),{status},{withCredentials: true})
 
 }
