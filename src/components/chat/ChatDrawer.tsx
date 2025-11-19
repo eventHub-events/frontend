@@ -22,6 +22,7 @@ export default function ChatDrawer({open, onClose, mode,eventId, organizerId, us
   // load conversation //
   useEffect(() => {
      if(!open) return;
+     setMessages([]);
      const load = async () => {
       if(mode === "private"){
         const res = await chatService.startPrivateChat({
@@ -37,7 +38,7 @@ export default function ChatDrawer({open, onClose, mode,eventId, organizerId, us
       }
      }
      load()
-  },[open]);
+  },[open,mode]);
 
   //load message history //
 
