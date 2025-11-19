@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import ChatDrawer from "@/components/chat/ChatDrawer";
 import {
   FiCalendar,
   FiMapPin,
@@ -58,6 +59,10 @@ interface EventDetailsData {
 const EventDetails: React.FC = () => {
   const params = useParams();
   const eventId = params.id as string ;
+  const [chatState, setChatState] = useState({
+  open: false,
+  mode: "private" as "private" | "community",
+});
 
   const [event, setEvent] = useState<EventDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -141,6 +146,7 @@ const EventDetails: React.FC = () => {
 
   const startingPrice = Math.min(...event.tickets.map((t) => t.price));
   const totalTicketsSelected = ticketSelections.reduce((sum, item) => sum + item.count, 0);
+  
 
   const handleBooking = async () => {
    if (!event ) return;
@@ -293,18 +299,25 @@ const EventDetails: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3">
-              <button className="flex items-center gap-2 bg-white px-5 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all border border-gray-200 hover:border-purple-300 group hover:scale-105">
-                <div className="p-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg group-hover:scale-110 transition-transform">
-                  <FiMessageCircle className="text-white text-sm" />
-                </div>
-                <span className="font-semibold text-gray-700 text-sm">Chat with Organizer</span>
-              </button>
-              <button className="flex items-center gap-2 bg-white px-5 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all border border-gray-200 hover:border-blue-300 group hover:scale-105">
-                <div className="p-1.5 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg group-hover:scale-110 transition-transform">
-                  <FiUsers className="text-white text-sm" />
-                </div>
-                <span className="font-semibold text-gray-700 text-sm">Community Chat</span>
-              </button>
+             <button
+  onClick={() => setChatState({ open: true, mode: "private" })}
+  className="flex items-center gap-2 bg-white px-5 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all border border-gray-200 hover:border-purple-300 group hover:scale-105"
+>
+  <div className="p-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg group-hover:scale-110 transition-transform">
+    <FiMessageCircle className="text-white text-sm" />
+  </div>
+  <span className="font-semibold text-gray-700 text-sm">Chat with Organizer</span>
+</button>
+
+<button
+  onClick={() => setChatState({ open: true, mode: "community" })}
+  className="flex items-center gap-2 bg-white px-5 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all border border-gray-200 hover:border-blue-300 group hover:scale-105"
+>
+  <div className="p-1.5 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg group-hover:scale-110 transition-transform">
+    <FiUsers className="text-white text-sm" />
+  </div>
+  <span className="font-semibold text-gray-700 text-sm">Community Chat</span>
+</button>
             </div>
 
             {/* Enhanced Tickets Section */}
@@ -595,7 +608,18 @@ const EventDetails: React.FC = () => {
           </div>
         </div>
       </div>
+         <ChatDrawer
+  open={chatState.open}
+  onClose={() => setChatState({ ...chatState, open: false })}
+  mode={chatState.mode}
+  eventId={event.id}
+  organizerId={event.organizerId}
+  userId={user?.id!}
+  role={user?.role!}
+/>
+
     </div>
+    
   );
 };
 

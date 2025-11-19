@@ -1,8 +1,8 @@
-import { IUser } from "@/types/authTypes";
+import { IOrganizer, IUser } from "@/types/authTypes";
 import StripeConnectButton from "./StripeConnectButton";
 
-export default function OrganizerPaymentsSection({organizer}:{organizer: IUser}) {
-
+export default function OrganizerPaymentsSection({organizer}:{organizer: IOrganizer}) {
+   console.log("orga",organizer)
   return (
         <div className="p-6 bg-gray-100 rounded-lg shadow">
       <h2 className="text-xl font-bold mb-4">Stripe Connection</h2>

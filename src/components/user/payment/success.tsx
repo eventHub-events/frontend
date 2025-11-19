@@ -13,17 +13,21 @@ export default function BookingSuccess({sessionId}: {sessionId: string}) {
   useEffect(() => {
     if (!sessionId) return;
 
-    (async () => {
-      try {
-           console.log("sessionId is for", sessionId)
-         const res = await bookingService.fetchBookingBySessionId(sessionId);
-        setBooking(res.data.data);
-      } catch (err) {
-        console.error("Failed to fetch booking:", err);
-      } finally {
-        setLoading(false);
-      }
-    })();
+  let attempts = 0;
+
+  const interval = setInterval(async () => {
+    attempts++;
+
+    const res = await bookingService.fetchBookingBySessionId(sessionId);
+    setBooking(res.data.data);
+
+    if (res.data.data.ticketUrls.length > 0 || attempts >= 10) {
+      clearInterval(interval);
+      setLoading(false);
+    }
+  }, 1000); // check every 1 sec
+
+  return () => clearInterval(interval);
   }, [sessionId]);
 
   if (loading)

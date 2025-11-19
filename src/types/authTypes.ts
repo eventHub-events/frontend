@@ -7,13 +7,14 @@ export interface IUser{
   role: "user"|"organizer"|"admin";
   image?:string,
   isVerified?:boolean,
-  stripeOnboarded?: boolean 
+  
 }
 
 export interface IOrganizer extends IUser{
 companyName?:string;
 kycStatus?: KycStatus
 isKycResubmitted : boolean;
+stripeOnboarded?: boolean 
 
 }
 export interface IAdmin extends IUser{
