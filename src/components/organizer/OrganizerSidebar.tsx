@@ -14,9 +14,11 @@ import {
   MdChevronRight,
   MdRocket,
   MdTrendingUp,
-  MdSubscriptions
+  MdSubscriptions,
+  MdMessage
 } from "react-icons/md";
 import { useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
 
 const menuItems = [
   { name: "Dashboard", icon: <MdDashboard />, href: "/organizer/dashboard" },
@@ -29,11 +31,13 @@ const menuItems = [
   { name: "Payouts", icon: <MdPayments />, href: "/organizer/payouts" },
   { name: "Subscription Plans", icon: <MdSubscriptions />, href: "/organizer/subscription-plans" },
   { name: "Profile", icon: <MdPerson />, href: "/organizer/profile" },
+  { name: "Messages", icon: <MdMessage />, href: "/organizer/messages" },
 ];
 
 export const OrganizerSidebar: React.FC = () => {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  
 
   return (
     <>
@@ -124,17 +128,25 @@ export const OrganizerSidebar: React.FC = () => {
                   `}
                 >
                   {/* Icon */}
-                  <div className={`
-                    transition-all duration-300
-                    ${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'}
-                    flex items-center justify-center
-                    ${isActive 
-                      ? "text-blue-600" 
-                      : "text-gray-400 group-hover:text-blue-500"
-                    }
-                  `}>
-                    {item.icon}
-                  </div>
+               <div className="relative flex items-center justify-center">
+  <span
+    className={`
+      ${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'}
+      flex items-center justify-center
+      transition-all duration-300
+      ${isActive 
+        ? 'text-blue-600'
+        : 'text-gray-400 group-hover:text-blue-500'
+      }
+    `}
+  >
+    {item.icon}
+  </span>
+
+  
+</div>
+
+
 
                   {/* Label */}
                   <span className={`
