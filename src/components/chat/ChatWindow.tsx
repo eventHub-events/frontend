@@ -1,37 +1,36 @@
-"use client"
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import MessageBubble from "./MessageBubble";
+import { ChatWindowProps } from "@/types/common/chat/chat";
 
-export default function ChatWindow({messages, onSend}: any) {
-   const [input, setInput] = useState("");
+export default function ChatWindow({ messages, onSend }: ChatWindowProps ) {
+  const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-  };
-
-  useEffect(scrollToBottom,[messages]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
-     <div className="flex flex-col flex-1">
+    <div className="flex flex-col h-full overflow-hidden">
 
-
-      {/* Messages */}
+      {/* Messages area */}
       <div className="flex-1 overflow-y-auto p-4">
-        {messages.map((msg: any, i: number) => (
+        {messages.map((msg, i: number) => (
           <MessageBubble
-            key={i}
+            key={msg.id || i}
             isMine={msg.isMine}
             message={msg.message}
             createdAt={new Date(msg.createdAt).toLocaleTimeString()}
+              senderName={msg.senderName} 
           />
         ))}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t flex gap-2">
+      <div className="p-3 border-t flex gap-2 shrink-0">
         <input
           className="flex-1 border rounded-lg px-3 py-2 outline-none"
           placeholder="Type a message..."
@@ -47,5 +46,5 @@ export default function ChatWindow({messages, onSend}: any) {
         </button>
       </div>
     </div>
-  )
+  );
 }

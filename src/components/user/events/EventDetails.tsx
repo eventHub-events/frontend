@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import ChatDrawer from "@/components/chat/ChatDrawer";
@@ -72,6 +72,9 @@ const EventDetails: React.FC = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
   const router = useRouter();
+  const [selected, setSelected] = useState<any>(null);
+
+
  
 
   useEffect(() => {
@@ -616,6 +619,13 @@ const EventDetails: React.FC = () => {
   organizerId={event.organizerId}
   userId={user?.id!}
   role={user?.role!}
+  // userName={event.organizerName+" - Organizer"}
+  userName={user?.name!}
+  peerId={event.organizerId}
+  targetName={event.organizerName+" - Organizer"}
+   isChatOpen={chatState.open} 
+
+
 />
 
     </div>
