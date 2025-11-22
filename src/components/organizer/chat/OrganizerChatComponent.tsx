@@ -1,15 +1,15 @@
 "use client";
 
 import ChatDrawer from "@/components/chat/ChatDrawer";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { clearCommunityUnread, clearUnread } from "@/redux/slices/common/chat/chatAlertSlice";
+import { useAppSelector } from "@/redux/hooks";
+
 
 import { eventService } from "@/services/organizer/eventServices";
 import { OrganizerChatService } from "@/services/organizer/organizerChatService";
 import { useEffect, useState } from "react";
 
 export default function OrganizerChat() {
-  const dispatch = useAppDispatch();  // ✅ CALL HOOK HERE (TOP LEVEL)
+
 
   const [events, setEvents] = useState([]);
   const [conversations, setConversations] = useState<any>(null);
@@ -17,8 +17,6 @@ export default function OrganizerChat() {
   
 
   const organizer = useAppSelector((s) => s.organizerAuth.organizer);
-const unread = useAppSelector((s) => s.chatAlert.unread );
-const communityUnread = useAppSelector(s => s.chatAlert.communityUnread);
 
 
 
@@ -38,7 +36,7 @@ const communityUnread = useAppSelector(s => s.chatAlert.communityUnread);
     };
 
     fetchEvents();
-    console.log("unread", unread)
+   
   }, [organizer]);
 
   const loadEventChats = async (eventId: string) => {
@@ -50,6 +48,17 @@ const communityUnread = useAppSelector(s => s.chatAlert.communityUnread);
       console.log(err);
     }
   };
+  const handleUpdate = (c) => {
+      setConversations((prev: any) => {
+        if(!prev) return prev;
+        return {
+          ...prev,
+          privateChats: prev.privateChats.map(chat =>
+            chat.id === c.id?{...chat, unreadCount: 0}: chat
+          )
+        }
+      })
+  }
 
   return (
     <div className="flex h-full">
@@ -82,7 +91,7 @@ const communityUnread = useAppSelector(s => s.chatAlert.communityUnread);
   <div
     key={c.id}
     onClick={() => {
-      // dispatch(clearUnread(c.id));
+      handleUpdate(c)
       setSelected({
                 mode: "private",
                 conversationId: c.id,
@@ -95,8 +104,14 @@ const communityUnread = useAppSelector(s => s.chatAlert.communityUnread);
     className="p-3 cursor-pointer hover:bg-gray-100 flex justify-between items-center"
   >
     <span>{c.userName}</span>
+     {/* 🔥 UNREAD BADGE */}
+    {c.unreadCount > 0 && (
+      <span className="bg-red-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+        {c.unreadCount}
+      </span>
+    )}
 
-    {unread[c.id] && <span className="w-2 h-2 bg-red-600 rounded-full"></span>}
+   
   </div>
 ))}
 
@@ -106,8 +121,8 @@ const communityUnread = useAppSelector(s => s.chatAlert.communityUnread);
         {conversations?.communityChat && (
           <div
             onClick={() => {
-               // 👈 CLEAR BADGE
-               dispatch(clearCommunityUnread());
+             
+             
               setSelected({
                 mode: "community",
                 conversationId: conversations.communityChat.id,
@@ -118,9 +133,7 @@ const communityUnread = useAppSelector(s => s.chatAlert.communityUnread);
           >
             <span>Community Chat</span>
 
-          {communityUnread && (
-  <span className="w-2 h-2 bg-red-600 rounded-full"></span>
-)}
+        
           </div>
         )}
       </div>
@@ -128,7 +141,7 @@ const communityUnread = useAppSelector(s => s.chatAlert.communityUnread);
       {/* ******** Column 3 – ChatWindow ******** */}
       <div className="flex-1">
         {selected ? (
-          <ChatDrawer
+          <ChatDrawer 
             open={true}
             onClose={() => setSelected(null)}
             mode={selected.mode}
