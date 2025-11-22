@@ -101,7 +101,7 @@ export default function ChatDrawer({
   );
 
   // PRIVATE CHAT SOCKET HOOK
-  const { sendMessage: sendPrivate } =
+  const { sendMessage: sendPrivate,socketRef } =
     mode === "private" 
       ? useChatSocketPrivate(
           conversation?.id! ,
@@ -125,6 +125,31 @@ export default function ChatDrawer({
           isChatOpen // ✅ FIXED
         )
       : { sendMessage: () => {} };
+      
+  useEffect(() => {
+  if (!open) return;                 // run only when opened
+  if (!conversation?.id) return;     // wait until conversation exists
+  if (mode !== "private") return;    // only for private chat
+  if (!socketRef?.current) return;
+
+  socketRef.current.emit("chat_open", {
+    userId,
+    conversationId: conversation.id,
+  });
+
+}, [open, conversation?.id]);
+
+useEffect(() => {
+  if (open) return;                  // run only when closing
+  if (!conversation?.id) return;
+  if (mode !== "private") return;
+  if (!socketRef?.current) return;
+
+  socketRef.current.emit("chat_close", { userId });
+
+}, [open]);
+
+
 
   // Send Logic
   const handleSend = async (text: string, reset: (value: string) => void) => {
@@ -137,10 +162,11 @@ export default function ChatDrawer({
       senderName: mode === "community" ? userName : undefined,
       eventId,
       message: text,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      receiverId: peerId
     };
 
-    await chatService.sendMessage(payload as PrivateMessage | CommunityMessage);
+    // await chatService.sendMessage(payload as PrivateMessage | CommunityMessage);
 
     if (mode === "private") sendPrivate(payload as PrivateMessage);
     else sendCommunity(payload as CommunityMessage);

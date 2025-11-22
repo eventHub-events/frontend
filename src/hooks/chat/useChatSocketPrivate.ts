@@ -37,6 +37,9 @@ export function useChatSocketPrivate(
         userId
       });
     socket.emit("user_online", userId);
+    if (isChatOpen) {
+    socket.emit("chat_open", { userId, conversationId });
+  }
 
     // Receive messages
     socket.on("private_message_received", (msg: PrivateMessage) => {
@@ -62,13 +65,15 @@ export function useChatSocketPrivate(
     }
 
     return () => {
+      socket.emit("chat_close", { userId }); 
       socket.disconnect();
     };
   }, [conversationId, isChatOpen]);
 
   const sendMessage = (data: PrivateMessage) => {
+     
     socketRef.current?.emit("send_private_message", data);
   };
 
-  return { sendMessage };
+  return { sendMessage,socketRef };
 }
