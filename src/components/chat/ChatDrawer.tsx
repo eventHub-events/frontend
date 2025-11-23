@@ -165,8 +165,10 @@ useEffect(() => {
       createdAt: new Date().toISOString(),
       receiverId: peerId
     };
-
-    // await chatService.sendMessage(payload as PrivateMessage | CommunityMessage);
+    if(mode === "community"){
+      
+      await chatService.sendMessage(payload as PrivateMessage | CommunityMessage);
+    }
 
     if (mode === "private") sendPrivate(payload as PrivateMessage);
     else sendCommunity(payload as CommunityMessage);
