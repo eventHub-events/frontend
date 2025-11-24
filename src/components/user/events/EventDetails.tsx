@@ -23,7 +23,7 @@ import { bookingService } from "@/services/user/bookingService";
 import { BookedTickets, BookingPayload } from "@/interface/user/booking";
 import { useAppSelector } from "@/redux/hooks";
 import Swal from "sweetalert2";
-import { UserChatService } from "@/services/user/userChatService";
+import ReviewSection from "../review/event/ReviewSection";
 
 interface TicketData {
   name: string;
@@ -73,8 +73,7 @@ const EventDetails: React.FC = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
   const router = useRouter();
-  // const [selected, setSelected] = useState<any>(null);
-  const[unreadCount, setUnreadCount]  =useState(0);
+  const [selected, setSelected] = useState<any>(null);
 
 
  
@@ -104,21 +103,6 @@ const EventDetails: React.FC = () => {
 
     fetchEvent();
   }, [eventId]);
-
-  useEffect(() => {
-    try{
-       if (!eventId || !user?.id) return;
-       (async () => {
-         const res = await UserChatService.getUnreadCount(eventId);
-         console.log("count res", res.data.data[0])
-         setUnreadCount(res.data.data[0].unreadCount);
-       }
-
-       )()
-    }catch(err){
-      console.log(err)
-    }
-  },[eventId,user?.id])
 
   if (loading) {
     return (
@@ -320,20 +304,13 @@ const EventDetails: React.FC = () => {
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3">
              <button
-  onClick={() => {
-    setChatState({ open: true, mode: "private" }); setUnreadCount(0)  }}
+  onClick={() => setChatState({ open: true, mode: "private" })}
   className="flex items-center gap-2 bg-white px-5 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all border border-gray-200 hover:border-purple-300 group hover:scale-105"
 >
   <div className="p-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg group-hover:scale-110 transition-transform">
     <FiMessageCircle className="text-white text-sm" />
   </div>
   <span className="font-semibold text-gray-700 text-sm">Chat with Organizer</span>
-  {/* 🔥 UNREAD BADGE */}
-  {unreadCount > 0 && (
-    <span className="ml-2 bg-red-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-      {unreadCount}
-    </span>
-  )}
 </button>
 
 <button
@@ -537,6 +514,7 @@ const EventDetails: React.FC = () => {
                 </div>
               </div>
             </div>
+            <ReviewSection eventId={event.id} userId={user?.id!} userName={user?.name!} />
           </div>
 
           {/* Right Column - Booking Summary */}
