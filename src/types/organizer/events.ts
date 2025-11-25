@@ -5,6 +5,7 @@ export interface EventCreationForm {
     title: string;
     type: EventType;
     categoryId: string;
+    category?: string;
     description: string;
     location:ILocation;
     totalCapacity: number;

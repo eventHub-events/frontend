@@ -331,164 +331,227 @@ export default function UserBookings() {
         </div>
 
         {/* Right Panel */}
-        <div className="flex-1 p-6 overflow-y-auto bg-card">
-          <AnimatePresence mode="wait">
-            {selectedBooking ? (
-              <motion.div
-                key={selectedBooking._id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-6 text-foreground"
-              >
-                <div className="flex gap-4 items-start">
-                  <div className="relative flex-shrink-0">
-                    {selectedBooking.eventImages && selectedBooking.eventImages.length > 0 ? (
-                      <Image
-                        src={selectedBooking.eventImages[0]}
-                        alt={selectedBooking.eventName}
-                        width={112}
-                        height={112}
-                        className="rounded-lg object-cover aspect-square shadow-md"
-                      />
-                    ) : (
-                      <div className="w-28 h-28 rounded-lg bg-muted flex items-center justify-center shadow-md">
-                        <Calendar className="w-8 h-8 text-primary" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-4">
-                      <h2 className="text-2xl font-bold tracking-tight text-primary">
-                        {selectedBooking.eventName}
-                      </h2>
-                      <PaymentStatusBadge status={selectedBooking.paymentStatus} />
-                    </div>
-
-                    <div className="space-y-2 mt-3 text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-primary" />
-                        <span>
-                          {format(
-                            new Date(selectedBooking.eventDate),
-                            "dd MMM yyyy, hh:mm a"
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-red-500" />
-                        <span className="truncate">{selectedBooking.eventLocation}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-blue-500" />
-                        <span>Organizer: {selectedBooking.organizerName}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-amber-500" />
-                        <span>
-                          Booked on{" "}
-                          {format(
-                            new Date(selectedBooking.bookingDate),
-                            "dd MMM yyyy, hh:mm a"
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t" />
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 text-primary">Tickets</h3>
-                  <div className="space-y-2">
-                    {selectedBooking.tickets.map((ticket, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <Card className="bg-muted/30 border-none">
-                          <CardContent className="flex justify-between items-center p-4">
-                            <div>
-                              <p className="font-semibold text-foreground">{ticket.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                Quantity: {ticket.quantity} × ₹{ticket.price}
-                              </p>
-                            </div>
-                            <p className="font-semibold text-lg text-primary">
-                              ₹{ticket.price * ticket.quantity}
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="border-t" />
-
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-primary">Payment Details</h3>
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-green-500" />
-                    <span className="font-medium">Payment Status:</span>
-                    <PaymentStatusBadge status={selectedBooking.paymentStatus} />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-indigo-500" />
-                    <span className="font-medium">Payment Method:</span>
-                    <span className="capitalize text-foreground">
-                      {selectedBooking.paymentMethod}
-                    </span>
-                  </div>
-                  <div className="pt-2">
-                    <p className="font-bold text-xl text-primary">
-                      Total Paid: ₹{selectedBooking.totalAmount}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-t" />
-
-                <div className="flex gap-3 pt-2">
-                  <Button onClick ={() => router.push(`/user/events/${selectedBooking.eventId}`)} variant="outline" className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-blue-600" />
-                    View Event
-                  </Button>
-                  <Button
-  onClick={() => {
-    if (!selectedBooking?.ticketUrls?.length) {
-      alert("Tickets are still being generated… Please try again in a moment.");
-      return;
-    }
-    setShowTicketViewer(true);
-  }}
-  className="flex items-center gap-2 bg-primary text-white hover:bg-primary/90"
->
-  <Eye className="w-4 h-4" />
-  View Tickets
-</Button>
-
-                </div>
-              </motion.div>
+        <div className="flex-1 p-8 overflow-y-auto bg-gradient-to-br from-card to-card/80">
+  <AnimatePresence mode="wait">
+    {selectedBooking ? (
+      <motion.div
+        key={selectedBooking._id}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.3 }}
+        className="max-w-4xl mx-auto space-y-8"
+      >
+        {/* Header Section */}
+        <div className="flex gap-6 items-start">
+          <div className="relative flex-shrink-0">
+            {selectedBooking.eventImages && selectedBooking.eventImages.length > 0 ? (
+              <Image
+                src={selectedBooking.eventImages[0]}
+                alt={selectedBooking.eventName}
+                width={120}
+                height={120}
+                className="rounded-xl object-cover aspect-square shadow-lg ring-2 ring-primary/20"
+              />
             ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center h-full text-muted-foreground"
-              >
-                <Calendar className="w-16 h-16 mb-4 text-primary/60" />
-                <p className="text-lg font-medium text-foreground">Select a booking</p>
-                <p className="text-sm text-center mt-2 max-w-sm">
-                  Choose a booking from the list to view detailed information
-                </p>
-              </motion.div>
+              <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-muted to-muted/60 flex items-center justify-center shadow-lg ring-2 ring-primary/20">
+                <Calendar className="w-8 h-8 text-primary" />
+              </div>
             )}
-          </AnimatePresence>
+          </div>
+          
+          <div className="flex-1 min-w-0 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tight text-foreground leading-tight">
+                  {selectedBooking.eventName}
+                </h2>
+                <div className="flex items-center gap-3">
+                  <PaymentStatusBadge status={selectedBooking.paymentStatus} />
+                  <span className="text-sm text-muted-foreground font-medium">
+                    Booking ID: {selectedBooking.bookingId}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Event Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Calendar className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Event Date</p>
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(selectedBooking.eventDate), "dd MMM yyyy, hh:mm a")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+                <div className="p-2 rounded-lg bg-red-500/10">
+                  <MapPin className="w-4 h-4 text-red-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Location</p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {selectedBooking.eventLocation}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <User className="w-4 h-4 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Organizer</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedBooking.organizerName}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+                <div className="p-2 rounded-lg bg-amber-500/10">
+                  <Clock className="w-4 h-4 text-amber-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Booked On</p>
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(selectedBooking.bookingDate), "dd MMM yyyy, hh:mm a")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Tickets Section */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-6 bg-primary rounded-full"></div>
+            <h3 className="text-xl font-semibold text-foreground">Ticket Details</h3>
+          </div>
+          
+          <div className="grid gap-4">
+            {selectedBooking.tickets.map((ticket, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="bg-gradient-to-r from-card to-card/80 border-border/50 shadow-sm hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-center">
+                      <div className="space-y-2">
+                        <p className="font-semibold text-lg text-foreground">
+                          {ticket.name}
+                        </p>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span>Quantity: {ticket.quantity}</span>
+                          <span>•</span>
+                          <span>₹{ticket.price} per ticket</span>
+                        </div>
+                      </div>
+                      <p className="font-bold text-xl text-primary">
+                        ₹{ticket.price * ticket.quantity}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Payment Details Section */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="w-1.5 h-6 bg-primary rounded-full"></div>
+            <h3 className="text-xl font-semibold text-foreground">Payment Information</h3>
+          </div>
+          
+          <Card className="bg-gradient-to-r from-card to-card/80 border-border/50">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center justify-between py-2 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-green-500/10">
+                    <CreditCard className="w-4 h-4 text-green-500" />
+                  </div>
+                  <span className="font-medium text-foreground">Payment Status</span>
+                </div>
+                <PaymentStatusBadge status={selectedBooking.paymentStatus} />
+              </div>
+
+              <div className="flex items-center justify-between py-2 border-b border-border/30">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-indigo-500/10">
+                    <FileText className="w-4 h-4 text-indigo-500" />
+                  </div>
+                  <span className="font-medium text-foreground">Payment Method</span>
+                </div>
+                <span className="capitalize font-semibold text-foreground">
+                  {selectedBooking.paymentMethod}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-2">
+                <span className="font-bold text-lg text-foreground">Total Amount</span>
+                <span className="font-bold text-2xl text-primary">
+                  ₹{selectedBooking.totalAmount}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4 pt-4">
+          <Button 
+            onClick={() => router.push(`/user/events/${selectedBooking.eventId}`)} 
+            variant="outline" 
+            className="flex items-center gap-2 px-6 py-2.5 border-2 hover:border-primary/50 transition-all"
+          >
+            <Eye className="w-4 h-4" />
+            View Event Details
+          </Button>
+          <Button
+            onClick={() => {
+              if (!selectedBooking?.ticketUrls?.length) {
+                alert("Tickets are still being generated… Please try again in a moment.");
+                return;
+              }
+              setShowTicketViewer(true);
+            }}
+            className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl"
+          >
+            <Eye className="w-4 h-4" />
+            View Tickets
+          </Button>
+        </div>
+      </motion.div>
+    ) : (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col items-center justify-center h-full text-muted-foreground"
+      >
+        <div className="p-8 rounded-2xl bg-muted/30 border border-border/50">
+          <Calendar className="w-20 h-20 mb-6 text-primary/60 mx-auto" />
+          <p className="text-xl font-semibold text-foreground text-center mb-2">
+            Select a Booking
+          </p>
+          <p className="text-sm text-center max-w-sm text-muted-foreground">
+            Choose a booking from the list to view detailed information, tickets, and payment details
+          </p>
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</div>
       </div>
       <Dialog open={showTicketViewer} onOpenChange={setShowTicketViewer}>
   <DialogContent className="max-w-lg">
