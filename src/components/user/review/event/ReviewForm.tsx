@@ -1,19 +1,36 @@
+import { organizerReviewService } from "@/services/organizer/review/organizerReviewService";
 import { reviewService } from "@/services/review/reviewService";
 import { showError, showSuccess } from "@/utils/toastService";
 import { AxiosError } from "axios";
 import { useState } from "react";
 
-export default function ReviewForm ({eventId, refresh, userId, userName}:{eventId:string; refresh:() => void| Promise<void>; userId:string,userName:string}) {
+
+interface Props {
+  mode: "event" | "organizer";
+  targetId: string;
+  userId: string;
+  userName: string;
+ refresh:() => void| Promise<void>;
+}
+
+export default function ReviewForm ({targetId, refresh, userId, userName, mode}: Props) {
   const[rating, setRating] = useState(0);
   const[review, setReview] = useState("");
 
   const handleSubmit = async () => {
     try{
-        const targetType = "event"
-    const res = await reviewService.addEventReview(eventId,{rating,review,userId,targetId: eventId, targetType, userName});
-    console.log("res", res);
-    showSuccess(res.data.message)
-    refresh();
+        if(mode === "event"){
+          const res = await reviewService.addEventReview(targetId,{rating,review,userId,targetId, targetType: mode, userName});
+          
+          console.log("res", res);
+          showSuccess(res.data.message)
+          refresh();
+        }else if(mode === "organizer"){
+           const res =  await organizerReviewService.addOrganizerReview(targetId,{rating,review,userId,targetId,targetType:mode, userName});
+            console.log("res", res);
+          showSuccess(res.data.message)
+          refresh();
+        }
     }catch(err){
        if(err instanceof AxiosError){
            console.log("err", err)

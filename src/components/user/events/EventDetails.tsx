@@ -514,7 +514,7 @@ const EventDetails: React.FC = () => {
                 </div>
               </div>
             </div>
-            <ReviewSection eventId={event.id} userId={user?.id!} userName={user?.name!} />
+            <ReviewSection mode={"event"} targetId={event.id} userId={user?.id!} userName={user?.name!} />
           </div>
 
           {/* Right Column - Booking Summary */}
@@ -609,6 +609,13 @@ const EventDetails: React.FC = () => {
                   </div>
                 </div>
               </div>
+                <ReviewSection 
+                  mode="organizer" 
+                  targetId={event.organizerId} 
+                  userId={user?.id!} 
+                  userName={user?.name!}
+                  />
+
             </div>
           </div>
         </div>

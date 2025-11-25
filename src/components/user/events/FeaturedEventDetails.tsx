@@ -116,7 +116,7 @@ const FeaturedEventsDetails = () => {
                   label: "Category",
                   name: "category",
                   type: "select",
-                  options: ["Music", "Sports", "Tech", "Art"],
+                  options: ["MusicConcerts", "Sports", "Technology", "Art","Workshops"],
                 },
               ]}
               onApply={handleSearch}

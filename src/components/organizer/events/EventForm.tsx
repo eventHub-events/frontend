@@ -168,6 +168,8 @@ export default function EventFormPage() {
     try {
       const startTime = data.startTime ? `${data.startTime} ${data.startAmPm}` : "";
       const endTime = data.endTime ? `${data.endTime} ${data.endAmPm}` : "";
+      const selectedCategory = categories.find((c) => c.id === data.categoryId);
+    const category = selectedCategory?.name || "";
 
       const payload: EventCreationForm = {
         ...data,
@@ -176,6 +178,7 @@ export default function EventFormPage() {
         images: uploadedImages,
         startTime,
         endTime,
+        category,
         tags: data.tagsInput ? data.tagsInput.split(",").map((t: string) => t.trim()) : [],
       };
        console.log("ppppp", payload);
