@@ -3,14 +3,16 @@ import RatingSummary from "./RatingSummary";
 import { reviewService } from "@/services/review/reviewService";
 import Pagination from "@/components/ui/Pagination";
 import ReviewsListOrganizer from "./ReviewsListOrganizer";
+import { EventReview, RatingSummaryType } from "@/types/user/review/reviewTypes";
 
 export interface OrganizerEventReviewProps {
    eventId : string;
+   isAdmin?: boolean
 }
-export default function OrganizerEventReview({eventId}: OrganizerEventReviewProps){
+export default function OrganizerEventReview({eventId, isAdmin}: OrganizerEventReviewProps){
  
-  const[summary,setSummary] = useState<any>(null);
-  const[reviews,setReviews] = useState([]);
+  const[summary,setSummary] = useState<RatingSummaryType | null>(null);
+  const[reviews,setReviews] = useState<EventReview[]>([]);
   const[page,setPage]  = useState(1);
   const[totalPages,setTotalPages] = useState(1);
 const limit = 6;
@@ -52,7 +54,11 @@ const limit = 6;
         />
       )}
 
-      <ReviewsListOrganizer reviews={reviews} />
+      <ReviewsListOrganizer reviews={reviews} isAdmin={isAdmin}refresh={()=>{
+                 fetchReviews(page) ;
+                 fetchSummary();
+                }
+      }  />
 
       <Pagination
         currentPage={page}
