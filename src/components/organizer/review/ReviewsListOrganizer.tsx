@@ -1,8 +1,26 @@
+import { reviewService } from "@/services/review/reviewService";
 import { EventReview } from "@/types/user/review/reviewTypes";
 
 export default function ReviewsListOrganizer({
-   reviews}:{reviews: EventReview[]}
+   reviews,
+   isAdmin,
+   refresh
+}: {
+   reviews: EventReview[];
+   isAdmin?: boolean;
+   refresh?: () => void;}
 ){
+  const handleDelete = async (reviewId: string) => {
+  if (!confirm("Are you sure you want to delete this review?")) return;
+
+  try {
+    await reviewService.deleteReview(reviewId);
+    if (refresh) refresh();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
     return (
     <div className="mt-6">
       <h3 className="text-lg font-semibold mb-4">Reviews</h3>
@@ -28,6 +46,15 @@ export default function ReviewsListOrganizer({
           </p>
 
           <p className="text-gray-700 mt-2">{r.review}</p>
+                {isAdmin && (
+  <button
+    onClick={() => handleDelete(r.id)}
+    className="text-red-500 text-sm hover:text-red-700"
+  >
+    Delete
+  </button>
+)}
+
         </div>
       ))}
     </div>

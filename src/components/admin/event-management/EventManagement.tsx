@@ -5,7 +5,8 @@ import { showSuccess, showWarning } from "@/utils/toastService";
 import { eventManagementService } from "@/services/admin/eventManagementService";
 import { ILocation } from "@/types/organizer/events";
 import { useAppSelector } from "@/redux/hooks";
-import { EventApprovalStatus, EventStatus } from "@/enums/organizer/events";
+import { EventApprovalStatus } from "@/enums/organizer/events";
+import OrganizerEventReview from "@/components/organizer/review/OrganizerEventReviews";
 
 interface Event {
   id: string;
@@ -29,6 +30,9 @@ export default function AdminEventManagementPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showEventReviewModal, setShowEventReviewModal] = useState(false);
+const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<string | null>(null);
+
   const [showReasonModal, setShowReasonModal] = useState(false);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
   const [reason, setReason] = useState("");
@@ -200,7 +204,7 @@ export default function AdminEventManagementPage() {
       </div>
 
       {/* 🧾 Main Content */}
-      <div className="flex flex-1 gap-6 overflow-hidden">
+      <div className="flex flex-1 gap-6 ">
         {/* Left: Event List */}
         <div className="w-1/3 bg-white rounded-xl shadow-sm border border-gray-200 p-4 overflow-y-auto">
           <h2 className="text-lg font-semibold mb-3">
@@ -281,7 +285,8 @@ export default function AdminEventManagementPage() {
 
         {/* Right: Event Details */}
         {selectedEvent && (
-          <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 overflow-y-auto">
+  <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6 
+                  sticky top-0 h-screen overflow-y-auto">
             <h2 className="text-lg font-semibold mb-4">Event Details</h2>
 
             <img
@@ -363,6 +368,16 @@ export default function AdminEventManagementPage() {
               >
                 Reject
               </button>
+              <button
+  onClick={() => {
+    setSelectedEventIdForReviews(selectedEvent.id);
+    setShowEventReviewModal(true);
+  }}
+  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+>
+  View Event Reviews
+</button>
+
 
               {/* 🔄 Toggle Block/Unblock */}
               {selectedEvent.eventApprovalStatus === "blocked" ? (
@@ -455,6 +470,25 @@ export default function AdminEventManagementPage() {
           <p className="text-xl font-bold">{stats.total}</p>
         </div>
       </div>
+                               {showEventReviewModal && selectedEventIdForReviews && (
+  <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-3">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 relative">
+
+      {/* Close Button */}
+      <button
+        className="absolute top-3 right-3 text-gray-600 hover:text-black text-xl"
+        onClick={() => setShowEventReviewModal(false)}
+      >
+        ✕
+      </button>
+
+       <OrganizerEventReview eventId ={selectedEventIdForReviews} isAdmin={true}/>
+      
+      
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

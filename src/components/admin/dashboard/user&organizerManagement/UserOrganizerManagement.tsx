@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useAdminSocket } from "@/hooks/useAdminSocket";
 import Pagination from "@/components/ui/Pagination";
 import { FilterBar } from "@/components/ui/FilterBar";
+import OrganizerReviewsForAdmin from "../../review/OrganizerReviewsForAdmin";
 
 const UserOrganizerManagement = () => {
   const [users, setUsers] = useState<IUserInfo[]>([]);
@@ -22,6 +23,9 @@ const UserOrganizerManagement = () => {
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [showReviewModal, setShowReviewModal] = useState(false);
+const [selectedOrganizerId, setSelectedOrganizerId] = useState<string | null>(null);
+
 
 
  useEffect(() => {
@@ -158,9 +162,18 @@ useEffect(() => {
                     {new Date(user.createdAt).toLocaleDateString("en-GB")}
                   </td>
                   <td className="py-3 px-4 flex items-center gap-2">
-                    <button className="text-blue-500 hover:text-blue-700">
-                      <FiEye />
-                    </button>
+                   <button 
+  className="text-blue-500 hover:text-blue-700"
+  onClick={() => {
+    if (user.role === "organizer") {
+      setSelectedOrganizerId(user.id);
+      setShowReviewModal(true);
+    }
+  }}
+>
+  <FiEye />
+</button>
+
                     <button className="text-green-500 hover:text-green-700">
                       <FiEdit />
                     </button>
@@ -186,6 +199,28 @@ useEffect(() => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
+      {showReviewModal && selectedOrganizerId && (
+  <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-3">
+    
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 animate-fade-in">
+      
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Organizer Reviews</h2>
+        <button 
+          className="text-gray-600 hover:text-black text-xl"
+          onClick={() => setShowReviewModal(false)}
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Review Component */}
+      <OrganizerReviewsForAdmin organizerId={selectedOrganizerId} isAdmin={true} />
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
