@@ -1,12 +1,23 @@
-export default function RatingStars({summary}: {summary:any}) {
-  return (
-        <div className="flex items-center gap-2 mb-4">
-      <div className="text-3xl font-bold">{summary.averageRating.toFixed(1)}</div>
-      <div className="text-yellow-500 text-xl">
-        {"★".repeat(Math.round(summary.averageRating))}
-        {"☆".repeat(5 - Math.round(summary.averageRating))}
+export default function RatingStars({ summary }) {
+  if (!summary) {
+    return (
+      <div className="flex items-center gap-2 mb-4">
+        <div className="text-3xl font-bold">0.0</div>
+        <div className="text-yellow-500 text-xl">☆☆☆☆☆</div>
       </div>
-      <span className="text-gray-500 text-sm">{summary.totalReviews} reviews</span>
+    );
+  }
+
+  const average = summary.averageRating ?? 0;
+
+  return (
+    <div className="flex items-center gap-2 mb-4">
+      <div className="text-3xl font-bold">{average.toFixed(1)}</div>
+
+      <div className="text-yellow-500 text-xl">
+        {"★".repeat(Math.round(average))}
+        {"☆".repeat(5 - Math.round(average))}
+      </div>
     </div>
-  )
+  );
 }

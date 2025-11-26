@@ -31,6 +31,7 @@ const menuItems = [
   { name: "Payouts", icon: <MdPayments />, href: "/organizer/payouts" },
   { name: "Subscription Plans", icon: <MdSubscriptions />, href: "/organizer/subscription-plans" },
   { name: "Profile", icon: <MdPerson />, href: "/organizer/profile" },
+  { name: "Reviews", icon: <MdPerson />, href: "/organizer/reviews" },
   { name: "Messages", icon: <MdMessage />, href: "/organizer/messages" },
 ];
 

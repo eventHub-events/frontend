@@ -86,6 +86,9 @@ setEvents(updated);
       event.title.toLowerCase().includes(search.toLowerCase()) &&
       (filter === "All" || event.status === filter)
   );
+  const handleViewReviews = (id: string) => {
+    router.push(`/organizer/events/${id}/reviews`);
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -136,6 +139,7 @@ setEvents(updated);
             onDelete={handleDelete}
             onCancel={handleCancel}
              onManageTickets={(id) => router.push(`/organizer/events/${id}/tickets`)}
+             onViewReviews ={handleViewReviews}
           />
         ))}
       </div>

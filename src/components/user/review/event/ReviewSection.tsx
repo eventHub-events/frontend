@@ -5,7 +5,7 @@ import ReviewForm from "./ReviewForm";
 import YourReviewCard from "./YourReviewCard";
 import ReviewsList from "./ReviewList";
 import { EventReview, RatingSummary } from "@/types/user/review/reviewTypes";
-import { GiConsoleController } from "react-icons/gi";
+
 
 interface Props {
   mode: "event" | "organizer";
@@ -28,7 +28,9 @@ export default function ReviewSection({mode,targetId, userId, userName}: Props) 
  const fetchData = async (pageNumber:number =1) => {
   setLoading(true);
   try{
+   
     const summaryRes = await reviewService.getReviewSummary(mode,targetId);
+    console.log("hello",summaryRes)
     const reviewRes = await reviewService.getEventReviews(targetId,mode,pageNumber, limit);
      if(pageNumber === 1){
        
@@ -40,7 +42,6 @@ export default function ReviewSection({mode,targetId, userId, userName}: Props) 
        setHasMore(reviewRes.data.data.hasMore);
      }
      setSummary(summaryRes.data.data);
-       console.log("hello",summaryRes)
      const mine = reviewRes.data.data.find((r: EventReview) => r.userId === userId);
      setMyReview(mine || null);
      setLoading(false);

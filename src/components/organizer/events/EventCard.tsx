@@ -23,6 +23,7 @@ interface EventCardProps {
   onManageTickets?: (id: string) => void;
   totalTicketsSold?: number;
   totalRevenue?: number;
+  onViewReviews: (eventId: string) => void;
 }
 
 export const EventCard: React.FC<EventCardProps> = ({
@@ -34,6 +35,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   onManageTickets,
   totalTicketsSold = 0,
   totalRevenue = 0,
+  onViewReviews
 }) => {
   const getStatusColor = (status?: string) => {
    switch (status?.toLowerCase()) {
@@ -102,40 +104,59 @@ export const EventCard: React.FC<EventCardProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-between mt-3">
-          <Button
-            onClick={() => onEdit(event.eventId!)}
-            variant="outline"
-            size="sm"
-            className="flex items-center space-x-1"
-          >
-            <FaEdit />
-            <span>Edit</span>
-          </Button>
-          <Button
-               onClick={() => onManageTickets?.(event.eventId!)}
-               variant="secondary"
-               size="sm"
-               className="flex items-center space-x-1"
->
-          <FaDollarSign />
-         <span>Tickets</span>
-         </Button>
-          <div className="flex items-center space-x-2">
-            <FaEye
-              onClick={() => onView(event.eventId!)}
-              className="cursor-pointer text-gray-500 hover:text-blue-600"
-            />
-            <FaBan
-              onClick={() => onCancel(event.eventId!)}
-              className="cursor-pointer text-red-500 hover:text-red-700"
-            />
-            <FaTrash
-              onClick={() => onDelete(event.eventId!)}
-              className="cursor-pointer text-gray-500 hover:text-red-600"
-            />
-          </div>
-        </div>
+   <div className="flex justify-between mt-3 items-center">
+
+  {/* Edit */}
+  <Button
+    onClick={() => onEdit(event.eventId!)}
+    variant="outline"
+    size="sm"
+    className="flex items-center space-x-1"
+  >
+    <FaEdit />
+    <span>Edit</span>
+  </Button>
+
+  {/* Tickets */}
+  <Button
+    onClick={() => onManageTickets?.(event.eventId!)}
+    variant="secondary"
+    size="sm"
+    className="flex items-center space-x-1"
+  >
+    <FaDollarSign />
+    <span>Tickets</span>
+  </Button>
+
+  {/* ⭐ NEW — View Reviews */}
+  <Button
+    onClick={() => onViewReviews(event.eventId!)}
+    variant="secondary"
+    size="sm"
+    className="flex items-center space-x-1 text-green-600 hover:text-blue-800"
+  >
+    <FaEye color="red" />
+    <span>Reviews</span>
+  </Button>
+
+  {/* View / Cancel / Delete Icons */}
+  <div className="flex items-center space-x-2">
+    <FaEye
+      onClick={() => onView(event.eventId!)}
+      className="cursor-pointer text-gray-500 hover:text-blue-600"
+    />
+    <FaBan
+      onClick={() => onCancel(event.eventId!)}
+      className="cursor-pointer text-red-500 hover:text-red-700"
+    />
+    <FaTrash
+      onClick={() => onDelete(event.eventId!)}
+      className="cursor-pointer text-gray-500 hover:text-red-600"
+    />
+  </div>
+
+</div>
+
       </div>
     </div>
   );
