@@ -1,3 +1,4 @@
+import { ReportTypes } from "@/types/admin/report";
 
 
 export const API_ROUTES = {
@@ -8,6 +9,13 @@ export const API_ROUTES = {
   FETCH_USER_BOOKING_BY_ID:(bookingId: string) => `/api/user/bookings/${bookingId}`,
   FETCH_USER_BOOKING_BY_SESSION_ID:(sessionId: string) => `/api/user/bookings/session/${sessionId}`,
   PAYMENT_CHECKOUT :() => `/api/user/payments/create-checkout-session`,
-  GET_USER_CHAT_COUNT : (eventId :string)=> `/api/user/chat/event/${eventId}`
+  GET_USER_CHAT_COUNT : (eventId :string)=> `/api/user/chat/event/${eventId}`,
+
+   REPORT : {
+      CREATE_EVENT_REPORT: `/api/user/report/event`,
+      CREATE_ORGANIZER_REPORT :`/api/user/report/organizer`,
+      FETCH_REPORTS: (targetType: ReportTypes ) => `/api/admin/reports/${targetType}`,
+      TAKE_ACTION: (reportId:  string) => `/api/admin/report/${reportId}`
+   }
 
 } 
