@@ -12,7 +12,8 @@ import {
   RiPriceTag3Line,
   RiMailLine,
   RiVipCrownLine,
-  RiBook2Line, // ✅ added icon for bookings
+  RiBook2Line,
+  RiFlagLine, // ✅ added icon for bookings
 } from "react-icons/ri";
 
 const links = [
@@ -27,6 +28,7 @@ const links = [
   { name: "Categories & Tags", path: "/admin/categories", icon: RiPriceTag3Line },
   { name: "Communication", path: "/dashboard/communication", icon: RiMailLine },
   { name: "Subscription Plans", path: "/admin/subscription-plans", icon: RiVipCrownLine },
+ { name: "Reports", path: "/admin/reports", icon: RiFlagLine }
 ];
 
 export default function Sidebar() {

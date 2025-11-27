@@ -24,6 +24,7 @@ import { BookedTickets, BookingPayload } from "@/interface/user/booking";
 import { useAppSelector } from "@/redux/hooks";
 import Swal from "sweetalert2";
 import ReviewSection from "../review/event/ReviewSection";
+import ReportIcon from "../report/ReportIcon";
 
 interface TicketData {
   name: string;
@@ -290,6 +291,14 @@ const EventDetails: React.FC = () => {
                 <button className="bg-white/25 backdrop-blur-sm p-2 rounded-lg hover:bg-white/35 transition-all hover:scale-110">
                   <FiShare2 className="text-sm text-white" />
                 </button>
+                       {/* ✅ REPORT EVENT */}
+                             <ReportIcon
+                               targetId={event.id}
+                               targetType="event"
+                               reporterId={user?.id!}
+                               reporterName={user?.name!}
+                               reporterRole="user"
+                                  />
               </div>
             </div>
           </div>
@@ -598,17 +607,29 @@ const EventDetails: React.FC = () => {
 
               {/* Organizer Info */}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5 mt-6">
-                <h4 className="font-bold text-gray-800 mb-4 text-sm">Organized by</h4>
-                <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-300">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md">
-                    {event.organizerName.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-800 text-sm">{event.organizerName}</p>
-                    <p className="text-gray-600 text-xs">Event Organizer</p>
-                  </div>
-                </div>
-              </div>
+  <div className="flex items-center justify-between mb-4">
+    <h4 className="font-bold text-gray-800 text-sm">Organized by</h4>
+
+    {/* 🚩 Report Organizer */}
+    <ReportIcon
+      targetId={event.organizerId}
+      targetType="organizer"
+      reporterId={user?.id!}
+      reporterName={user?.name!}
+      reporterRole="user"
+    />
+  </div>
+
+  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-300">
+    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md">
+      {event.organizerName.charAt(0)}
+    </div>
+    <div>
+      <p className="font-bold text-gray-800 text-sm">{event.organizerName}</p>
+      <p className="text-gray-600 text-xs">Event Organizer</p>
+    </div>
+  </div>
+</div>
                 <ReviewSection 
                   mode="organizer" 
                   targetId={event.organizerId} 
