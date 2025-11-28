@@ -23,7 +23,10 @@ export default function Navbar() {
     }
   };
   return (
-    <header className="h-20 fixed top-0 left-64 right-0 bg-white/85 backdrop-blur-xl border-b border-gray-200/60 px-8 flex items-center justify-between z-50 shadow-sm shadow-gray-900/5">
+    <header
+  className="fixed top-0 left-64 w-[calc(100%-16rem)] h-20 
+             bg-white/85 backdrop-blur-xl border-b px-8 
+             flex items-center justify-between z-40">
       {/* Animated Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-violet-500/[0.02] via-blue-500/[0.01] to-purple-500/[0.02]"></div>
 

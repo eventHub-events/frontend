@@ -16,6 +16,9 @@ export const API_ROUTES = {
       CREATE_ORGANIZER_REPORT :`/api/user/report/organizer`,
       FETCH_REPORTS: (targetType: ReportTypes ) => `/api/admin/reports/${targetType}`,
       TAKE_ACTION: (reportId:  string) => `/api/admin/report/${reportId}`
+   },
+   DASHBOARD: {
+       FETCH_DATA : `/api/admin/dashboard`
    }
 
 } 
