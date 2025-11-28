@@ -93,7 +93,8 @@ export default function OrganizerSubscription() {
       organizerName: organizer?.name!,
       organizerEmail : organizer?.email!,
       payoutDelayDays: plan.privileges.payout.delayDays,
-      subscriptionType : currentPlan?"upgrade":"new"
+      subscriptionType : currentPlan?"upgrade":"new",
+      commissionRate : plan.privileges.commissionRate
     });
      console.log("rseses", response);
      
