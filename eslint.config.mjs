@@ -15,12 +15,12 @@ export default [
 
   // Disable rules for dynamic route pages
   {
-    // files: ["src/app/**/[userType]/page.tsx"],
-    // rules: {
-    //   "@typescript-eslint/no-explicit-any": "off",
-    //   "@typescript-eslint/ban-ts-comment": "off",
-    // },
+     files: ["src/app/**/[userType]/page.tsx"],
+     rules: {
+       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
+     },
 
-     ignores: ["**/*"],
+    //  ignores: ["**/*"],
   },
 ];

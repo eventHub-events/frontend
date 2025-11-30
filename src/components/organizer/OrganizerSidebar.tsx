@@ -38,77 +38,59 @@ const menuItems = [
 export const OrganizerSidebar: React.FC = () => {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  
+  const organizer = useAppSelector((state) => state.organizerAuth.organizer);
 
   return (
     <>
       <aside className={`
         fixed top-0 left-0 h-screen flex flex-col z-50
-        transition-all duration-400 ease-in-out
-        ${isCollapsed ? 'w-20' : 'w-72'}
-        bg-white
-        border-r border-gray-100
-        shadow-lg shadow-gray-200/50
-        group/sidebar
+        transition-all duration-300 ease-in-out
+        ${isCollapsed ? 'w-20' : 'w-80'}
+        bg-white border-r border-slate-200
       `}>
         
         {/* Subtle Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-50/30 to-blue-50/20 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/30 via-purple-50/20 to-pink-50/30"></div>
         
-        {/* Accent Line */}
-        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500 to-emerald-400"></div>
-
         {/* Header Section */}
-        <div className="relative p-6 pb-4 border-b border-gray-100/80">
-          <div className={`flex items-center gap-3 transition-all duration-400 ${isCollapsed ? 'justify-center' : ''}`}>
+        <div className="relative h-20 px-6 flex items-center border-b border-slate-200">
+          <div className={`flex items-center gap-3 transition-all duration-300 ${isCollapsed ? 'justify-center w-full' : ''}`}>
             {/* Logo */}
-            <div className={`
-              relative flex items-center justify-center
-              transition-all duration-400
-              ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'}
-              bg-white
-              border border-gray-200
-              rounded-xl
-              shadow-sm
-              group/logo hover:shadow-md hover:border-blue-300
-            `}>
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-emerald-400 rounded-lg flex items-center justify-center">
-                <MdEvent className="text-white text-lg" />
-              </div>
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 flex-shrink-0">
+              <MdEvent className="text-white text-2xl" />
             </div>
 
             {/* Brand Text */}
-            <div className={`transition-all duration-400 overflow-hidden ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-              <div className="text-2xl font-bold text-gray-900">
-                EventHub
+            {!isCollapsed && (
+              <div className="flex flex-col">
+                <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  EventHub
+                </div>
+                <div className="text-xs font-semibold text-indigo-600 tracking-wider uppercase">
+                  Organizer
+                </div>
               </div>
-              <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-0.5">
-                Organizer
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Toggle Button */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className={`
-              absolute -right-3 top-1/2 -translate-y-1/2
-              w-6 h-6 bg-white border border-gray-300 rounded-full
-              shadow-md
-              flex items-center justify-center
-              text-gray-500 hover:text-blue-600
-              transition-all duration-400 hover:scale-110
-              hover:border-blue-400 hover:shadow-blue-200
-              ${isCollapsed ? 'rotate-180' : ''}
+              absolute -right-4 top-1/2 -translate-y-1/2
+              w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full
+              shadow-lg shadow-indigo-500/30 flex items-center justify-center
+              text-white hover:scale-110 hover:shadow-indigo-500/50
+              transition-all duration-300
             `}
           >
-            {isCollapsed ? <MdChevronRight size={14} /> : <MdChevronLeft size={14} />}
+            {isCollapsed ? <MdChevronRight size={18} /> : <MdChevronLeft size={18} />}
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-6 overflow-y-auto">
-          <div className="space-y-1">
+        <nav className="flex-1 px-4 py-6 overflow-y-auto">
+          <div className="space-y-2">
             {menuItems.map((item) => {
               const isActive = pathname === item.href;
               
@@ -117,59 +99,44 @@ export const OrganizerSidebar: React.FC = () => {
                   key={item.name}
                   href={item.href}
                   className={`
-                    group relative flex items-center
-                    transition-all duration-300 ease-out
-                    ${isCollapsed ? 'justify-center px-2' : 'px-4'}
-                    py-3 rounded-xl font-medium
-                    hover:translate-x-1 transform-gpu
+                    group relative flex items-center gap-4
+                    transition-all duration-300
+                    ${isCollapsed ? 'justify-center px-3' : 'px-5'}
+                    py-4 rounded-2xl font-semibold text-base
                     ${isActive 
-                      ? "bg-blue-50 text-blue-700 border-r-2 border-blue-500 shadow-sm" 
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50/80"
+                      ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]" 
+                      : "text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/80 hover:scale-[1.01]"
                     }
                   `}
                 >
-                  {/* Icon */}
-               <div className="relative flex items-center justify-center">
-  <span
-    className={`
-      ${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'}
-      flex items-center justify-center
-      transition-all duration-300
-      ${isActive 
-        ? 'text-blue-600'
-        : 'text-gray-400 group-hover:text-blue-500'
-      }
-    `}
-  >
-    {item.icon}
-  </span>
-
-  
-</div>
-
-
+                  {/* Icon Container */}
+                  <div className={`
+                    relative z-10 flex items-center justify-center
+                    transition-all duration-300
+                    ${!isActive && 'group-hover:scale-110'}
+                  `}>
+                    <span className="text-2xl">
+                      {item.icon}
+                    </span>
+                  </div>
 
                   {/* Label */}
-                  <span className={`
-                    text-sm font-medium transition-all duration-300
-                    ${isCollapsed 
-                      ? 'w-0 opacity-0 ml-0' 
-                      : 'w-auto opacity-100 ml-3'
-                    }
-                    ${isActive ? 'font-semibold' : ''}
-                  `}>
-                    {item.name}
-                  </span>
+                  {!isCollapsed && (
+                    <span className="relative z-10 tracking-wide">
+                      {item.name}
+                    </span>
+                  )}
 
-                  {/* Active Dot for collapsed state */}
+                  {/* Active indicator dot for collapsed */}
                   {isActive && isCollapsed && (
-                    <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                    <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/50"></div>
                   )}
 
                   {/* Tooltip for collapsed state */}
                   {isCollapsed && (
-                    <div className="absolute left-full ml-3 px-2 py-1.5 bg-gray-900 text-white text-xs rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-50">
+                    <div className="absolute left-full ml-4 px-4 py-2.5 bg-slate-800 text-white text-sm font-medium rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap z-50">
                       {item.name}
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-800 rotate-45"></div>
                     </div>
                   )}
                 </Link>
@@ -178,114 +145,89 @@ export const OrganizerSidebar: React.FC = () => {
           </div>
 
           {/* Stats Card */}
-          <div className={`
-            mt-6 transition-all duration-400
-            ${isCollapsed ? 'px-2' : 'px-3'}
-          `}>
-            <div className={`
-              p-4 bg-gradient-to-br from-blue-50 to-emerald-50
-              rounded-xl border border-blue-100
-              transition-all duration-400
-              ${isCollapsed ? 'text-center' : ''}
-              group/card hover:shadow-md hover:border-blue-200
-            `}>
-              <div className={`flex items-center transition-all duration-400 ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-emerald-400 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-                  <MdTrendingUp className="text-white text-sm" />
+          {!isCollapsed && (
+            <div className="mt-8 mx-1">
+              <div className="relative p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 overflow-hidden group hover:shadow-lg transition-all duration-300">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-3xl"></div>
+                
+                <div className="relative z-10 flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <MdTrendingUp className="text-white text-xl" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-slate-800">12</div>
+                    <div className="text-xs text-slate-600 font-medium">Total Events</div>
+                  </div>
                 </div>
                 
-                <div className={`
-                  transition-all duration-400 overflow-hidden
-                  ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}
-                `}>
-                  <div className="text-sm font-semibold text-gray-900">12 Events</div>
-                  <div className="text-xs text-emerald-600 mt-0.5">+3 this month</div>
-                </div>
-              </div>
-              
-              {/* Progress Bar */}
-              {!isCollapsed && (
-                <div className="mt-3 space-y-2">
-                  <div className="w-full bg-blue-100 rounded-full h-1.5">
-                    <div className="bg-gradient-to-r from-blue-500 to-emerald-400 h-1.5 rounded-full w-3/4 shadow-sm"></div>
+                <div className="relative z-10 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-600 font-medium">This Month</span>
+                    <span className="text-emerald-600 font-bold">+3 Events</span>
+                  </div>
+                  <div className="w-full bg-emerald-100 rounded-full h-2.5 overflow-hidden">
+                    <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2.5 rounded-full w-3/4 shadow-md shadow-emerald-500/20"></div>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Monthly Progress</span>
-                    <span className="text-emerald-600 font-medium">75%</span>
+                    <span className="text-slate-500">Goal Progress</span>
+                    <span className="text-slate-800 font-bold">75%</span>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Upgrade Card */}
-          <div className={`
-            mt-3 transition-all duration-400
-            ${isCollapsed ? 'px-2' : 'px-3'}
-          `}>
-            <div className={`
-              p-4 bg-gradient-to-br from-orange-50 to-amber-50
-              rounded-xl border border-amber-200
-              transition-all duration-400
-              ${isCollapsed ? 'text-center' : ''}
-              group/upgrade hover:shadow-md hover:border-amber-300
-            `}>
-              <div className={`flex items-center transition-all duration-400 ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-                <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0 group-hover/upgrade:scale-110 transition-transform duration-300">
-                  <MdRocket className="text-white text-sm" />
+          {!isCollapsed && (
+            <div className="mt-4 mx-1">
+              <div className="relative p-5 bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 rounded-2xl overflow-hidden group/upgrade cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+                <div className="absolute inset-0 bg-black/5"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
+                
+                <div className="relative z-10 flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/40">
+                    <MdRocket className="text-white text-xl" />
+                  </div>
+                  <div>
+                    <div className="text-base font-bold text-white">Go Premium</div>
+                    <div className="text-xs text-white/90 font-medium">Unlock Everything</div>
+                  </div>
                 </div>
                 
-                <div className={`
-                  transition-all duration-400 overflow-hidden
-                  ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}
-                `}>
-                  <div className="text-sm font-semibold text-gray-900">Go Premium</div>
-                  <div className="text-xs text-amber-600 mt-0.5">Unlock features</div>
-                </div>
-              </div>
-              
-              {/* Upgrade Button */}
-              {!isCollapsed && (
-                <button className="w-full mt-3 px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-semibold rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] transform-gpu">
-                  Upgrade Now
+                <button className="relative z-10 w-full px-4 py-3 bg-white text-orange-600 text-sm font-bold rounded-xl hover:bg-amber-50 transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]">
+                  Upgrade Now →
                 </button>
-              )}
+              </div>
             </div>
-          </div>
+          )}
         </nav>
 
         {/* User Profile Section */}
-        <div className={`
-          p-4 border-t border-gray-100 bg-white/80 backdrop-blur-sm
-          transition-all duration-400
-          ${isCollapsed ? 'px-3' : 'px-4'}
-        `}>
-          <div className={`flex items-center transition-all duration-400 ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
+        <div className="relative p-5 border-t border-slate-200 bg-slate-50/50 backdrop-blur-sm">
+          <div className={`flex items-center gap-4 ${isCollapsed ? 'justify-center' : ''}`}>
             {/* Avatar */}
-            <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-400 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
-                <MdPerson className="text-white text-lg" />
+            <div className="relative flex-shrink-0">
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <MdPerson className="text-white text-xl" />
               </div>
-              <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border-2 border-white rounded-full shadow-sm"></div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-3 border-white rounded-full shadow-md"></div>
             </div>
             
             {/* User Info */}
-            <div className={`
-              transition-all duration-400 overflow-hidden
-              ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}
-            `}>
-              <div className="text-sm font-semibold text-gray-900">John Doe</div>
-              <div className="text-xs text-gray-500">Organizer</div>
-            </div>
+            {!isCollapsed && (
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-bold text-slate-800 truncate">
+                  {organizer?.name || "John Doe"}
+                </div>
+                <div className="text-xs text-slate-600 truncate font-medium">Premium Organizer</div>
+              </div>
+            )}
           </div>
         </div>
       </aside>
 
-      {/* Mobile Overlay */}
-      <div 
-        className="lg:hidden fixed inset-0 bg-black/20 z-40 backdrop-blur-sm"
-        style={{ display: 'none' }}
-      />
+      {/* Spacer for main content */}
+      <div className={`${isCollapsed ? 'w-20' : 'w-80'} flex-shrink-0 transition-all duration-300`} />
     </>
   );
 };

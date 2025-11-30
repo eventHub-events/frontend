@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import ChatDrawer from "@/components/chat/ChatDrawer";
@@ -74,7 +74,7 @@ const EventDetails: React.FC = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
   const router = useRouter();
-  const [selected, setSelected] = useState<any>(null);
+  // const [selected, setSelected] = useState<any>(null);
 
 
  
@@ -295,8 +295,8 @@ const EventDetails: React.FC = () => {
                              <ReportIcon
                                targetId={event.id}
                                targetType="event"
-                               reporterId={user?.id!}
-                               reporterName={user?.name!}
+                               reporterId={user?.id??""}
+                               reporterName={user?.name??""}
                                reporterRole="user"
                                   />
               </div>
@@ -523,7 +523,7 @@ const EventDetails: React.FC = () => {
                 </div>
               </div>
             </div>
-            <ReviewSection mode={"event"} targetId={event.id} userId={user?.id!} userName={user?.name!} />
+            <ReviewSection mode={"event"} targetId={event.id} userId={user?.id??""} userName={user?.name??""} />
           </div>
 
           {/* Right Column - Booking Summary */}
@@ -614,8 +614,8 @@ const EventDetails: React.FC = () => {
     <ReportIcon
       targetId={event.organizerId}
       targetType="organizer"
-      reporterId={user?.id!}
-      reporterName={user?.name!}
+      reporterId={user?.id ?? ""}
+      reporterName={user?.name??""}
       reporterRole="user"
     />
   </div>
@@ -633,8 +633,8 @@ const EventDetails: React.FC = () => {
                 <ReviewSection 
                   mode="organizer" 
                   targetId={event.organizerId} 
-                  userId={user?.id!} 
-                  userName={user?.name!}
+                  userId={user?.id ?? ""} 
+                  userName={user?.name?? ""}
                   />
 
             </div>
@@ -647,10 +647,10 @@ const EventDetails: React.FC = () => {
   mode={chatState.mode}
   eventId={event.id}
   organizerId={event.organizerId}
-  userId={user?.id!}
-  role={user?.role!}
+  userId={user?.id?? ""}
+  role={user?.role??""}
   // userName={event.organizerName+" - Organizer"}
-  userName={user?.name!}
+  userName={user?.name?? ""}
   peerId={event.organizerId}
   targetName={event.organizerName+" - Organizer"}
    isChatOpen={chatState.open} 

@@ -56,12 +56,12 @@ export default function OrganizerSubscription() {
       console.log("rrrrr", res)
       setCurrentPlan(res.data.data || null);
     } catch (err) {
-      console.log("No active plan found (new organizer)");
+      console.log(err);
       setCurrentPlan(null);
     }
   };
 
-  const handlePurchaseOrUpgrade = async (plan: ISubscriptionPlan) => {
+  // const handlePurchaseOrUpgrade = async (plan: ISubscriptionPlan) => {
     // const action = currentPlan ? "upgrade" : "purchase";
     // const confirmed = window.confirm(
     //   `Do you want to ${action} the ${plan.name} plan for ₹${plan.price}/month?`
@@ -81,7 +81,7 @@ export default function OrganizerSubscription() {
     // } finally {
     //   setIsLoading(false);
     // }
-  };
+  // };
   
    const handleBuyPlan = async (plan: ISubscriptionPlan) => {
   try {
@@ -90,8 +90,8 @@ export default function OrganizerSubscription() {
       price: plan.price,
       planId: plan.id!,
       durationInDays: plan.durationInDays,
-      organizerName: organizer?.name!,
-      organizerEmail : organizer?.email!,
+      organizerName: organizer?.name?? "",
+      organizerEmail : organizer?.email?? "",
       payoutDelayDays: plan.privileges.payout.delayDays,
       subscriptionType : currentPlan?"upgrade":"new",
       commissionRate : plan.privileges.commissionRate

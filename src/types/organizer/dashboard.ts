@@ -57,12 +57,12 @@ export interface OrganizerPayoutSummary {
 
 
 //
-interface RevenueChartProps {
-  data: OrganizerTimelineItem[];
-}
-interface EventTableProps {
-  rows: OrganizerEventPerformance[];
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
+// interface RevenueChartProps {
+//   data: OrganizerTicketTimelineItem[];
+// }
+// interface EventTableProps {
+//   rows: OrganizerEventPerformance[];
+//   currentPage: number;
+//   totalPages: number;
+//   onPageChange: (page: number) => void;
+// }

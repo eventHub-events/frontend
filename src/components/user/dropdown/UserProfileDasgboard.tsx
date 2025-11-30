@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import {
   FaUser, FaLock, FaHeart, FaTicketAlt, FaCreditCard, FaBell, FaCog,
-  FaEye, FaEyeSlash, FaUpload, FaEdit, FaCheck, FaTimes
+   FaUpload, FaEdit, FaCheck, FaTimes
 } from "react-icons/fa";
 import Image from "next/image";
 import toast, { Toaster } from "react-hot-toast";
@@ -44,7 +44,7 @@ const UserProfile: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    // setValue,
     watch,
     reset,
     trigger

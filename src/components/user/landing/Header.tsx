@@ -15,9 +15,16 @@ import {
   FaUser,
   FaKey,
   FaSearch,
-  FaTicketAlt, // 🎟️ icon for Bookings
+  FaTicketAlt,
+  FaSignInAlt,
+  FaUserPlus,
 } from "react-icons/fa";
 import GetStartedModal from "./GetStartedModal";
+
+// Import the new logo image.
+// Make sure the path is correct. It should be relative to this file or an absolute path from the public directory.
+// Based on your previous code, it seems like it should be:
+import eventHubLogo from "../../../../public/Gemini_Generated_Image_tnbt85tnbt85tnbt.png"; // Adjust path if necessary
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,26 +70,31 @@ const Header: React.FC = () => {
   }, [user]);
 
   return (
-    <header className="sticky top-0 z-50 bg-black backdrop-blur-xl border-b border-gray-200/60 shadow-sm">
+    <>
+    <header className="sticky top-0 z-50 
+                  bg-black backdrop-blur-xl 
+                  border border-white/60 
+                  shadow-[0_2px_20px_rgba(255,255,255,0.08)]">
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group flex-shrink-0">
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-white via-red-600 to-yellow-500 rounded-2xl flex items-center justify-center shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
-                <div className="text-white font-black text-xl tracking-tighter drop-shadow-lg">EH</div>
-              </div>
-              <div className="absolute -inset-2 bg-gradient-to-r from-indigo-600 to-pink-500 rounded-2xl blur-xl opacity-30 group-hover:opacity-40 transition-all duration-1000 group-hover:duration-300"></div>
-              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-400 to-pink-400 rounded-2xl blur opacity-20 group-hover:opacity-30 transition-all duration-700"></div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-3xl font-black bg-gradient-to-r from-red-900 via-yellow-600 to-pink-500 bg-clip-text text-transparent tracking-tight drop-shadow-sm">
-                EventHub
-              </span>
-              <span className="text-[10px] font-semibold bg-gradient-to-r from-yellow-600 to-red-400 bg-clip-text text-transparent tracking-widest uppercase mt-0.5">
-                Experience • Connect • Celebrate
-              </span>
-            </div>
+          {/* Logo Section - UPDATED */}
+          <Link href="/" className="flex items-center flex-shrink-0 gap-3 group">
+            {/* The Logo Image */}
+            <Image
+              src={eventHubLogo}
+              alt="EventHub Logo"
+              width={48} // Adjust width to match height for a square aspect ratio
+              height={48}
+              className="object-contain h-12 w-auto group-hover:scale-105 transition-transform duration-300"
+              priority
+            />
+            {/* The Text "EventHub" - Solid White and Bold */}
+  <span className="text-3xl font-bold text-white tracking-tighter flex items-center gap-1">
+  Event
+  <span className="text-red-600 font-light text-4xl -translate-y-0.5">/</span>
+  Hub
+</span>
           </Link>
 
           {/* Search Bar */}
@@ -102,34 +114,73 @@ const Header: React.FC = () => {
           {/* Right Section */}
           <div className="flex items-center gap-3 flex-shrink-0">
             {user ? (
-              <div className="relative flex items-center space-x-3" ref={dropdownRef}>
+              <div className="relative flex border-b-orange-800 items-center space-x-3" ref={dropdownRef}>
                 {/* Profile Button */}
-                <button
-                  onClick={() => setDropdownOpen((prev) => !prev)}
-                  className="flex items-center space-x-3 p-1 rounded-2xl hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200"
-                >
-                  <div className="flex flex-col items-end">
-                    <span className="text-sm font-semibold text-gray-900">{user.name}</span>
-                    <span className="text-xs text-gray-500">Member</span>
-                  </div>
+                          
+                             <button
+      onClick={() => setDropdownOpen((prev) => !prev)}
+    className="group flex items-center gap-3 pl-2 pr-3 py-1.5 
+           rounded-full bg-white/5 hover:bg-white/10 
+           transition backdrop-blur-md
+           border border-white/60 hover:border-white/70
+           hover:shadow-[0_0_12px_rgba(255,255,255,0.25)]"
 
-                  <div className="relative">
-                    {user.image ? (
-                      <Image
-                        src={user.image}
-                        alt="User"
-                        className="w-10 h-10 rounded-xl object-cover ring-2 ring-purple-500/20 shadow-sm"
-                        width={40}
-                        height={40}
-                      />
-                    ) : (
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-sm">
-                        <FaUserCircle size={20} className="text-white" />
-                      </div>
-                    )}
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                  </div>
-                </button>
+    >
+      {/* Avatar + Border + Status */}
+      <div className="relative">
+        {user.image ? (
+          <Image
+            src={user.image}
+            alt="User"
+            width={36}
+            height={36}
+            className="w-9 h-9 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-9 h-9 rounded-full 
+                          bg-gradient-to-br from-gray-700 to-gray-900 
+                          flex items-center justify-center">
+            <FaUserCircle className="text-gray-300 text-lg" />
+          </div>
+        )}
+
+        {/* Premium Border */}
+       <span
+  className="absolute inset-0 rounded-full pointer-events-none
+             ring-2 ring-yellow-600/100
+             group-hover:ring-yellow-500/90 
+             transition"
+/>
+
+        {/* Online Status */}
+        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 
+                         rounded-full bg-green-500 
+                         border-2 border-black" />
+      </div>
+
+      {/* Username */}
+      <span className="hidden sm:inline text-sm font-semibold text-white">
+        {user.name}
+      </span>
+
+      {/* Chevron */}
+      <svg
+        className={`w-4 h-4 text-white/70 transition-transform ${
+          isDropdownOpen ? "rotate-180" : ""
+        }`}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M19 9l-7 7-7-7"
+        />
+      </svg>
+    </button>
+
 
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
@@ -194,7 +245,6 @@ const Header: React.FC = () => {
                         </div>
                       </Link>
 
-                      {/* 🎟️ New Bookings Link */}
                       <Link
                         href="/user/bookings"
                         className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-pink-50 rounded-xl transition-all duration-200 group"
@@ -254,26 +304,31 @@ const Header: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    setIsOpen(true);
-                    setMode("login");
-                  }}
-                  className="px-5 py-2.5 text-sm font-semibold text-gray-700 hover:text-purple-600 transition-all duration-200 hover:scale-105"
-                >
-                  Sign In
-                </button>
-                <button
-                  onClick={() => {
-                    setIsOpen(true);
-                    setMode("signup");
-                  }}
-                  className="px-6 py-2.5 bg-gradient-to-r from-yellow-600 to-red-800 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                >
-                  Get Started
-                </button>
-              </div>
+              <div className="flex items-center gap-2">
+  {/* Sign In */}
+  <button
+    onClick={() => {
+      setIsOpen(true);
+      setMode("login");
+    }}
+    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-200 hover:text-white transition"
+  >
+    <FaSignInAlt className="text-base" />
+    <span className="hidden sm:inline">Sign In</span>
+  </button>
+
+  {/* Get Started */}
+  <button
+    onClick={() => {
+      setIsOpen(true);
+      setMode("signup");
+    }}
+    className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-yellow-600 to-red-700 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
+  >
+    <FaUserPlus className="text-sm" />
+    <span>Get Started</span>
+  </button>
+</div>
             )}
           </div>
         </div>
@@ -286,6 +341,7 @@ const Header: React.FC = () => {
         mode={mode}
       />
     </header>
+    </>
   );
 };
 

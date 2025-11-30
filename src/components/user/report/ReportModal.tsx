@@ -52,7 +52,7 @@ export default function ReportModal({
 }: Props) {
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   const reasons = REPORT_REASONS[targetType];
 
@@ -63,7 +63,7 @@ export default function ReportModal({
     }
 
     try {
-      setLoading(true);
+      // setLoading(true);
     
        const payload: CreateReportDTO = {
             targetId,
@@ -90,7 +90,7 @@ export default function ReportModal({
        const message = err instanceof AxiosError?err.response?.data.message: "Failed to  submit the  report"
       showError(message);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
