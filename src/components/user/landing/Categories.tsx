@@ -1,76 +1,209 @@
 "use client"
-import React, { useState } from "react";
+import { Category } from "@/components/admin/category/CategoryManagement";
+import { categoryService } from "@/services/admin/categoryService";
+import React, { useEffect, useState } from "react";
 import { 
   FaMusic, 
   FaRunning, 
   FaPalette, 
   FaLaptopCode, 
   FaUtensils,
-  FaChevronRight
+  FaChevronRight,
+  FaCalendarAlt
 } from "react-icons/fa";
+import { IconType } from "react-icons/lib";
 
 const Categories = () => {
+   const  [categoryNames,setCategoryNames] = useState<string[]>([]);
+   const  [categories,setCategories] = useState<Category[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const categories = [
-    { name: "Music", icon: <FaMusic className="text-pink-500" />, color: "bg-pink-100" },
-    { name: "Sports", icon: <FaRunning className="text-blue-500" />, color: "bg-blue-100" },
-    { name: "Art", icon: <FaPalette className="text-purple-500" />, color: "bg-purple-100" },
-    { name: "Tech", icon: <FaLaptopCode className="text-green-500" />, color: "bg-green-100" },
-    { name: "Food & Drinks", icon: <FaUtensils className="text-amber-500" />, color: "bg-amber-100" },
-  ];
+ 
+   useEffect(() => {
+     try{
+
+      const fetchCategories = async () => {
+                const result=  await categoryService.fetchAllCategories();
+                console.log("cat", result)
+                 setCategories(result.data.data);
+                 const names = result.data.data?.map((cat: Category) => cat.name)
+                 setCategoryNames(names)
+     }
+      fetchCategories();
+    }catch(err){
+       console.log(err);
+     }
+   },[]);
+
+
+   const categoryIconMap: Record<string, IconType> = {
+  music: FaMusic,
+  sports: FaRunning,
+  art: FaPalette,
+  technology: FaLaptopCode,
+  tech: FaLaptopCode,
+  food: FaUtensils,
+  
+};
+const getCategoryIcon = (name: string): IconType => {
+  const key = name.toLowerCase();
+  return categoryIconMap[key] || FaCalendarAlt; // fallback icon
+};
+
+ const categoryIconColorMap: Record<string, string> = {
+  music: "text-purple-600",
+  sports: "text-green-600",
+  art: "text-pink-600",
+  technology: "text-indigo-600",
+  food: "text-orange-600",
+};
+const categoryStyleMap: Record<string, {
+  ring: string;
+  glow: string;
+  icon: string;
+}> = {
+  musicconcerts: {
+    ring: "from-fuchsia-500 via-pink-500 to-rose-500",
+    glow: "shadow-[0_0_60px_rgba(236,72,153,0.35)]",
+    icon: "text-pink-600",
+  },
+  workshops: {
+    ring: "from-amber-500 via-orange-500 to-yellow-400",
+    glow: "shadow-[0_0_60px_rgba(245,158,11,0.35)]",
+    icon: "text-orange-600",
+  },
+  sports: {
+    ring: "from-emerald-500 via-green-500 to-lime-400",
+    glow: "shadow-[0_0_60px_rgba(34,197,94,0.35)]",
+    icon: "text-green-600",
+  },
+  technology: {
+    ring: "from-indigo-500 via-blue-500 to-cyan-400",
+    glow: "shadow-[0_0_60px_rgba(59,130,246,0.35)]",
+    icon: "text-blue-600",
+  },
+};
+const getCategoryStyle = (name: string) => {
+  return (
+    categoryStyleMap[name.toLowerCase()] ?? {
+      ring: "from-gray-400 to-gray-300",
+      glow: "shadow-none",
+      icon: "text-gray-700",
+    }
+  );
+};
+
+const getIconColor = (name: string) => {
+  return categoryIconColorMap[name.toLowerCase()] ?? "text-gray-800";
+};
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-3">
-            Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Categories</span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Discover experiences tailored to your interests
-          </p>
-        </div>
+<section className="relative py-28 bg-[#f5f6f8]">
+  {/* <div className="
+    relative max-w-7xl mx-auto px-4
+    rounded-[42px]
+    bg-white/60 backdrop-blur-xl
+    shadow-[0_40px_120px_rgba(0,0,0,0.12)]
+    border border-black/5
+    py-20
+  "> */}
+    {/* ✅ AMBIENT GLOW – PUT IT HERE */}
+  <div className="absolute inset-0 pointer-events-none">
+    <div className="
+      absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+      w-[900px] h-[500px]
+      rounded-full
+      bg-gradient-to-r from-red-500/10 via-orange-400/10 to-yellow-300/10
+      blur-[140px]
+    "/>
+  </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {categories.map((category) => (
-            <button
-              key={category.name}
-              onClick={() => setActiveCategory(category.name)}
-              className={`relative group p-6 rounded-2xl transition-all duration-300 ${category.color} ${
-                activeCategory === category.name 
-                  ? 'ring-2 ring-offset-2 ring-purple-500 shadow-lg' 
-                  : 'hover:shadow-md hover:-translate-y-1'
-              }`}
-            >
-              <div className="flex flex-col items-center">
-                <div className="p-4 bg-white rounded-full shadow-sm mb-4 group-hover:shadow-md transition-shadow">
-                  {React.cloneElement(category.icon, { size: 24 })}
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">{category.name}</h3>
-                <div className="flex items-center text-sm text-purple-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  Explore <FaChevronRight className="ml-1" size={12} />
-                </div>
-              </div>
-              
-              {/* Active indicator */}
-              {activeCategory === category.name && (
-                <div className="absolute top-3 right-3 w-2 h-2 bg-purple-500 rounded-full"></div>
-              )}
-            </button>
-          ))}
-        </div>
+  {/* ✅ CONTENT CONTAINER */}
+  <div className="
+    relative max-w-7xl mx-auto px-4
+    rounded-[42px]
+    bg-white/60 backdrop-blur-xl
+    shadow-[0_40px_120px_rgba(0,0,0,0.12)]
+    border border-black/5
+    py-20
+  ">
 
-        {/* View all button */}
-        <div className="text-center mt-12">
-          <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-800 hover:to-gray-600 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg">
-            View All Categories
-            <FaChevronRight className="ml-2" size={14} />
-          </button>
+    {/* Header */}
+    <div className="text-center mb-20">
+      <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
+        Explore by{" "}
+        <span className="text-red-600">Category</span>
+      </h2>
+      <p className="mt-4 text-lg text-gray-600">
+        Choose what excites you the most
+      </p>
+    </div>
+
+    {/* Category Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+
+    {categories.map((category) => {
+  const Icon = getCategoryIcon(category.name);
+  const style = getCategoryStyle(category.name);
+
+  return (
+    <button
+      key={category.id}
+      className="group relative rounded-3xl bg-white px-8 py-10 text-center
+                 shadow-[0_10px_35px_rgba(0,0,0,0.08)]
+                 hover:-translate-y-2 transition-all duration-300"
+    >
+      {/* Icon Ring */}
+      <div
+        className={`
+          mx-auto mb-6 w-20 h-20 rounded-full
+          flex items-center justify-center
+          bg-gradient-to-br ${style.ring}
+          ${style.glow}
+          transition-all duration-300
+          group-hover:scale-110
+        `}
+      >
+        <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center">
+          <Icon size={26} className={style.icon} />
         </div>
       </div>
-    </section>
+
+      <h3 className="text-lg font-semibold text-gray-900">
+        {category.name}
+      </h3>
+
+      <div className="mt-3 opacity-0 group-hover:opacity-100 transition">
+        <span className="text-sm font-medium text-gray-700">
+          Explore →
+        </span>
+      </div>
+    </button>
   );
+})}
+
+    </div>
+
+    {/* CTA */}
+    <div className="mt-20 text-center">
+      <button className="
+        inline-flex items-center gap-3
+        px-12 py-4 rounded-full
+        text-white font-semibold
+        bg-gradient-to-r from-red-600 to-orange-500
+        shadow-lg hover:shadow-xl hover:scale-[1.03]
+        transition
+      ">
+        Explore all categories →
+      </button>
+    </div>
+ </div>
+  {/* </div> */}
+</section>
+
+
+
+);
 };
 
 export default Categories;

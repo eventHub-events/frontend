@@ -5,6 +5,7 @@ import { useState } from "react";
 import ProtectedRoute from "../auth/RoleProtection";
 import { paymentService } from "@/services/user/paymentService";
 import { BookingStatus } from "@/enums/organizer/booking";
+import Image from "next/image";
 
 export interface UserBookingData {
   bookingId?: string;
@@ -59,11 +60,13 @@ export default function Payment({ booking }: { booking: UserBookingData }) {
 
           {/* EVENT IMAGE */}
           {booking.eventImages?.length ? (
-            <img
-              src={booking.eventImages[0]}
-              alt="Event Banner"
-              className="w-full h-40 object-cover rounded-xl mb-6 shadow-md"
-            />
+           <Image
+  src={booking.eventImages[0]}
+  alt="Event Banner"
+  width={800}
+  height={300}
+  className="w-full h-40 object-cover rounded-xl mb-6 shadow-md"
+/>
           ) : null}
 
           <div className="space-y-4 mb-8">

@@ -4,7 +4,8 @@ import Sidebar from "@/components/admin/ui/SideBar";
 import Navbar from "@/components/admin/ui/NavBar";
 
 import ProtectedRoute from "@/components/user/auth/RoleProtection";
-import AdminDashboardPage from "@/components/admin/dashboard/parts/Admindashboard";
+import AdminDashboardPage from "@/components/admin/dashboard/parts/AdminDashboard";
+
 
 const DashboardPage = () => {
   return (

@@ -19,6 +19,9 @@ export const API_ROUTES = {
    },
    DASHBOARD: {
        FETCH_DATA : `/api/admin/dashboard`
+   },
+   ORGANIZER_DASHBOARD : {
+         FETCH_DATA : `/api/organizer/dashboard`
    }
 
 } 

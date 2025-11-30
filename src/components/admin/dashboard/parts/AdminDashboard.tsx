@@ -8,6 +8,7 @@ import SubscriptionRevenueChart from "./SubscriptionRevenueChart";
 import BookingCountChart from "./BookingCountChart";
 import RevenuePieChart from "./RevenuePieChart";
 import { adminDashboardService } from "@/services/admin/adminDashboardService";
+import { GiConsoleController } from "react-icons/gi";
 
 export default function AdminDashboardPage() {
   const [range, setRange] = useState<"daily" | "monthly" | "yearly">("monthly");
@@ -24,6 +25,8 @@ export default function AdminDashboardPage() {
       const res = await adminDashboardService.fetchDashboardData(range);
       console.log("res", res)
       setData(res.data.data);
+    }catch(err){
+      console.log(err)
     } finally {
       setLoading(false);
     }

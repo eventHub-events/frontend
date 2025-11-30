@@ -46,7 +46,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
 
   })
 
-  const uploadedTypes = documents.map(doc => doc.type);
+  // const uploadedTypes = documents.map(doc => doc.type);
   const rejectedDocs  = documents. filter(doc => doc.status === "Rejected");
   const [rejectedDocType ,setRejectedDocType] = useState("")
   const [rejectedDocId, setRejectedDocId] = useState("") 
@@ -72,7 +72,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
     };
     fetchDocuments();
     setIsUpdating(false)
-  }, [uploading, organizerId,isUpdating]);
+  }, [uploading, organizerId,isUpdating,rejectedDocs]);
 
   const latestStatusMap: Record<string, string> = {};
 documents.forEach((doc) => {
