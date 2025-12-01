@@ -10,13 +10,13 @@ export default function OrganizerLayout({ children }: { children: React.ReactNod
    useOrganizerState()
   return (
     
-    <div className="flex flex-col h-screen">
+    <div className=" h-screen">
       <OrganizerNavbar />
-      <div className="flex flex-1">
+         
         <OrganizerSidebar />
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
+      <main className="ml-80 pt-24 px-8 overflow-auto">  {children}</main>
       </div>
-    </div>
+    
    
   );
 }

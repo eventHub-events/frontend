@@ -105,7 +105,7 @@ export const OrganizerSidebar: React.FC = () => {
                     py-4 rounded-2xl font-semibold text-base
                     ${isActive 
                       ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]" 
-                      : "text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/80 hover:scale-[1.01]"
+                      : "text-black hover:text-indigo-600 hover:bg-indigo-50/80 hover:scale-[1.01]"
                     }
                   `}
                 >

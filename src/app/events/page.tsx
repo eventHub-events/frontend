@@ -3,6 +3,8 @@ import EventsListing, { FeaturedEvent } from "@/components/user/events/EventList
 import { eventDisplayService } from "@/services/user/eventDisplayService";
 import { useCallback } from "react";
 import { PaginatedEventsResponse } from "@/types/user/events/eventResponseType";
+import Header from "@/components/user/landing/Header";
+import Footer from "@/components/user/landing/Footer";
 
 
 
@@ -20,7 +22,14 @@ const AllEventsPage = () => {
     [] // empty dependency array ensures stable reference
   );
 
-  return <EventsListing title="Explore Events" fetchEvents={fetchEvents} />;
+  return (
+  
+    <div>
+       <Header/>
+      <EventsListing title="Explore Events" fetchEvents={fetchEvents} />
+      <Footer/>
+    </div>
+  )
 };
 
 export default AllEventsPage;

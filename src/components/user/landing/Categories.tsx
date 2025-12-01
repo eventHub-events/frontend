@@ -23,7 +23,7 @@ import { IconType } from "react-icons/lib";
      try{
 
       const fetchCategories = async () => {
-                const result=  await categoryService.fetchAllCategories();
+                const result=  await categoryService.fetchAllCategoriesForLandingPage();
                 console.log("cat", result)
                  setCategories(result.data.data);
                 //  const names = result.data.data?.map((cat: Category) => cat.name)
@@ -141,7 +141,7 @@ const getCategoryStyle = (name: string) => {
   return (
     <button
       key={category.id}
-       onClick={() => router.push(`/user/events/category/${encodeURIComponent(category.name)}`)}
+      //  onClick={() => router.push(`/user/events/category/${encodeURIComponent(category.name)}`)}
       className="group relative rounded-3xl bg-white px-8 py-10 text-center
                  shadow-[0_10px_35px_rgba(0,0,0,0.08)]
                  hover:-translate-y-2 transition-all duration-300"
@@ -180,7 +180,7 @@ const getCategoryStyle = (name: string) => {
     {/* CTA */}
     <div className="mt-20 text-center">
       <button 
-         onClick={() => router.push("/user/events")}
+          onClick={() => router.push("/events")}
        className="
         inline-flex items-center gap-3
         px-12 py-4 rounded-full

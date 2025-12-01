@@ -30,7 +30,7 @@ export const OrganizerNavbar: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 right-0 left-0 lg:left-[280px] h-20 bg-white/80 backdrop-blur-lg border-b border-slate-100/80 flex items-center justify-between px-8 z-40 transition-all duration-300 shadow-sm supports-[backdrop-filter]:bg-white/60">
+    <header className="fixed top-0 left-0 right-0 h-20  bg-white/80 backdrop-blur-lg border-b border-slate-100/80 flex items-center justify-between px-8 z-40 transition-all duration-300 shadow-sm supports-[backdrop-filter]:bg-white/60">
       
       {/* Left: Logo for mobile */}
       <div className="lg:hidden flex items-center">

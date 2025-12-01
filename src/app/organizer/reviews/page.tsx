@@ -12,7 +12,7 @@ export  default function OrganizerReviewPage (){
   
   return (
      <ProtectedRoute allowedRoles={["organizer"]}>
-          <div className="ml-64 p-6"> 
+          <div > 
        <OrganizerReviews/ >
           </div>
      </ProtectedRoute>
