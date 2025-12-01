@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,23 +19,24 @@ export function AdminBookingDetails({ bookingId, onClose }: AdminBookingDetailsP
   const [loading, setLoading] = useState(true);
   const [showTicketsModal, setShowTicketsModal] = useState(false);
 
-  useEffect(() => {
-    if (!bookingId) return;
-    fetchBooking();
-  }, [bookingId]);
-
-  async function fetchBooking() {
+  
+  const fetchBooking = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await bookingService_admin.getBookingById(bookingId)
-      console.log("res", res)
-      setBooking(res.data.data);
-    } catch (err) {
-      console.error("Failed to fetch admin booking details", err);
-    } finally {
-      setLoading(false);
-    }
+    const res = await bookingService_admin.getBookingById(bookingId);
+    console.log("res", res);
+    setBooking(res.data.data);
+  } catch (err) {
+    console.error("Failed to fetch admin booking details", err);
+  } finally {
+    setLoading(false);
   }
+}, [bookingId]);
+
+useEffect(() => {
+  if (!bookingId) return;
+  fetchBooking();
+}, [bookingId,fetchBooking]);
 
   if (loading)
     return (

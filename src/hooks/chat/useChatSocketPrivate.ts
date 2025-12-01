@@ -68,7 +68,7 @@ export function useChatSocketPrivate(
       socket.emit("chat_close", { userId }); 
       socket.disconnect();
     };
-  }, [conversationId, isChatOpen]);
+  }, [conversationId, isChatOpen, dispatch,peerId,role,userId,onMessage,onStatusChange]);
 
   const sendMessage = (data: PrivateMessage) => {
      

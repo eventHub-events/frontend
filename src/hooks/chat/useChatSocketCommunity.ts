@@ -44,7 +44,7 @@ export function useChatSocketCommunity(
     return () => {
       socket.disconnect();
     };
-  }, [eventId, isChatOpen]);
+  }, [eventId, isChatOpen,dispatch,onMessage,role,userId]);
 
   const sendMessage = (data: CommunityMessage) => {
     socketRef.current?.emit("send_community_message", data);

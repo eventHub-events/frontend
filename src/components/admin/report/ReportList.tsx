@@ -2,7 +2,7 @@
 
 import { adminReportService } from "@/services/admin/adminReportService";
 import { ReportData, ReportStatus, ReportTypes } from "@/types/admin/report";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReportRow from "./ReportRow";
 import Pagination from "@/components/ui/Pagination";
 
@@ -23,29 +23,31 @@ export default function ReportList({ targetType, status }: Props) {
     setCurrentPage(1); // reset page on filter change
   }, [targetType, status]);
 
-  useEffect(() => {
+  
+
+ const fetchReports = useCallback(async () => {
+  try {
+    setLoading(true);
+
+    const res = await adminReportService.fetchReports({
+      targetType,
+      status,
+      page: currentPage,
+      limit: LIMIT,
+    });
+
+    setReports(res.data.data.reportData);
+    setTotalPages(res.data.data.total);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+}, [targetType, status, currentPage]);
+
+ useEffect(() => {
     fetchReports();
-  }, [targetType, status, currentPage]);
-
-  const fetchReports = async () => {
-    try {
-      setLoading(true);
-
-      const res = await adminReportService.fetchReports({
-        targetType,
-        status,
-        page: currentPage,
-        limit: LIMIT,
-      });
-
-      setReports(res.data.data.reportData);
-       setTotalPages(res.data.data.total);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [targetType, status, currentPage, fetchReports]);
 
   return (
     <div className="space-y-4">

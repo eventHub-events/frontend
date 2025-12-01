@@ -1,3 +1,4 @@
+
 import { ReportTypes } from "@/types/admin/report";
 
 
@@ -22,6 +23,14 @@ export const API_ROUTES = {
    },
    ORGANIZER_DASHBOARD : {
          FETCH_DATA : `/api/organizer/dashboard`
-   }
+   },
+    EVENTS : {
+      FETCH_BY_FILTER: `/api/user/search/events`,
+      FETCH_TRENDING_EVENTS : "/api/user/events/trending",
+      FETCH_FEATURED_EVENTS :  "/api/user/events/featured",
+      FETCH_EVENT_DETAILS_BY_ID : (eventId: string) =>  `/api/user/events/${eventId}`,
+      FETCH_ALL_FEATURED_EVENTS :  `/api/user/events/featured/all`,
+
+    }
 
 } 

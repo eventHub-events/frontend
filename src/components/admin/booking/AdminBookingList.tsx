@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FilterBar } from "@/components/ui/FilterBar";
 import Pagination from "@/components/ui/Pagination";
@@ -46,7 +46,8 @@ export default function AdminBookingList() {
 
   const limit = 8;
 
-  const fetchBookings = async (page = 1, appliedFilters = filters) => {
+  const fetchBookings = useCallback(
+  async (page = 1, appliedFilters = filters) => {
     try {
       setLoading(true);
 
@@ -69,11 +70,13 @@ export default function AdminBookingList() {
     } finally {
       setLoading(false);
     }
-  };
+  },
+  [limit, filters] // ← dependencies of the callback
+);
 
   useEffect(() => {
     fetchBookings(page, filters);
-  }, [page, filters]);
+  }, [page, filters,fetchBookings]);
 
   const filterConfig = [
     {

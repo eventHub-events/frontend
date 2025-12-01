@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ISubscriptionPlan } from "@/components/admin/subscription-plans/SubscriptionPlansManagement";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,32 +34,32 @@ export default function OrganizerSubscription() {
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
   const organizerId = organizer?.id
 
-  useEffect(() => {
-    fetchPlans();
-    fetchCurrentPlan(); // Fetch organizer's current subscription
-  }, []);
+ const fetchPlans = useCallback(async () => {
+  try {
+    const res = await subscriptionService.fetchAllSubscriptionPlans();
+    setPlans(res.data.data);
+    setIsLoading(false);
+  } catch (err) {
+    console.error("Error fetching plans", err);
+  }
+}, []);
 
-  const fetchPlans = async () => {
-    try {
-      const res = await subscriptionService.fetchAllSubscriptionPlans();
-      setPlans(res.data.data);
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error fetching plans", err);
-    }
-  };
+const fetchCurrentPlan = useCallback(async () => {
+  try {
+    if (!organizerId) return;
+    const res = await subscriptionService.fetchCurrentSubscription(organizerId);
+    setCurrentPlan(res.data.data || null);
+  } catch (err) {
+    console.log(err);
+    setCurrentPlan(null);
+  }
+}, [organizerId]);
 
-  const fetchCurrentPlan = async () => {
-    try {
-        if(!organizerId) return 
-      const res = await subscriptionService.fetchCurrentSubscription(organizerId);
-      console.log("rrrrr", res)
-      setCurrentPlan(res.data.data || null);
-    } catch (err) {
-      console.log(err);
-      setCurrentPlan(null);
-    }
-  };
+useEffect(() => {
+  fetchPlans();
+  fetchCurrentPlan();
+}, [fetchPlans, fetchCurrentPlan]);
+
 
   // const handlePurchaseOrUpgrade = async (plan: ISubscriptionPlan) => {
     // const action = currentPlan ? "upgrade" : "purchase";

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import RangeSelector from "./RangeSelector";
 import StatCard from "./StateCard";
 import { AdminDashboardDTO } from "@/types/admin/dashboard";
@@ -8,29 +8,30 @@ import SubscriptionRevenueChart from "./SubscriptionRevenueChart";
 import BookingCountChart from "./BookingCountChart";
 import RevenuePieChart from "./RevenuePieChart";
 import { adminDashboardService } from "@/services/admin/adminDashboardService";
-import { GiConsoleController } from "react-icons/gi";
+
 
 export default function AdminDashboardPage() {
   const [range, setRange] = useState<"daily" | "monthly" | "yearly">("monthly");
   const [data, setData] = useState<AdminDashboardDTO | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchDashboard();
-  }, [range]);
+  
+ const fetchDashboard = useCallback(async () => {
+  setLoading(true);
+  try {
+    const res = await adminDashboardService.fetchDashboardData(range);
+    console.log("res", res)
+    setData(res.data.data);
+  } catch (err) {
+    console.log(err)
+  } finally {
+    setLoading(false);
+  }
+}, [range]);
 
-  const fetchDashboard = async () => {
-    setLoading(true);
-    try {
-      const res = await adminDashboardService.fetchDashboardData(range);
-      console.log("res", res)
-      setData(res.data.data);
-    }catch(err){
-      console.log(err)
-    } finally {
-      setLoading(false);
-    }
-  };
+useEffect(() => {
+  fetchDashboard();
+}, [fetchDashboard]);
 
   if (loading || !data)
     return <div className="p-6">Loading dashboard...</div>;
