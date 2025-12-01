@@ -59,7 +59,8 @@ export default function ChatDrawer({
         setConversation(res.data.data);
         convId = res.data.data.id;
       } else {
-        setConversation({ id: conversationId!, eventId });
+         if (!conversationId) return;
+        setConversation({ id: conversationId, eventId });
       }
 
       // Load messages
@@ -74,7 +75,7 @@ export default function ChatDrawer({
     };
 
     load();
-  }, [open, mode, conversationId]);
+  }, [open, mode, conversationId,eventId,organizerId,userId]);
 
   const handleIncoming = useCallback(
     (msg: PrivateMessage| CommunityMessage) => {
@@ -100,32 +101,62 @@ export default function ChatDrawer({
     [conversation, peerId]
   );
 
-  // PRIVATE CHAT SOCKET HOOK
-  const { sendMessage: sendPrivate,socketRef } =
-    mode === "private" 
-      ? useChatSocketPrivate(
-          conversation?.id! ,
-          userId,
-          role,
-          handleIncoming,
-          handleStatusChange,
-          peerId,
-          isChatOpen // ✅ FIXED
-        )
-      : { sendMessage: () => {} };
+  // // PRIVATE CHAT SOCKET HOOK
+  // const { sendMessage: sendPrivate,socketRef } =
+  //   mode === "private" 
+  //     ? useChatSocketPrivate(
+  //         conversation?.id ?? "" ,
+  //         userId,
+  //         role,
+  //         handleIncoming,
+  //         handleStatusChange,
+  //         peerId,
+  //         isChatOpen // ✅ FIXED
+  //       )
+  //     : { sendMessage: () => {} };
 
-  // COMMUNITY CHAT SOCKET HOOK
-  const { sendMessage: sendCommunity } =
-    mode === "community"
-      ? useChatSocketCommunity(
-          eventId,
-          userId,
-          role,
-          handleIncoming,
-          isChatOpen // ✅ FIXED
-        )
-      : { sendMessage: () => {} };
+  // // COMMUNITY CHAT SOCKET HOOK
+  // const { sendMessage: sendCommunity } =
+  //   mode === "community"
+  //     ? useChatSocketCommunity(
+  //         eventId,
+  //         userId,
+  //         role,
+  //         handleIncoming,
+  //         isChatOpen // ✅ FIXED
+  //       )
+  //     : { sendMessage: () => {} };
       
+  
+  // ------------------------------
+// SOCKET HOOKS (must be unconditional)
+// ------------------------------
+
+const privateChat = useChatSocketPrivate(
+  conversation?.id ?? "",
+  userId,
+  role,
+  handleIncoming,
+  handleStatusChange,
+  peerId,
+  isChatOpen
+);
+
+const communityChat = useChatSocketCommunity(
+  eventId,
+  userId,
+  role,
+  handleIncoming,
+  isChatOpen
+);
+
+// Normalized values you can use anywhere
+const socketRef = privateChat.socketRef; // only meaningful in private mode
+const sendPrivate = privateChat.sendMessage;
+const sendCommunity = communityChat.sendMessage;
+
+
+
   useEffect(() => {
   if (!open) return;                 // run only when opened
   if (!conversation?.id) return;     // wait until conversation exists
@@ -137,7 +168,7 @@ export default function ChatDrawer({
     conversationId: conversation.id,
   });
 
-}, [open, conversation?.id]);
+}, [open, conversation?.id,mode, socketRef, userId]);
 
 useEffect(() => {
   if (open) return;                  // run only when closing
@@ -147,7 +178,7 @@ useEffect(() => {
 
   socketRef.current.emit("chat_close", { userId });
 
-}, [open]);
+}, [open, conversation?.id, mode, socketRef, userId]);
 
 
 

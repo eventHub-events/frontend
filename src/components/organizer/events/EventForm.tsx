@@ -11,6 +11,7 @@ import { showError, showSuccess, showWarning } from "@/utils/toastService";
 import { eventService } from "@/services/organizer/eventServices";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import Image from "next/image";
 
 interface Category {
   id: string;
@@ -70,7 +71,7 @@ export default function EventFormPage() {
       setCategories(response.data.data);
     };
     fetchCategories();
-  }, []);
+  }, [organizer?.isVerified,router]);
 
   // 🔹 If editing, fetch event details and populate form
   useEffect(() => {
@@ -459,11 +460,14 @@ export default function EventFormPage() {
                     <div className="flex gap-3 mt-3 overflow-x-auto pb-2">
                       {imagePreviews.map((src, idx) => (
                         <div key={idx} className="relative w-24 h-24">
-                          <img
-                            src={src}
-                            alt={`preview-${idx}`}
-                            className="w-full h-full object-cover rounded-lg border border-gray-300"
-                          />
+                                         <Image
+  src={src}
+  alt={`preview-${idx}`}
+  width={300}          // choose suitable size
+  height={300}
+  className="w-full h-full object-cover rounded-lg border border-gray-300"
+/>
+
                           <button
                             type="button"
                             onClick={() => removeImage(idx)}

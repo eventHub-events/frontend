@@ -1,4 +1,4 @@
-import { IOrganizer, IUser } from "@/types/authTypes";
+import { IOrganizer } from "@/types/authTypes";
 import StripeConnectButton from "./StripeConnectButton";
 
 export default function OrganizerPaymentsSection({organizer}:{organizer: IOrganizer}) {

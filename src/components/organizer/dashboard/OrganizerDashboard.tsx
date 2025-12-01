@@ -4,7 +4,7 @@
 // import EventPerformanceTable from "./EventPerformanceTable";
 import RevenueChart from "./RevenueChart";
 import BookingChart from "./BookingChart";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { organizerDashboardService } from "@/services/organizer/dashboard/organizerDashboardService";
 import { OrganizerDashboardDTO } from "@/types/organizer/dashboard";
 
@@ -15,19 +15,19 @@ export default function OrganizerDashboardPage() {
   const [data, setData] =
     useState<OrganizerDashboardDTO | null>(null);
 
-  const [range, setRange] =
+  const [range] =
     useState<"daily" | "monthly" | "yearly">("monthly");
 
-  useEffect(() => {
-    fetchDashboard();
-  }, [range]);
+    
+    const fetchDashboard = useCallback(async () => {
+      const res = await organizerDashboardService.fetchDashboardData(range);
+      console.log("res", res);
+      setData(res.data.data);
+    }, [range]);
+    useEffect(() => {
+      fetchDashboard();
+    }, [range,fetchDashboard]);
 
-  const fetchDashboard = async () => {
-    const res =
-      await organizerDashboardService.fetchDashboardData(range);
-      console.log("res",res)
-    setData(res.data.data);
-  };
 
   if (!data)
     return <div className="p-6">Loading dashboard…</div>;

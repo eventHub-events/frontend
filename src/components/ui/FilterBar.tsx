@@ -47,7 +47,7 @@ export function FilterBar({ filters, onApply,values }: FilterBarProps) {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [debouncedFilterValues]);
+  }, [debouncedFilterValues, filterValues, onApply]);
 
   const applyFilters = () => {
     onApply(filterValues);

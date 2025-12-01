@@ -117,7 +117,7 @@ export default function OrganizerProfile() {
     };
 
     fetchProfile();
-  }, [organizerId]);
+  }, [organizerId, organizer, dispatch]);
 
   const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];

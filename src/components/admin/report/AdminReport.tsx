@@ -8,7 +8,7 @@ import ReportList from "./ReportList";
 export default function AdminReports() {
 
   const[activeType, setActiveType] = useState<ReportTypes>(ReportTypes.EVENT);
-  const[status, setStatus] = useState<ReportStatus>(ReportStatus.PENDING);
+  const[status] = useState<ReportStatus>(ReportStatus.PENDING);
 
  return(
           <div className="p-6 space-y-6">

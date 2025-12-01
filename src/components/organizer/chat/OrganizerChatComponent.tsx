@@ -146,11 +146,11 @@ export default function OrganizerChat() {
             onClose={() => setSelected(null)}
             mode={selected.mode}
             eventId={selected.eventId}
-            organizerId={organizer?.id!}
-            userId={organizer?.id!}
+            organizerId={organizer?.id?? ""}
+            userId={organizer?.id ?? ""}
             role="organizer"
             conversationId={selected.conversationId}
-            userName={organizer?.name!}
+            userName={organizer?.name?? ""}
             peerId={selected.userId}
             targetName={selected.userName}
             isChatOpen={true}  

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { reviewService } from "@/services/review/reviewService";
 import Pagination from "@/components/ui/Pagination";
 import ReviewsListOrganizer from "./ReviewsListOrganizer";
@@ -19,37 +19,48 @@ export default function OrganizerReviews(){
   const organizerId= organizer?.id;
   const[loading,setLoading] = useState<boolean>(true);
 const limit = 6;
-  const fetchSummary = async() => {
-    try{
-        console.log("organizerId", organizerId)
-         const res = await reviewService.getReviewSummary("organizer",organizerId!,);
-     setSummary(res.data.data);
-     
-    }catch(err){
-       console.log(err)
-    }
-   
+ const fetchSummary = useCallback(async () => {
+  try {
+    if (!organizerId) return;
+    const res = await reviewService.getReviewSummary("organizer", organizerId);
+    setSummary(res.data.data);
+  } catch (err) {
+    console.log(err);
   }
+}, [organizerId]);
 
-   const fetchReviews = async (pageNumber: number) => {
-     try{
-          const page= pageNumber;
-          const res = await reviewService.getReviewsForOrganizer(organizerId!,"organizer",page,limit);
-          setReviews(res.data.data.reviews);
-          setTotalPages(res.data.data.total);
-     }catch(err){
-        console.log(err);
-     }finally{
-       setLoading(false);
-     }
-    }
-     useEffect(() => { 
-       if(!organizer)return;
+const fetchReviews = useCallback(
+  async (pageNumber: number) => {
+    try {
+      if (!organizerId) return;
       setLoading(true);
-     
-       fetchSummary();
-       fetchReviews(page);
-     },[page]);
+
+      const res = await reviewService.getReviewsForOrganizer(
+        organizerId,
+        "organizer",
+        pageNumber,
+        limit
+      );
+
+      setReviews(res.data.data.reviews);
+      setTotalPages(res.data.data.total);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  },
+  [organizerId, limit]
+);
+
+useEffect(() => {
+  if (!organizer) return;
+
+  fetchSummary();
+  fetchReviews(page);
+
+}, [organizer, page, fetchSummary, fetchReviews]);
+
     
 
           if (loading) {

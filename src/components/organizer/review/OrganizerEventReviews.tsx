@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import RatingSummary from "./RatingSummary";
 import { reviewService } from "@/services/review/reviewService";
 import Pagination from "@/components/ui/Pagination";
@@ -16,31 +16,41 @@ export default function OrganizerEventReview({eventId, isAdmin}: OrganizerEventR
   const[page,setPage]  = useState(1);
   const[totalPages,setTotalPages] = useState(1);
 const limit = 6;
-  const fetchSummary = async() => {
-    try{
-         const res = await reviewService.getReviewSummary("event",eventId,);
-     setSummary(res.data.data);
-    }catch(err){
-       console.log(err)
-    }
-   
+ const fetchSummary = useCallback(async () => {
+  try {
+    if (!eventId) return;
+    const res = await reviewService.getReviewSummary("event", eventId);
+    setSummary(res.data.data);
+  } catch (err) {
+    console.log(err);
   }
+}, [eventId]);
 
-   const fetchReviews = async (pageNumber: number) => {
-     try{
-       const page= pageNumber;
-          const res = await reviewService.getReviewsForOrganizer(eventId,"event",page,limit);
-          console.log("res", res)
-          setReviews(res.data.data.reviews);
-          setTotalPages(res.data.data.total);
-     }catch(err){{
-        console.log(err);
-     }}
+const fetchReviews = useCallback(
+  async (pageNumber: number) => {
+    try {
+      if (!eventId) return;
+
+      const res = await reviewService.getReviewsForOrganizer(
+        eventId,
+        "event",
+        pageNumber,
+        limit
+      );
+
+      setReviews(res.data.data.reviews);
+      setTotalPages(res.data.data.total);
+    } catch (err) {
+      console.log(err);
     }
-     useEffect(() => { 
-       fetchSummary();
-       fetchReviews(page);
-     },[page]);
+  },
+  [eventId, limit]
+);
+
+useEffect(() => {
+  fetchSummary();
+  fetchReviews(page);
+}, [page, fetchSummary, fetchReviews]);
 
      return (
             <div className="p-6 space-y-6 max-w-5xl mx-auto">

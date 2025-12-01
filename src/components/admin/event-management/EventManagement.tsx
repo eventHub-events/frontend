@@ -7,6 +7,7 @@ import { ILocation } from "@/types/organizer/events";
 import { useAppSelector } from "@/redux/hooks";
 import { EventApprovalStatus } from "@/enums/organizer/events";
 import OrganizerEventReview from "@/components/organizer/review/OrganizerEventReviews";
+import Image from "next/image";
 
 interface Event {
   id: string;
@@ -29,7 +30,7 @@ export default function AdminEventManagementPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [showEventReviewModal, setShowEventReviewModal] = useState(false);
 const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<string | null>(null);
 
@@ -40,7 +41,7 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
 
   // 🔹 Fetch all events
   const fetchEvents = async () => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const res = await eventManagementService.fetchAllEvents();
       console.log(res)
@@ -50,7 +51,7 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
       console.error(err);
       showWarning("Failed to load events");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -61,7 +62,7 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
   // 🔹 Approve Event
   const handleApprove = async (eventId: string) => {
     try {
-      setLoading(true);
+      // setLoading(true);
 
       if(selectedEvent?.eventApprovalStatus ===EventApprovalStatus.Approved){
          showWarning("Event already approved");
@@ -81,14 +82,14 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
       console.error(err);
       showWarning("Failed to approve event");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   // 🔹 Reject Event
   const handleReject = async (eventId: string, reason: string) => {
     try {
-      setLoading(true);
+      // setLoading(true);
        if(selectedEvent?.eventApprovalStatus ===EventApprovalStatus.Rejected){
          showWarning("Event already rejected");
          return
@@ -101,14 +102,14 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
       console.error(err);
       showWarning("Failed to reject event");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   // 🔹 Block Event
   const handleBlock = async (eventId: string, reason: string) => {
     try {
-      setLoading(true);
+      // setLoading(true);
        if(selectedEvent?.eventApprovalStatus ===EventApprovalStatus.Blocked){
          showWarning("Event already blocked");
          return
@@ -121,14 +122,14 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
       console.error(err);
       showWarning("Failed to block event");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   // 🔹 Unblock Event
   const handleUnblock = async (eventId: string) => {
     try {
-      setLoading(true);
+      // setLoading(true);
        if(selectedEvent?.eventApprovalStatus !==EventApprovalStatus.Blocked){
          showWarning("Event is not blocked");
          return
@@ -145,7 +146,7 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
       console.error(err);
       showWarning("Failed to unblock event");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -232,11 +233,13 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
                       : "hover:bg-gray-50"
                   }`}
                 >
-                  <img
-                    src={Array.isArray(event.images) ? event.images[0] : event.images}
-                    alt={event.title}
-                    className="w-16 h-16 rounded-lg object-cover shadow-sm"
-                  />
+                            <Image
+  src={Array.isArray(event.images) ? event.images[0] : event.images}
+  alt={event.title}
+  width={64}
+  height={64}
+  className="rounded-lg object-cover shadow-sm"
+/>
 
                   <div className="flex-1 space-y-1">
                     <p className="font-semibold text-gray-800">{event.title}</p>
@@ -289,11 +292,14 @@ const [selectedEventIdForReviews, setSelectedEventIdForReviews] = useState<strin
                   sticky top-0 h-screen overflow-y-auto">
             <h2 className="text-lg font-semibold mb-4">Event Details</h2>
 
-            <img
-              src={selectedEvent.images?.[0]}
-              alt={selectedEvent.title}
-              className="w-full h-48 object-cover rounded-xl mb-4"
-            />
+            <Image
+  src={selectedEvent.images?.[0] || "/placeholder.jpg"}
+  alt={selectedEvent.title}
+  width={800}   // choose a proper width
+  height={300}  // choose a proper height
+  className="w-full h-48 object-cover rounded-xl mb-4"
+/>
+
 
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-xl font-bold">{selectedEvent.title}</h3>

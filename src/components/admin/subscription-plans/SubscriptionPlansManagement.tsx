@@ -40,10 +40,7 @@ export interface ISubscriptionPlan {
 export default function SubscriptionPlansManagement() {
   const [plans, setPlans] = useState<ISubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    totalOrganizers: 0,
-    monthlyRevenue: 0,
-  });
+ 
   const [showModal, setShowModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<ISubscriptionPlan | null>(null);
 

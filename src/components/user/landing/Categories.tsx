@@ -1,6 +1,7 @@
 "use client"
 import { Category } from "@/components/admin/category/CategoryManagement";
 import { categoryService } from "@/services/admin/categoryService";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { 
   FaMusic, 
@@ -8,26 +9,25 @@ import {
   FaPalette, 
   FaLaptopCode, 
   FaUtensils,
-  FaChevronRight,
   FaCalendarAlt
 } from "react-icons/fa";
 import { IconType } from "react-icons/lib";
 
-const Categories = () => {
-   const  [categoryNames,setCategoryNames] = useState<string[]>([]);
+ const Categories = () => {
+//    const  [categoryNames,setCategoryNames] = useState<string[]>([]);
    const  [categories,setCategories] = useState<Category[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  // const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
- 
+  const router = useRouter();
    useEffect(() => {
      try{
 
       const fetchCategories = async () => {
-                const result=  await categoryService.fetchAllCategories();
+                const result=  await categoryService.fetchAllCategoriesForLandingPage();
                 console.log("cat", result)
                  setCategories(result.data.data);
-                 const names = result.data.data?.map((cat: Category) => cat.name)
-                 setCategoryNames(names)
+                //  const names = result.data.data?.map((cat: Category) => cat.name)
+                // //  setCategoryNames(names)
      }
       fetchCategories();
     }catch(err){
@@ -50,13 +50,7 @@ const getCategoryIcon = (name: string): IconType => {
   return categoryIconMap[key] || FaCalendarAlt; // fallback icon
 };
 
- const categoryIconColorMap: Record<string, string> = {
-  music: "text-purple-600",
-  sports: "text-green-600",
-  art: "text-pink-600",
-  technology: "text-indigo-600",
-  food: "text-orange-600",
-};
+ 
 const categoryStyleMap: Record<string, {
   ring: string;
   glow: string;
@@ -93,9 +87,7 @@ const getCategoryStyle = (name: string) => {
   );
 };
 
-const getIconColor = (name: string) => {
-  return categoryIconColorMap[name.toLowerCase()] ?? "text-gray-800";
-};
+
 
   return (
 <section className="relative py-28 bg-[#f5f6f8]">
@@ -149,6 +141,7 @@ const getIconColor = (name: string) => {
   return (
     <button
       key={category.id}
+      //  onClick={() => router.push(`/user/events/category/${encodeURIComponent(category.name)}`)}
       className="group relative rounded-3xl bg-white px-8 py-10 text-center
                  shadow-[0_10px_35px_rgba(0,0,0,0.08)]
                  hover:-translate-y-2 transition-all duration-300"
@@ -186,7 +179,9 @@ const getIconColor = (name: string) => {
 
     {/* CTA */}
     <div className="mt-20 text-center">
-      <button className="
+      <button 
+          onClick={() => router.push("/events")}
+       className="
         inline-flex items-center gap-3
         px-12 py-4 rounded-full
         text-white font-semibold

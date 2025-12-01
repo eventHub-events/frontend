@@ -6,7 +6,7 @@ import { BookedTickets } from "@/interface/user/booking";
 import { useAppSelector } from "@/redux/hooks";
 import { bookingService_organizer } from "@/services/organizer/bookingService";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { 
   FiEye, 
   FiDollarSign,
@@ -35,14 +35,10 @@ export default function OrganizerBookingList() {
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
   const router = useRouter()
 
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      fetchBooking(page, filters);
-    }, 400);
-    return () => clearTimeout(delay);
-  }, [page, filters]);
+  
 
-  const fetchBooking = async (page = 1, appliedFilters = filters) => {
+ const fetchBooking = useCallback(
+  async (page = 1, appliedFilters = filters) => {
     setLoading(true);
     try {
       if (!organizer) return;
@@ -55,16 +51,28 @@ export default function OrganizerBookingList() {
         startDate: appliedFilters.startDate,
         endDate: appliedFilters.endDate,
       };
-      const res = await bookingService_organizer.fetchAllDetails(organizer.id, query);
-      console.log("res", res)
+      const res = await bookingService_organizer.fetchAllDetails(
+        organizer.id,
+        query
+      );
+
       setBookings(res.data?.data.bookings);
       setTotalPages(res.data.data.totalPages);
-    } catch (Err) {
-      console.log(Err);
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoading(false);
     }
-  };
+  },
+  [organizer, limit, filters] // dependencies used inside fetchBooking
+);
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      fetchBooking(page, filters);
+    }, 400);
+    return () => clearTimeout(delay);
+  }, [page, filters, fetchBooking]);
 
   const filterConfig = [
     {
