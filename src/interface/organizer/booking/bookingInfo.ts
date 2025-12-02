@@ -21,6 +21,7 @@ export interface BookingFilter {
   startDate?: string;
   endDate?: string;
   status?: BookingStatus;
+  eventId?: string;
   page?: number;
   limit?: number
 

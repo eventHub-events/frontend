@@ -3,7 +3,6 @@ import { FilterBar } from "@/components/ui/FilterBar";
 import Pagination from "@/components/ui/Pagination";
 import { BookingInfo } from "@/interface/organizer/booking/bookingInfo";
 import { BookedTickets } from "@/interface/user/booking";
-import { useAppSelector } from "@/redux/hooks";
 import { bookingService_organizer } from "@/services/organizer/bookingService";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -18,11 +17,11 @@ import {
   FiUser
 } from "react-icons/fi";
 
-export default function OrganizerBookingList() {
+export default function OrganizerBookingList({eventId}:{eventId: string}) {
   const [bookings, setBookings] = useState<BookingInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
-    title: "",
+  
     userName: "",
     status: undefined,
     startDate: "",
@@ -32,7 +31,7 @@ export default function OrganizerBookingList() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 8;
-  const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+ 
   const router = useRouter()
 
   
@@ -41,21 +40,21 @@ export default function OrganizerBookingList() {
   async (page = 1, appliedFilters = filters) => {
     setLoading(true);
     try {
-      if (!organizer) return;
+      if (!eventId) return;
       const query = {
         page,
         limit,
-        title: appliedFilters.search || appliedFilters.title || "",
+        // title: appliedFilters.search || appliedFilters.title || "",
         userName: appliedFilters.userName || "",
         status: appliedFilters.status,
         startDate: appliedFilters.startDate,
         endDate: appliedFilters.endDate,
       };
-      const res = await bookingService_organizer.fetchAllDetails(
-        organizer.id,
+      const res = await bookingService_organizer.fetchBookingsByEventId(
+        eventId,
         query
       );
-
+       console.log("hello")
       setBookings(res.data?.data.bookings);
       setTotalPages(res.data.data.totalPages);
     } catch (error) {
@@ -64,7 +63,9 @@ export default function OrganizerBookingList() {
       setLoading(false);
     }
   },
-  [organizer, limit, filters] // dependencies used inside fetchBooking
+
+  
+  [eventId, limit] // dependencies used inside fetchBooking
 );
 
   useEffect(() => {
@@ -75,12 +76,12 @@ export default function OrganizerBookingList() {
   }, [page, filters, fetchBooking]);
 
   const filterConfig = [
-    {
-      type: "text" as const,
-      name: "search",
-      label: "Search Events",
-      icon: <FiSearch className="w-4 h-4" />
-    },
+    // {
+    //   type: "text" as const,
+    //   name: "search",
+    //   label: "Search Events",
+    //   icon: <FiSearch className="w-4 h-4" />
+    // },
     {
       type: "select" as const,
       name: "status",
@@ -158,10 +159,13 @@ export default function OrganizerBookingList() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
           <FilterBar
             filters={filterConfig}
-            onApply={(values) => {
-              setFilters({ ...filters, ...values });
-              setPage(1);
-            }}
+           onApply={(values) => {
+  setPage(1);
+  setFilters((prev) => ({
+    ...prev,
+    ...values,
+  }));
+}}
           />
         </div>
 

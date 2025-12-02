@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EventData } from "@/types/organizer/events";
+import { FiUsers } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 interface EventCardProps {
   event: EventData;
@@ -53,9 +55,9 @@ export const EventCard: React.FC<EventCardProps> = ({
     return "";
 }
   };
-
+   const router = useRouter();
   return (
-    <div className="bg-white shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition">
+    <div className="bg-white shadow-sm rounded-2xl overflow-hidden min-w-[380px] hover:shadow-md transition">
       <div className="relative h-44 w-full">
         <Image
           src={event.images?.[0] || "/placeholder.jpg"}
@@ -104,43 +106,62 @@ export const EventCard: React.FC<EventCardProps> = ({
           </div>
         </div>
 
-   <div className="flex justify-between mt-3 items-center">
+  {/* Actions */}
+{/* Actions */}
+ {/* Actions */}
+<div className="mt-4 flex items-center justify-between">
 
-  {/* Edit */}
-  <Button
-    onClick={() => onEdit(event.eventId!)}
-    variant="outline"
-    size="sm"
-    className="flex items-center space-x-1"
-  >
-    <FaEdit />
-    <span>Edit</span>
-  </Button>
+  {/* LEFT: Primary actions */}
+  <div className="flex items-center gap-2">
+    <Button
+      onClick={() => onEdit(event.eventId!)}
+      variant="outline"
+      size="sm"
+      className="px-2"
+    >
+      <FaEdit className="mr-1" />
+      Edit
+    </Button>
 
-  {/* Tickets */}
-  <Button
-    onClick={() => onManageTickets?.(event.eventId!)}
-    variant="secondary"
-    size="sm"
-    className="flex items-center space-x-1"
-  >
-    <FaDollarSign />
-    <span>Tickets</span>
-  </Button>
+    <Button
+      onClick={() => onManageTickets?.(event.eventId!)}
+      variant="secondary"
+      size="sm"
+      className="px-2"
+    >
+      <FaDollarSign className="mr-1" />
+      Tickets
+    </Button>
 
-  {/* ⭐ NEW — View Reviews */}
-  <Button
-    onClick={() => onViewReviews(event.eventId!)}
-    variant="secondary"
-    size="sm"
-    className="flex items-center space-x-1 text-green-600 hover:text-blue-800"
-  >
-    <FaEye color="red" />
-    <span>Reviews</span>
-  </Button>
+    <Button
+      onClick={() => onViewReviews(event.eventId!)}
+      variant="secondary"
+      size="sm"
+      className="px-2 text-green-600"
+    >
+      <FaEye className="mr-1" />
+      Reviews
+    </Button>
 
-  {/* View / Cancel / Delete Icons */}
-  <div className="flex items-center space-x-2">
+    <button
+      onClick={() =>
+        router.push(`/organizer/events/${event.eventId}/bookings`)
+      }
+      className="
+        inline-flex items-center gap-2
+        px-2 py-1.5 text-sm font-medium
+        rounded-lg bg-indigo-50 text-indigo-600
+        hover:bg-indigo-100 transition
+        whitespace-nowrap
+      "
+    >
+      <FiUsers className="w-4 h-4" />
+      Bookings
+    </button>
+  </div>
+
+  {/* RIGHT: Secondary actions */}
+  <div className="flex items-center gap-3">
     <FaEye
       onClick={() => onView(event.eventId!)}
       className="cursor-pointer text-gray-500 hover:text-blue-600"
@@ -157,7 +178,11 @@ export const EventCard: React.FC<EventCardProps> = ({
 
 </div>
 
+
+</div>
+
+
       </div>
-    </div>
+    
   );
 };
