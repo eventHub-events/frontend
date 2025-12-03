@@ -8,6 +8,7 @@ export const API_ROUTES = {
   FETCH_BOOKING_DETAILS : (organizerId:string)  => `/api/organizer/${organizerId}/bookings`,
   FETCH_BOOKING_BY_ID :(organizerId:string, bookingId: string) => `/api/organizer/${organizerId}/bookings/${bookingId}`,
   FETCH_USER_BOOKINGS: (userId: string) => `/api/user/${userId}/bookings`,
+  FETCH_BOOKINGS_BY_EVENTID : (eventId :string) => `/api/organizer/bookings/${eventId}`,
   FETCH_USER_BOOKING_BY_ID:(bookingId: string) => `/api/user/bookings/${bookingId}`,
   FETCH_USER_BOOKING_BY_SESSION_ID:(sessionId: string) => `/api/user/bookings/session/${sessionId}`,
   PAYMENT_CHECKOUT :() => `/api/user/payments/create-checkout-session`,
@@ -40,6 +41,15 @@ export const API_ROUTES = {
       DELETE: (categoryId :string) => `/api/admin/categories/${categoryId}/soft-delete`,
       FETCH_BY_ID :(categoryId: string) => `/api/admin/categories/${categoryId}`,
       FETCH_ALL_FOR_LANDING_PAGE :`/api/admin/common/categories`
+    },
+
+    EVENT_ADMIN: {
+      FETCH_ALL_EVENTS :`/api/admin/events`,
+      UPDATE_ADMIN: (eventId: string) => `/api/admin/event-moderation/${eventId}/update`,
+      REJECT_EVENT: (eventId: string) => `/api/admin/events/${eventId}/reject`,
+      APPROVE_EVENT: (eventId: string) => `/api/admin/events/${eventId}/approve`,
+      BLOCK_EVENT :(eventId: string) => `/api/admin/events/${eventId}/block`,
+      UNBLOCK_EVENT: (eventId: string) => `/api/admin/events/${eventId}/unblock`
     }
 
 } 

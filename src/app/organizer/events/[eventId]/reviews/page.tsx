@@ -11,7 +11,7 @@ export  default function OrganizerEventReviewPage (){
   
   return (
      <ProtectedRoute allowedRoles={["organizer"]}>
-          <div className="ml-64 p-6"> 
+          <div > 
        <OrganizerEventReview eventId={eventId as string }/>
           </div>
      </ProtectedRoute>
