@@ -41,6 +41,15 @@ export const API_ROUTES = {
       DELETE: (categoryId :string) => `/api/admin/categories/${categoryId}/soft-delete`,
       FETCH_BY_ID :(categoryId: string) => `/api/admin/categories/${categoryId}`,
       FETCH_ALL_FOR_LANDING_PAGE :`/api/admin/common/categories`
+    },
+
+    EVENT_ADMIN: {
+      FETCH_ALL_EVENTS :`/api/admin/events`,
+      UPDATE_ADMIN: (eventId: string) => `/api/admin/event-moderation/${eventId}/update`,
+      REJECT_EVENT: (eventId: string) => `/api/admin/events/${eventId}/reject`,
+      APPROVE_EVENT: (eventId: string) => `/api/admin/events/${eventId}/approve`,
+      BLOCK_EVENT :(eventId: string) => `/api/admin/events/${eventId}/block`,
+      UNBLOCK_EVENT: (eventId: string) => `/api/admin/events/${eventId}/unblock`
     }
 
 } 
