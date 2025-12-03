@@ -7,13 +7,17 @@ import ReportModal from "./ReportModal";
 
 interface Props {
   targetId: string;
-  targetType: "event" | "organizer";
+  targetType: "event" | "organizer"|"chat_message";
   reporterId: string;
  reporterName: string;
  reporterRole?: string;
+ chatId?: string;
+ senderId?:string;
+ senderName?:string;
+   mode?:"private"|"community"
 }
 
-export default function ReportIcon({ targetId, targetType,reporterId,reporterName,reporterRole }: Props) {
+export default function ReportIcon({ targetId, targetType,reporterId,reporterName,reporterRole, chatId ,senderId, senderName, mode}: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -38,6 +42,10 @@ export default function ReportIcon({ targetId, targetType,reporterId,reporterNam
           reporterId={reporterId}
           reporterName={reporterName}
           reporterRole={reporterRole}
+          chatId = {chatId}
+          senderId ={senderId!}
+          senderName={senderName}
+          mode={mode}
         />
       )}
     </>

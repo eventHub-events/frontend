@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import ChatWindow from "./ChatWindow";
 import { ChatMessageUI, CommunityMessage, ConversationData, PrivateMessage, StatusPayload } from "@/types/common/chat/chat";
 
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -20,6 +21,7 @@ interface Props {
   peerId?: string;
   targetName?: string;
   isChatOpen: boolean;
+ 
 }
 
 export default function ChatDrawer({
@@ -232,7 +234,7 @@ useEffect(() => {
         </button>
       </div>
 
-      <ChatWindow messages={messages} onSend={handleSend} />
+      <ChatWindow messages={messages} onSend={handleSend} userName ={userName} userId={userId} role={role} mode={mode} />
     </div>
   );
 }

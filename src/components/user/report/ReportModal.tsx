@@ -6,15 +6,21 @@ import { showError, showSuccess } from "@/utils/toastService";
 import { reportService } from "@/services/user/reportService";
 import { CreateReportDTO } from "@/types/user/report/report";
 import { AxiosError } from "axios";
+import ModalPortal from "./ModalPortal";
+
 
 
 interface Props {
   targetId: string;
-  targetType: "event" | "organizer" | "user";
+  targetType: "event" | "organizer" | "user"|"chat_message";
   reporterId: string;
  reporterName: string;
  reporterRole?: string;
+ chatId?:string;
   onClose: () => void;
+  senderId?: string;
+  senderName?:string;
+    mode?:"private"|"community"
 }
 
 const REPORT_REASONS = {
@@ -39,6 +45,13 @@ const REPORT_REASONS = {
     "Fake account",
     "Other",
   ],
+   chat_message: [ // ✅ ADD THIS
+    "Abusive language",
+    "Harassment",
+    "Spam",
+    "Hate speech",
+    "Other",
+  ],
 };
 
 export default function ReportModal({
@@ -47,12 +60,17 @@ export default function ReportModal({
   onClose,
    reporterId,
    reporterName,
-    reporterRole
+    reporterRole,
+    senderId,
+    senderName,
+    chatId,
+    mode
 
 }: Props) {
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   // const [loading, setLoading] = useState(false);
+  
 
   const reasons = REPORT_REASONS[targetType];
 
@@ -72,18 +90,27 @@ export default function ReportModal({
           description,
           reporterId,
           reporterName,
-          reporterRole
+          reporterRole,
+          senderId,
+          senderName,
+          chatId,
+          mode
+          
        }
+       console.log("payylaod", payload)
     if(targetType === "event" ){
        await reportService.createEventReport(payload)
        showSuccess("Report submitted successfully");
        onClose();
-      }else{
+      }else if(targetType === "organizer"){
         await reportService.createOrganizerReport(payload)
         showSuccess("Report submitted successfully");
         onClose();
+    }else if (targetType === "chat_message") {
+      await reportService.createChatReport(payload); // ✅ IMPORTANT
     }
-      
+      showSuccess("Report submitted successfully");
+    onClose();
 
     } catch (err) {
       console.log(err)
@@ -95,6 +122,7 @@ export default function ReportModal({
   };
 
   return (
+     <ModalPortal>
    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-3">
   <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-6 relative">
 
@@ -146,6 +174,7 @@ export default function ReportModal({
 
   </div>
 </div>
+ </ModalPortal>
 
   );
 }

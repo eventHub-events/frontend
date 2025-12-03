@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import MessageBubble from "./MessageBubble";
 import { ChatWindowProps } from "@/types/common/chat/chat";
 
-export default function ChatWindow({ messages, onSend }: ChatWindowProps ) {
+export default function ChatWindow({ messages, onSend, userName,userId, role,mode }: ChatWindowProps ) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    console.log("messages", messages)
   }, [messages]);
 
   return (
@@ -24,6 +25,14 @@ export default function ChatWindow({ messages, onSend }: ChatWindowProps ) {
             message={msg.message}
             createdAt={new Date(msg.createdAt).toLocaleTimeString()}
               senderName={msg.senderName} 
+              senderId={msg.senderId}
+              conversationId={msg.conversationId}
+              messageId={msg.id}
+              reporterName={userName}
+              reporterId={userId}
+              reporterRole ={role}
+              mode ={mode}
+
           />
         ))}
         <div ref={messagesEndRef} />
