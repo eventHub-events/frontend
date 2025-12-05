@@ -11,5 +11,6 @@ export interface CreateReportDTO {
   senderId?: string;
   senderName?: string;
   chatId? :string;
-    mode?:"private"|"community"
+    mode?:"private"|"community";
+    messageSnapshot?: string
 }

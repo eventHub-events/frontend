@@ -14,10 +14,11 @@ interface Props {
  chatId?: string;
  senderId?:string;
  senderName?:string;
-   mode?:"private"|"community"
+   mode?:"private"|"community";
+   message?:string;
 }
 
-export default function ReportIcon({ targetId, targetType,reporterId,reporterName,reporterRole, chatId ,senderId, senderName, mode}: Props) {
+export default function ReportIcon({ targetId, targetType,reporterId,reporterName,reporterRole, chatId ,senderId, senderName, mode, message}: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -46,6 +47,7 @@ export default function ReportIcon({ targetId, targetType,reporterId,reporterNam
           senderId ={senderId!}
           senderName={senderName}
           mode={mode}
+          message={message}
         />
       )}
     </>

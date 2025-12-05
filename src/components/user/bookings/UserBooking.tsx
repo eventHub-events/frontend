@@ -43,6 +43,7 @@ interface Booking {
   tickets: TicketInfo[];
   totalAmount: number;
   paymentStatus: string;
+
   paymentMethod: string;
   bookingDate: string;
   ticketUrls: string[];
@@ -67,13 +68,21 @@ const filterConfig = [
     type: "text" as const,
     placeholder: "Filter by organizer...",
   },
-  {
-    label: "Payment Status",
-    name: "status",
-    type: "select" as const,
-    options: ["Paid", "pending-payment", "Refunded"],
-    placeholder: "All statuses",
-  },
+ {
+  label: "Booking Status",
+  name: "status",
+  type: "select" as const,
+  options: [
+    "confirmed",
+    "pending-payment",
+    "payment-failed",
+    "cancelled",
+    "expired",
+    "refunded",
+  ],
+  placeholder: "All statuses",
+},
+
   {
     label: "Booking Date",
     name: "bookingDate",
@@ -81,11 +90,14 @@ const filterConfig = [
   },
 ];
 
-const PaymentStatusBadge = ({ status }: { status: string }) => {
+const BookingStatusBadge = ({ status }: { status: string }) => {
   const statusConfig = {
-    Paid: { variant: "default" as const, label: "Paid" },
-    "pending-payment": { variant: "secondary" as const, label: "Pending" },
-    Refunded: { variant: "outline" as const, label: "Refunded" },
+    confirmed: { variant: "default" as const, label: "Confirmed" },
+    "pending-payment": { variant: "secondary" as const, label: "Pending Payment" },
+    "payment-failed": { variant: "destructive" as const, label: "Payment Failed" },
+    cancelled: { variant: "outline" as const, label: "Cancelled" },
+    expired: { variant: "outline" as const, label: "Expired" },
+    refunded: { variant: "outline" as const, label: "Refunded" },
   };
 
   const config =
@@ -247,7 +259,8 @@ export default function UserBookings() {
                     <span>{format(new Date(booking.bookingDate), "dd MMM yyyy")}</span>
                   </div>
                   <div className="mt-2">
-                    <PaymentStatusBadge status={booking.paymentStatus} />
+                    <BookingStatusBadge status={booking.paymentStatus} />
+
                   </div>
                 </div>
               </CardContent>
@@ -262,7 +275,7 @@ export default function UserBookings() {
   if (initialLoad) {
     return (
       <div className="flex flex-col gap-6">
-        <FilterBar filters={filterConfig} values={filters} onApply={handleFilterApply} />
+        <FilterBar filters={filterConfig}  onApply={handleFilterApply} />
         <div className="flex h-[calc(100vh-15rem)] bg-background rounded-xl shadow-sm border overflow-hidden">
           <div className="w-1/3 border-r overflow-y-auto bg-muted/30">
             <div className="p-4 border-b">
@@ -284,7 +297,7 @@ export default function UserBookings() {
 
   return (
     <div className="flex flex-col gap-6">
-      <FilterBar filters={filterConfig} values={filters} onApply={handleFilterApply} />
+      <FilterBar filters={filterConfig}  onApply={handleFilterApply} />
       <div className="flex h-[calc(100vh-15rem)] rounded-xl shadow-md border overflow-hidden">
         {/* Left Panel */}
         <div className="w-1/3 border-r overflow-y-auto flex flex-col bg-muted/30">
@@ -367,7 +380,8 @@ export default function UserBookings() {
                   {selectedBooking.eventName}
                 </h2>
                 <div className="flex items-center gap-3">
-                  <PaymentStatusBadge status={selectedBooking.paymentStatus} />
+                  <BookingStatusBadge status={selectedBooking.paymentStatus} />
+
                   <span className="text-sm text-muted-foreground font-medium">
                     Booking ID: {selectedBooking.bookingId}
                   </span>
@@ -481,9 +495,10 @@ export default function UserBookings() {
                   <div className="p-2 rounded-lg bg-green-500/10">
                     <CreditCard className="w-4 h-4 text-green-500" />
                   </div>
-                  <span className="font-medium text-foreground">Payment Status</span>
+                  <span className="font-medium text-foreground">Booking Status</span>
                 </div>
-                <PaymentStatusBadge status={selectedBooking.paymentStatus} />
+                <BookingStatusBadge status={selectedBooking.paymentStatus} />
+
               </div>
 
               <div className="flex items-center justify-between py-2 border-b border-border/30">

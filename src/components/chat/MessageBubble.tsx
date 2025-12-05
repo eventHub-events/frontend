@@ -52,6 +52,7 @@ export default memo(function MessageBubble({ isMine, message, createdAt, senderN
                 senderId={senderId}
                 senderName={senderName}
                 mode={mode}
+                message={message}
               />
             </div>
           )}

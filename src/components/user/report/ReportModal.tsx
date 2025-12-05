@@ -21,6 +21,7 @@ interface Props {
   senderId?: string;
   senderName?:string;
     mode?:"private"|"community"
+    message?: string;
 }
 
 const REPORT_REASONS = {
@@ -64,7 +65,8 @@ export default function ReportModal({
     senderId,
     senderName,
     chatId,
-    mode
+    mode,
+    message
 
 }: Props) {
   const [reason, setReason] = useState("");
@@ -79,7 +81,7 @@ export default function ReportModal({
       showError("Please select a reason");
       return;
     }
-
+    console.log("message is", message)
     try {
       // setLoading(true);
     
@@ -94,7 +96,8 @@ export default function ReportModal({
           senderId,
           senderName,
           chatId,
-          mode
+          mode,
+          messageSnapshot: message
           
        }
        console.log("payylaod", payload)

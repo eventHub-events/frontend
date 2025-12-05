@@ -35,7 +35,7 @@ export default function ReportList({ targetType, status }: Props) {
       page: currentPage,
       limit: LIMIT,
     });
-
+    console.log("resss", res)
     setReports(res.data.data.reportData);
     setTotalPages(res.data.data.total);
   } catch (err) {

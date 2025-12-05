@@ -7,12 +7,13 @@ import { useAppSelector } from "@/redux/hooks";
 import { eventService } from "@/services/organizer/eventServices";
 import { OrganizerChatService } from "@/services/organizer/organizerChatService";
 import { ConversationResponseDTO, ConversationsDataType, ConversationType, SelectedConversationType } from "@/types/organizer/chat";
+import { EventResponseDTO } from "@/types/organizer/events";
 import { useEffect, useState } from "react";
 
 export default function OrganizerChat() {
 
 
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<EventResponseDTO[]>([]);
   const [conversations, setConversations] = useState<ConversationsDataType| null>(null);
   const [selected, setSelected] = useState<SelectedConversationType| null>(null);
   
@@ -30,7 +31,7 @@ export default function OrganizerChat() {
     const fetchEvents = async () => {
       try {
         const res = await eventService.fetchEvents(organizer.id);
-        setEvents(res.data.data );
+        setEvents(res.data.data as EventResponseDTO[] );
       } catch (err) {
         console.log(err);
       }
@@ -44,7 +45,7 @@ export default function OrganizerChat() {
   const loadEventChats = async (eventId: string) => {
     try {
       const res = await OrganizerChatService.getOrganizerEventChats(eventId);
-      console.log("reeeee",res)
+    
       setConversations(res.data.data as ConversationsDataType);
     } catch (err) {
       console.log(err);
@@ -69,11 +70,11 @@ export default function OrganizerChat() {
       <div className="w-60 border-r bg-gray-50">
         <h2 className="p-3 font-bold">My Events</h2>
 
-        {events.map((ev: any) => (
+        {events.map((ev: EventResponseDTO) => (
           <div
             key={ev.eventId}
             onClick={() => {
-              loadEventChats(ev.eventId);
+              loadEventChats(ev.eventId!);
               setSelected(null);
             }}
             className="p-3 cursor-pointer hover:bg-gray-200"
