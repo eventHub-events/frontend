@@ -1,7 +1,8 @@
 export enum ReportTypes {
   EVENT ="event",
   USER = "user",
-  ORGANIZER = "organizer"
+  ORGANIZER = "organizer",
+ CHAT_MESSAGE = "chat_message" 
 }
 
 export enum ReportStatus {
@@ -32,6 +33,10 @@ export interface ReportData{
              reported?:  Date;
               updatedAt?: Date;
               id?: string;
+              chatId?:string;
+              senderId?: string;
+              senderName?: string;
+              messageSnapshot?:string
 
 }
 

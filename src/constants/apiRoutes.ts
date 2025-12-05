@@ -17,6 +17,7 @@ export const API_ROUTES = {
    REPORT : {
       CREATE_EVENT_REPORT: `/api/user/report/event`,
       CREATE_ORGANIZER_REPORT :`/api/user/report/organizer`,
+      CREATE_CHAT_REPORT :`/api/chat/report/chat-message`,
       FETCH_REPORTS: (targetType: ReportTypes ) => `/api/admin/reports/${targetType}`,
       TAKE_ACTION: (reportId:  string) => `/api/admin/report/${reportId}`
    },

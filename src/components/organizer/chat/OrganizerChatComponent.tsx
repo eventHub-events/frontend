@@ -6,14 +6,16 @@ import { useAppSelector } from "@/redux/hooks";
 
 import { eventService } from "@/services/organizer/eventServices";
 import { OrganizerChatService } from "@/services/organizer/organizerChatService";
+import { ConversationResponseDTO, ConversationsDataType, ConversationType, SelectedConversationType } from "@/types/organizer/chat";
+import { EventResponseDTO } from "@/types/organizer/events";
 import { useEffect, useState } from "react";
 
 export default function OrganizerChat() {
 
 
-  const [events, setEvents] = useState([]);
-  const [conversations, setConversations] = useState<any>(null);
-  const [selected, setSelected] = useState<any>(null);
+  const [events, setEvents] = useState<EventResponseDTO[]>([]);
+  const [conversations, setConversations] = useState<ConversationsDataType| null>(null);
+  const [selected, setSelected] = useState<SelectedConversationType| null>(null);
   
 
   const organizer = useAppSelector((s) => s.organizerAuth.organizer);
@@ -29,27 +31,28 @@ export default function OrganizerChat() {
     const fetchEvents = async () => {
       try {
         const res = await eventService.fetchEvents(organizer.id);
-        setEvents(res.data.data);
+        setEvents(res.data.data as EventResponseDTO[] );
       } catch (err) {
         console.log(err);
       }
     };
 
     fetchEvents();
+    console.log("ssssss", selected)
    
   }, [organizer]);
 
   const loadEventChats = async (eventId: string) => {
     try {
       const res = await OrganizerChatService.getOrganizerEventChats(eventId);
-      console.log("reeeee",res)
-      setConversations(res.data.data);
+    
+      setConversations(res.data.data as ConversationsDataType);
     } catch (err) {
       console.log(err);
     }
   };
-  const handleUpdate = (c) => {
-      setConversations((prev: any) => {
+  const handleUpdate = (c: ConversationResponseDTO) => {
+      setConversations((prev) => {
         if(!prev) return prev;
         return {
           ...prev,
@@ -67,11 +70,11 @@ export default function OrganizerChat() {
       <div className="w-60 border-r bg-gray-50">
         <h2 className="p-3 font-bold">My Events</h2>
 
-        {events.map((ev: any) => (
+        {events.map((ev: EventResponseDTO) => (
           <div
             key={ev.eventId}
             onClick={() => {
-              loadEventChats(ev.eventId);
+              loadEventChats(ev.eventId!);
               setSelected(null);
             }}
             className="p-3 cursor-pointer hover:bg-gray-200"
@@ -93,7 +96,7 @@ export default function OrganizerChat() {
     onClick={() => {
       handleUpdate(c)
       setSelected({
-                mode: "private",
+                mode: ConversationType.PRIVATE,
                 conversationId: c.id,
                 userName: c.userName,
                 userId: c.userId,
@@ -105,7 +108,7 @@ export default function OrganizerChat() {
   >
     <span>{c.userName}</span>
      {/* 🔥 UNREAD BADGE */}
-    {c.unreadCount > 0 && (
+    {c.unreadCount! > 0 && (
       <span className="bg-red-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
         {c.unreadCount}
       </span>
@@ -124,7 +127,7 @@ export default function OrganizerChat() {
              
              
               setSelected({
-                mode: "community",
+                mode: ConversationType.COMMUNITY,
                 conversationId: conversations.communityChat.id,
                 eventId: conversations.communityChat.eventId,
               });
@@ -145,7 +148,7 @@ export default function OrganizerChat() {
             open={true}
             onClose={() => setSelected(null)}
             mode={selected.mode}
-            eventId={selected.eventId}
+            eventId={selected.eventId!}
             organizerId={organizer?.id?? ""}
             userId={organizer?.id ?? ""}
             role="organizer"

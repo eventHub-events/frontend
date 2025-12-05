@@ -55,4 +55,8 @@ export interface StatusPayload {
 export interface ChatWindowProps {
   messages: ChatMessageUI[];
   onSend: (text: string, reset: (value: string) => void) => void;
+  userName?:string;
+  role?:string;
+  userId? :string;
+  mode?:"private"|"community"
 }

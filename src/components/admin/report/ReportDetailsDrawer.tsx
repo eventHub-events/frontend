@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { adminReportService } from "@/services/admin/adminReportService";
-import { ReportActions, ReportData, ReportStatus } from "@/types/admin/report";
+import { ReportActions, ReportData, ReportStatus, ReportTypes } from "@/types/admin/report";
 
 interface Props {
   report: ReportData;
@@ -66,6 +66,34 @@ export default function ReportDetailsDrawer({
           </p>
         )}
       </div>
+                            {/* ✅ Chat Message Snapshot */}
+{report.targetType === ReportTypes.CHAT_MESSAGE && (
+  <div className="mt-4 p-3 rounded bg-gray-50 text-sm space-y-1">
+    <p>
+      <strong>Sender:</strong>{" "}
+      <span className="text-gray-700">{report.senderName}</span>
+    </p>
+
+    <p>
+      <strong>Message ID:</strong>{" "}
+      <span className="text-gray-500 text-xs">{report.targetId}</span>
+    </p>
+
+    {report.messageSnapshot && (
+  <div className="mt-2 text-sm text-gray-700">
+    <p className="font-semibold text-gray-800 mb-1">
+      Message:
+    </p>
+
+    <div className="italic border-l-4 border-red-400 pl-3 text-gray-600">
+      “{report.messageSnapshot}”
+    </div>
+  </div>
+)}
+
+  </div>
+)}
+
 
       {/* Admin Note */}
       <textarea

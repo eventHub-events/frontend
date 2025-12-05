@@ -4,6 +4,7 @@ const tabs = [
   { label: "Events", value: ReportTypes.EVENT },
   { label: "Organizers", value: ReportTypes.ORGANIZER },
   { label: "Users", value: ReportTypes.USER },
+  { label: "Chat Messages", value: ReportTypes.CHAT_MESSAGE },
 ];
 
 

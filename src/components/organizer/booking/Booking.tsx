@@ -10,7 +10,6 @@ import {
   FiEye, 
   FiDollarSign,
   FiLoader,
-  FiSearch,
   FiUsers,
   FiCalendar,
   FiMapPin,
