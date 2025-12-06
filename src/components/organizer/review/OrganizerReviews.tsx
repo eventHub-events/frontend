@@ -23,6 +23,7 @@ const limit = 6;
   try {
     if (!organizerId) return;
     const res = await reviewService.getReviewSummary("organizer", organizerId);
+    console.log("ress", res)
     setSummary(res.data.data);
   } catch (err) {
     console.log(err);
