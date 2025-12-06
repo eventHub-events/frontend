@@ -176,7 +176,8 @@ const EventDetails: React.FC = () => {
      eventVenue: event.venue,
      tickets: selectedTickets,
      organizerId: event.organizerId,
-     eventImages : event.images
+     eventImages : event.images,
+     userEmail: user.email
      
 
   };

@@ -13,6 +13,7 @@ export const API_ROUTES = {
   FETCH_USER_BOOKING_BY_SESSION_ID:(sessionId: string) => `/api/user/bookings/session/${sessionId}`,
   PAYMENT_CHECKOUT :() => `/api/user/payments/create-checkout-session`,
   GET_USER_CHAT_COUNT : (eventId :string)=> `/api/user/chat/event/${eventId}`,
+  CANCEL_BOOKING :(bookingId :string) => `/api/user/bookings/cancel/${bookingId}`,
 
    REPORT : {
       CREATE_EVENT_REPORT: `/api/user/report/event`,

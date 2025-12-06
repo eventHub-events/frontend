@@ -28,6 +28,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Swal from "sweetalert2";
+import { AxiosError } from "axios";
 
 
 
@@ -181,9 +183,20 @@ export default function UserBookings() {
         const bookingsList = res.data.data.bookingsList || [];
         setBookings(bookingsList);
         setTotalPages(res.data.data.totalPages || 1);
-        if (bookingsList.length > 0 && !selectedBooking) {
-          setSelectedBooking(bookingsList[0]);
+        // if (bookingsList.length > 0 && !selectedBooking) {
+        //   setSelectedBooking(bookingsList[0]);
+        // }
+
+           if (selectedBooking) {
+        const updatedMatch = bookingsList.find(
+          (b:Booking) => b.bookingId === selectedBooking.bookingId
+        );
+        if (updatedMatch) {
+          setSelectedBooking(updatedMatch); // ⭐ refresh right panel
         }
+      } else if (bookingsList.length > 0) {
+        setSelectedBooking(bookingsList[0]);
+      }
       } catch (err) {
         console.error("Error fetching bookings:", err);
       } finally {
@@ -191,7 +204,7 @@ export default function UserBookings() {
         setInitialLoad(false);
       }
     },
-    [user?.id, selectedBooking]
+    [user?.id]
   );
 
   useEffect(() => {
@@ -523,30 +536,82 @@ export default function UserBookings() {
           </Card>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 pt-4">
-          <Button 
-            onClick={() => router.push(`/user/events/${selectedBooking.eventId}`)} 
-            variant="outline" 
-            className="flex items-center gap-2 px-6 py-2.5 border-2 hover:border-primary/50 transition-all"
-          >
-            <Eye className="w-4 h-4" />
-            View Event Details
-          </Button>
-          <Button
-            onClick={() => {
-              if (!selectedBooking?.ticketUrls?.length) {
-                alert("Tickets are still being generated… Please try again in a moment.");
-                return;
-              }
-              setShowTicketViewer(true);
-            }}
-            className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl"
-          >
-            <Eye className="w-4 h-4" />
-            View Tickets
-          </Button>
-        </div>
+      {/* Action Buttons */}
+<div className="flex gap-4 pt-4">
+
+  {/* View Event Details */}
+  <Button 
+    onClick={() => router.push(`/user/events/${selectedBooking.eventId}`)} 
+    variant="outline" 
+    className="flex items-center gap-2 px-6 py-2.5 border-2 hover:border-primary/50 transition-all"
+  >
+    <Eye className="w-4 h-4" />
+    View Event Details
+  </Button>
+
+  {/* View Tickets */}
+  <Button
+    onClick={() => {
+      if (!selectedBooking?.ticketUrls?.length) {
+        alert("Tickets are still being generated… Please try again in a moment.");
+        return;
+      }
+      setShowTicketViewer(true);
+    }}
+    className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl"
+  >
+    <Eye className="w-4 h-4" />
+    View Tickets
+  </Button>
+
+  {/* CANCEL BOOKING BUTTON */}
+  {selectedBooking.paymentStatus === "confirmed" &&
+    new Date(selectedBooking.eventDate) > new Date() && (
+      <Button
+        variant="destructive"
+        className="flex items-center gap-2 px-6 py-2.5"
+        onClick={async () => {
+            
+                                  const result = await Swal.fire({
+  title: "Cancel Booking?",
+  text: "You will receive a full refund.",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#d33",
+  cancelButtonColor: "#3085d6",
+  confirmButtonText: "Yes, cancel it",
+  cancelButtonText: "No",
+});
+
+if (!result.isConfirmed) return;
+
+try {
+  await bookingService.cancelBookings(selectedBooking.bookingId);
+
+  Swal.fire({
+    title: "Cancelled!",
+    text: "Your booking has been cancelled. Refund will be processed shortly.",
+    icon: "success",
+  });
+
+  fetchBookings(currentPage, filters);
+} catch (err) {
+  Swal.fire({
+    title: "Error",
+    text: err instanceof AxiosError 
+      ? err.response?.data?.message || err.message 
+      : "Cancellation failed. Try again later.",
+    icon: "error",
+  });
+}
+
+        }}
+      >
+        Cancel Booking
+      </Button>
+    )}
+</div>
+
       </motion.div>
     ) : (
       <motion.div

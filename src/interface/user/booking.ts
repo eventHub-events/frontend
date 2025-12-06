@@ -23,6 +23,7 @@ export interface BookingPayload {
         userName: string;
         organizerId: string;
         eventImages: string[];
+        userEmail?:string;
 
 }
 
