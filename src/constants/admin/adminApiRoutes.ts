@@ -15,5 +15,8 @@ export const ADMIN_API_ROUTES = {
     FETCH_PENDING_ORGANIZERS : `/api/admin/pending-organizers?status=Pending`,
     UPDATE_ORGANIZER_UPLOAD_DOCUMENTS : (organizerId: string) => `/api/admin/organizers/${organizerId}/updateDocument`,
     UPDATE_ORGANIZER_VERIFICATION_STATUS: (organizerId: string) => `/api/admin/organizers/${organizerId}/verification-status`
-  }
+  },
+   FINANCE_PAYOUT : {
+       FETCH_FINANCE_OVERVIEW : `/api/admin/finance/overview`
+   }
 }
