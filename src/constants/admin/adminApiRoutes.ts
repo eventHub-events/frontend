@@ -17,6 +17,9 @@ export const ADMIN_API_ROUTES = {
     UPDATE_ORGANIZER_VERIFICATION_STATUS: (organizerId: string) => `/api/admin/organizers/${organizerId}/verification-status`
   },
    FINANCE_PAYOUT : {
-       FETCH_FINANCE_OVERVIEW : `/api/admin/finance/overview`
+       FETCH_FINANCE_OVERVIEW : `/api/admin/finance/overview`,
+       FETCH_TRANSACTIONS : `/api/admin/finance/transactions`,
+       EXPORT_TRANSACTIONS_PDF: "/api/admin/finance/transactions/export/pdf",
+
    }
 }
