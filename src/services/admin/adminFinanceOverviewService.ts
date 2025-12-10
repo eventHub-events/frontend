@@ -3,6 +3,7 @@ import { ADMIN_API_ROUTES } from "@/constants/admin/adminApiRoutes";
 import { apiClient } from "../ApiClient";
 import { FinanceOverviewFilter } from "@/interface/admin/finance-payout/financeOverview";
 import { TransactionsFilter } from "@/interface/admin/finance-payout/transactions";
+import { RefundsFilter } from "@/interface/admin/finance-payout/refund";
 
 
 export const adminFinanceOverviewService = {
@@ -16,5 +17,8 @@ export const adminFinanceOverviewService = {
      params: {...filters},
      withCredentials : true,
      responseType: "blob"
-  })
+  }),
+
+  fetchRefunds :(filters : RefundsFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_REFUNDS,{params:{...filters}, withCredentials: true}),
+  fetchRefundsOverview :(filters? : RefundsFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_REFUNDS_OVERVIEW,{params:{...filters}, withCredentials: true})
 } 
