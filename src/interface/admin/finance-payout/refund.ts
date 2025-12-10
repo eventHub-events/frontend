@@ -18,7 +18,7 @@ export interface RefundRow {
    userName :string;
    refundedAmount: number;
    refundStatus?: string;
-   refundedDate?: Date;
+   refundDate?: Date;
    paymentMethod?: string;
    paymentId?: string;
    createdAt?: string;
@@ -34,10 +34,10 @@ export interface RefundPaginatedResult {
 }
 
 export interface RefundOverviewTotals {
-    totalRefundAmount : number;
-    refundedCount : number;
+    totalRefundedAmount : number;
+    refundCount : number;
     refundsPending: number;
-    refundProcessed : number;
+    refundsProcessed : number;
 
 }
 export interface RefundTrendDaily {
@@ -65,6 +65,7 @@ export interface RefundOverviewResult {
    trend:{
      daily : RefundTrendDaily[];
      monthly : RefundTrendMonthly[];
-     yearly : RefundTrendYearly
+     yearly : RefundTrendYearly[]
    };
 }
+export type RefundTrendRange = "daily" | "monthly" | "yearly";
