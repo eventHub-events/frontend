@@ -596,6 +596,7 @@ try {
 
   fetchBookings(currentPage, filters);
 } catch (err) {
+   console.log(err)
   Swal.fire({
     title: "Error",
     text: err instanceof AxiosError 

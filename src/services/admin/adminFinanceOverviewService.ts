@@ -4,6 +4,8 @@ import { apiClient } from "../ApiClient";
 import { FinanceOverviewFilter } from "@/interface/admin/finance-payout/financeOverview";
 import { TransactionsFilter } from "@/interface/admin/finance-payout/transactions";
 import { RefundsFilter } from "@/interface/admin/finance-payout/refund";
+import { PayoutsFilter } from "@/interface/admin/finance-payout/payouts";
+import { ApiError } from "next/dist/server/api-utils";
 
 
 export const adminFinanceOverviewService = {
@@ -20,5 +22,7 @@ export const adminFinanceOverviewService = {
   }),
 
   fetchRefunds :(filters : RefundsFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_REFUNDS,{params:{...filters}, withCredentials: true}),
-  fetchRefundsOverview :(filters? : RefundsFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_REFUNDS_OVERVIEW,{params:{...filters}, withCredentials: true})
+  fetchRefundsOverview :(filters? : RefundsFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_REFUNDS_OVERVIEW,{params:{...filters}, withCredentials: true}),
+  fetchPayoutOverview:(filters?:{from?: string; to?: string}) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_PAYOUT_OVERVIEW,{params:{...filters}, withCredentials :true}),
+  fetchPayouts :(filters?:PayoutsFilter) =>  apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_PAYOUTS,{params:{...filters},withCredentials : true})
 } 
