@@ -25,7 +25,7 @@ const links = [
   { name: "Promo Codes", path: "/admin/promo-codes", icon: RiCoupon3Line },
   { name: "Categories & Tags", path: "/admin/categories", icon: RiPriceTag3Line },
   { name: "Communication", path: "/admin/communication", icon: RiMailLine },
-  { name: "Subscription Plans", path: "/admin/subscriptions", icon: RiVipCrownLine },
+  { name: "Subscription Plans", path: "/admin/subscription-plans", icon: RiVipCrownLine },
   { name: "Reports", path: "/admin/reports", icon: RiFlagLine },
 ];
 

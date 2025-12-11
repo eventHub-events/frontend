@@ -23,6 +23,8 @@ export const ADMIN_API_ROUTES = {
        FETCH_REFUNDS :"/api/admin/finance/refunds",
        FETCH_REFUNDS_OVERVIEW :"/api/admin/finance/refunds/overview",
        FETCH_PAYOUT_OVERVIEW: "/api/admin/finance/payouts/overview",
+       FETCH_SUBSCRIPTION_OVERVIEW: "/api/admin/finance/subscription/overview",
+       FETCH_SUBSCRIPTION_PLAN_REVENUE: "/api/admin/finance/subscription",
        FETCH_PAYOUTS: "/api/admin/finance/payouts",
        FETCH_EVENT_REVENUE_SUMMARY : "/api/admin/finance/event-revenue-summary"
 

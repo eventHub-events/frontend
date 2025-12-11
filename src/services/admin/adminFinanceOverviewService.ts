@@ -6,6 +6,7 @@ import { TransactionsFilter } from "@/interface/admin/finance-payout/transaction
 import { RefundsFilter } from "@/interface/admin/finance-payout/refund";
 import { PayoutsFilter } from "@/interface/admin/finance-payout/payouts";
 import { EventRevenueFilter } from "@/interface/admin/finance-payout/event-summary";
+import { SubscriptionOverviewFilter, SubscriptionPlansFilter } from "@/interface/admin/finance-payout/subscription";
 
 
 
@@ -26,5 +27,8 @@ export const adminFinanceOverviewService = {
   fetchRefundsOverview :(filters? : RefundsFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_REFUNDS_OVERVIEW,{params:{...filters}, withCredentials: true}),
   fetchPayoutOverview:(filters?:{from?: string; to?: string}) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_PAYOUT_OVERVIEW,{params:{...filters}, withCredentials :true}),
   fetchPayouts :(filters?:PayoutsFilter) =>  apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_PAYOUTS,{params:{...filters},withCredentials : true}),
-  fetchEventRevenue :(filters: EventRevenueFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_EVENT_REVENUE_SUMMARY,{params :{...filters},withCredentials: true})
+  fetchEventRevenue :(filters: EventRevenueFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_EVENT_REVENUE_SUMMARY,{params :{...filters},withCredentials: true}),
+
+  fetchSubscriptionPlansRevenue:(filter :SubscriptionPlansFilter) => apiClient.get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_SUBSCRIPTION_PLAN_REVENUE,{params:{...filter}, withCredentials :true}),
+  fetchSubscriptionOverview: (filter?: SubscriptionOverviewFilter) => apiClient. get(ADMIN_API_ROUTES.FINANCE_PAYOUT.FETCH_SUBSCRIPTION_OVERVIEW,{params :{...filter}, withCredentials: true})
 } 
