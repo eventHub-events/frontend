@@ -15,5 +15,18 @@ export const ADMIN_API_ROUTES = {
     FETCH_PENDING_ORGANIZERS : `/api/admin/pending-organizers?status=Pending`,
     UPDATE_ORGANIZER_UPLOAD_DOCUMENTS : (organizerId: string) => `/api/admin/organizers/${organizerId}/updateDocument`,
     UPDATE_ORGANIZER_VERIFICATION_STATUS: (organizerId: string) => `/api/admin/organizers/${organizerId}/verification-status`
-  }
+  },
+   FINANCE_PAYOUT : {
+       FETCH_FINANCE_OVERVIEW : `/api/admin/finance/overview`,
+       FETCH_TRANSACTIONS : `/api/admin/finance/transactions`,
+       EXPORT_TRANSACTIONS_PDF: "/api/admin/finance/transactions/export/pdf",
+       FETCH_REFUNDS :"/api/admin/finance/refunds",
+       FETCH_REFUNDS_OVERVIEW :"/api/admin/finance/refunds/overview",
+       FETCH_PAYOUT_OVERVIEW: "/api/admin/finance/payouts/overview",
+       FETCH_SUBSCRIPTION_OVERVIEW: "/api/admin/finance/subscription/overview",
+       FETCH_SUBSCRIPTION_PLAN_REVENUE: "/api/admin/finance/subscription",
+       FETCH_PAYOUTS: "/api/admin/finance/payouts",
+       FETCH_EVENT_REVENUE_SUMMARY : "/api/admin/finance/event-revenue-summary"
+
+   }
 }

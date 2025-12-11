@@ -53,5 +53,6 @@ export const API_ROUTES = {
       BLOCK_EVENT :(eventId: string) => `/api/admin/events/${eventId}/block`,
       UNBLOCK_EVENT: (eventId: string) => `/api/admin/events/${eventId}/unblock`
     }
+    
 
 } 

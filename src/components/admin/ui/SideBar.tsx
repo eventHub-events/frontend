@@ -1,19 +1,18 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaRegCalendarCheck } from "react-icons/fa";
 import {
   RiDashboardLine,
   RiUserSettingsLine,
   RiShieldCheckLine,
   RiCalendarEventLine,
+  RiBook2Line,
   RiMoneyDollarCircleLine,
   RiCoupon3Line,
   RiPriceTag3Line,
   RiMailLine,
   RiVipCrownLine,
-  RiBook2Line,
-  RiFlagLine, // ✅ added icon for bookings
+  RiFlagLine,
 } from "react-icons/ri";
 
 const links = [
@@ -21,91 +20,60 @@ const links = [
   { name: "User Management", path: "/admin/user-organizer", icon: RiUserSettingsLine },
   { name: "Organizer Verification", path: "/admin/organizer-verification", icon: RiShieldCheckLine },
   { name: "Event Management", path: "/admin/events", icon: RiCalendarEventLine },
-  // ✅ New Bookings Tab
   { name: "Bookings", path: "/admin/bookings", icon: RiBook2Line },
-  { name: "Finance & Payments", path: "/dashboard/finance", icon: RiMoneyDollarCircleLine },
-  { name: "Promo Codes", path: "/dashboard/promo-codes", icon: RiCoupon3Line },
+  { name: "Finance & Payments", path: "/admin/finance", icon: RiMoneyDollarCircleLine },
+  { name: "Promo Codes", path: "/admin/promo-codes", icon: RiCoupon3Line },
   { name: "Categories & Tags", path: "/admin/categories", icon: RiPriceTag3Line },
-  { name: "Communication", path: "/dashboard/communication", icon: RiMailLine },
+  { name: "Communication", path: "/admin/communication", icon: RiMailLine },
   { name: "Subscription Plans", path: "/admin/subscription-plans", icon: RiVipCrownLine },
- { name: "Reports", path: "/admin/reports", icon: RiFlagLine }
+  { name: "Reports", path: "/admin/reports", icon: RiFlagLine },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 h-screen fixed left-0 top-0 z-30 bg-gradient-to-br from-indigo-50 via-white to-blue-50 border-r border-indigo-100 shadow-2xl flex flex-col">
-      {/* Logo Section */}
-      <div className="px-6 py-8 border-b border-indigo-100">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/30">
-            <FaRegCalendarCheck className="text-2xl text-white" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
-              EventHub
-            </span>
-            <span className="text-xs text-indigo-400 font-semibold">Admin Portal</span>
-          </div>
-        </div>
-      </div>
+    <aside 
+      className="
+        fixed top-20 left-0  /* sidebar starts below navbar */
+        w-72 h-[calc(100vh-5rem)]
+        bg-gradient-to-b from-white to-gray-50
+        border-r border-gray-200 shadow-md
+        z-40 flex flex-col
+      "
+    >
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-6 overflow-y-auto">
-        <div className="space-y-1.5">
-          {links.map((link) => {
-            const Icon = link.icon;
-            const isActive = pathname === link.path;
+      {/* Navigation menu */}
+      <nav className="flex-1 px-5 py-6 space-y-2 overflow-y-auto">
+        {links.map(({ name, path, icon: Icon }) => {
+          const active = pathname === path;
 
-            return (
-              <Link
-                key={link.path}
-                href={link.path}
-                className={`group flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 relative
-                  ${
-                    isActive
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
-                      : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-700"
-                  }
-                `}
-              >
-                {/* Active indicator */}
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 bg-white rounded-r-full shadow-sm" />
-                )}
+          return (
+            <Link
+              key={path}
+              href={path}
+              className={`
+                flex items-center gap-4 px-5 py-4 rounded-xl text-base font-medium
+                transition-all relative group
 
-                {/* Icon */}
-                <Icon
-                  className={`text-xl flex-shrink-0 transition-transform duration-200 ${
-                    isActive ? "" : "group-hover:scale-110 group-hover:text-indigo-600"
-                  }`}
-                />
+                ${active
+                  ? "bg-indigo-600 text-white shadow-lg"
+                  : "text-black font-extrabold hover:bg-indigo-50 hover:text-indigo-700"}
+              `}
+            >
+              {active && (
+                <div className="absolute left-0 top-0 h-full w-1 bg-white rounded-r-xl"></div>
+              )}
 
-                {/* Text */}
-                <span className="text-sm font-semibold truncate">{link.name}</span>
-
-                {/* Subtle hover glow */}
-                {!isActive && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/5 to-indigo-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                )}
-              </Link>
-            );
-          })}
-        </div>
+              <Icon className="text-2xl" />
+              <span>{name}</span>
+            </Link>
+          );
+        })}
       </nav>
 
-      {/* Footer */}
-      <div className="px-6 py-5 border-t border-indigo-100 bg-gradient-to-r from-indigo-50/50 to-blue-50/50">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-gray-500 font-medium">
-            &copy; {new Date().getFullYear()} EventHub
-          </span>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm shadow-emerald-500/50" />
-            <span className="text-indigo-600 font-semibold">Online</span>
-          </div>
-        </div>
+      <div className="px-6 py-4 border-t border-gray-200 text-xs text-gray-500">
+        © {new Date().getFullYear()} EventHub
       </div>
     </aside>
   );

@@ -8,14 +8,33 @@ import { Download, Calendar, MapPin, User, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { bookingService_admin } from "@/services/admin/bookingService-admin";
+import { BookingStatus } from "@/enums/organizer/booking";
 
 interface AdminBookingDetailsProps {
   bookingId: string;
   onClose?: () => void;
 }
+ interface UserBookingListData {
+   bookingId?: string;
+   eventId: string;
+   eventName :string;
+   eventImages?: string[];
+   eventDate: string;
+   eventLocation: string;
+   organizerName: string;
+   tickets : {
+                 name:  string, quantity: number, price: number
+                                          }[];
+   totalAmount: number;
+   paymentStatus: BookingStatus;
+   paymentMethod?: string;
+   bookingDate?: Date;
+   userName?: string;
+   ticketUrls?: string[]
+}
 
 export function AdminBookingDetails({ bookingId, onClose }: AdminBookingDetailsProps) {
-  const [booking, setBooking] = useState<any>(null);
+  const [booking, setBooking] = useState<UserBookingListData| null>(null);
   const [loading, setLoading] = useState(true);
   const [showTicketsModal, setShowTicketsModal] = useState(false);
 
@@ -84,7 +103,7 @@ useEffect(() => {
 
         <p className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-purple-600" />
-          <b>Booked on:</b> {booking.bookingDate}
+          <b>Booked on:</b> {booking.bookingDate?.toLocaleDateString()}
         </p>
 
         <p>
@@ -103,7 +122,9 @@ useEffect(() => {
       <div>
         <h3 className="text-lg font-semibold mb-2">Tickets</h3>
 
-        {booking.tickets.map((ticket: any, index: number) => (
+        {booking.tickets.map((ticket:{
+                 name:  string, quantity: number, price: number
+                                          } , index: number) => (
           <Card key={index} className="mb-3 bg-gray-50">
             <CardContent className="p-4 flex justify-between items-center">
 
