@@ -12,13 +12,19 @@ const compat = new FlatCompat({
 
 const config = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    rules: {
+      "react-hooks/exhaustive-deps": "off",
+    },
+  },
 
   // Disable rules for dynamic route pages
   {
      files: ["src/app/**/[userType]/page.tsx"],
      rules: {
-       "@typescript-eslint/no-explicit-any": "off",
+      //  "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/ban-ts-comment": "off",
+     
      },
 
     //  ignores: ["**/*"],

@@ -26,7 +26,8 @@ export const API_ROUTES = {
        FETCH_DATA : `/api/admin/dashboard`
    },
    ORGANIZER_DASHBOARD : {
-         FETCH_DATA : `/api/organizer/dashboard`
+         FETCH_DATA : `/api/organizer/dashboard`,
+         FETCH_DASHBOARD_DETAILS :`/api/organizer/dashboard-details`
    },
     EVENTS : {
       FETCH_BY_FILTER: `/api/user/search/events`,

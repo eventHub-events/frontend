@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import RangeSelector from "./RangeSelector";
-import StatCard from "./StateCard";
+
 import { AdminDashboardDTO } from "@/types/admin/dashboard";
 import ChartCard from "./ChartCard";
 import BookingRevenueChart from "./BookingRevenueChart";
@@ -8,36 +8,48 @@ import SubscriptionRevenueChart from "./SubscriptionRevenueChart";
 import BookingCountChart from "./BookingCountChart";
 import RevenuePieChart from "./RevenuePieChart";
 import { adminDashboardService } from "@/services/admin/adminDashboardService";
+import GroupStatCard from "./GroupStateCard";
 
+// ⭐ ADD THIS IMPORT ⭐
+import {
+  Users,
+  UserCheck,
+  UserPlus,
+  BadgeCheck,
+  TrendingUp,
+  Wallet,
+  Coins,
+  Crown,
+  Layers,
+} from "lucide-react";
 
 export default function AdminDashboardPage() {
   const [range, setRange] = useState<"daily" | "monthly" | "yearly">("monthly");
   const [data, setData] = useState<AdminDashboardDTO | null>(null);
   const [loading, setLoading] = useState(true);
 
-  
- const fetchDashboard = useCallback(async () => {
-  setLoading(true);
-  try {
-    const res = await adminDashboardService.fetchDashboardData(range);
-    console.log("res", res)
-    setData(res.data.data);
-  } catch (err) {
-    console.log(err)
-  } finally {
-    setLoading(false);
-  }
-}, [range]);
+  const fetchDashboard = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await adminDashboardService.fetchDashboardData(range);
+      setData(res.data.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [range]);
 
-useEffect(() => {
-  fetchDashboard();
-}, [fetchDashboard]);
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
 
   if (loading || !data)
     return <div className="p-6">Loading dashboard...</div>;
 
   return (
     <div className="p-6 space-y-6">
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-semibold">Admin Dashboard</h1>
@@ -46,83 +58,79 @@ useEffect(() => {
 
       {/* USERS */}
       <section>
-       <h2 className="font-semibold mb-3 text-gray-700 tracking-wide uppercase text-sm">Users</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <StatCard label="Total Users" value={data.users.totalUsers} />
-          <StatCard label="Active Users" value={data.users.activeUsers} />
-          <StatCard label="Total Organizers" value={data.users.totalOrganizers} />
-          <StatCard label="Active Organizers" value={data.users.activeOrganizers} />
-          <StatCard
-            label="Pending Verification"
-            value={data.users.pendingOrganizerVerification}
-          />
-        </div>
+        <GroupStatCard
+          title="Users"
+          icon={<Users />}
+          stats={[
+            { label: "Total Users", value: data.users.totalUsers, icon: <Users />, color: "bg-purple-100 text-purple-700" },
+            { label: "Active Users", value: data.users.activeUsers, icon: <UserCheck />, color: "bg-green-100 text-green-700" },
+            { label: "Total Organizers", value: data.users.totalOrganizers, icon: <Crown />, color: "bg-yellow-100 text-yellow-700" },
+            { label: "Active Organizers", value: data.users.activeOrganizers, icon: <BadgeCheck />, color: "bg-blue-100 text-blue-700" },
+            { label: "Pending Verification", value: data.users.pendingOrganizerVerification, icon: <UserPlus />, color: "bg-red-100 text-red-700" },
+          ]}
+        />
       </section>
 
       {/* BOOKINGS */}
       <section>
-        <h2 className="font-semibold mb-3 text-gray-700 tracking-wide uppercase text-sm">Bookings</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard label="Total Revenue" value={`₹${data.bookings.totalRevenue}`} />
-          <StatCard label="Platform Revenue" value={`₹${data.bookings.platformRevenue}`} />
-          <StatCard label="Organizer Revenue" value={`₹${data.bookings.organizerRevenue}`} />
-          <StatCard label="Total Bookings" value={data.bookings.bookingsCount} />
-        </div>
+        <GroupStatCard
+          title="Bookings"
+          icon={<TrendingUp />}
+          stats={[
+            { label: "Total Revenue", value: `₹${data.bookings.totalRevenue}`, icon: <Wallet />, color: "bg-green-100 text-green-700" },
+            { label: "Platform Revenue", value: `₹${data.bookings.platformRevenue}`, icon: <Coins />, color: "bg-indigo-100 text-indigo-700" },
+            { label: "Organizer Revenue", value: `₹${data.bookings.organizerRevenue}`, icon: <Coins />, color: "bg-orange-100 text-orange-700" },
+            { label: "Total Bookings", value: data.bookings.bookingsCount, icon: <TrendingUp />, color: "bg-blue-100 text-blue-700" },
+          ]}
+        />
       </section>
 
       {/* SUBSCRIPTIONS */}
       <section>
-        <h2 className="font-semibold mb-3 text-gray-700 tracking-wide uppercase text-sm">Subscriptions</h2>
-        <div className="grid grid-cols-3 gap-4">
-          <StatCard
-            label="Subscription Revenue"
-            value={`₹${data.subscriptions.totalRevenue}`}
-          />
-          <StatCard
-            label="Total Subscriptions"
-            value={data.subscriptions.totalSubscriptions}
-          />
-          <StatCard
-            label="Active Subscriptions"
-            value={data.subscriptions.activeSubscriptions}
-          />
-        </div>
+        <GroupStatCard
+          title="Subscriptions"
+          icon={<Crown />}
+          stats={[
+            { label: "Subscription Revenue", value: `₹${data.subscriptions.totalRevenue}`, icon: <Wallet />, color: "bg-green-100 text-green-700" },
+            { label: "Total Subscriptions", value: data.subscriptions.totalSubscriptions, icon: <Layers />, color: "bg-blue-100 text-blue-700" },
+            { label: "Active Subscriptions", value: data.subscriptions.activeSubscriptions, icon: <BadgeCheck />, color: "bg-purple-100 text-purple-700" },
+          ]}
+        />
       </section>
 
-      {/* PAYOUT */}
+      {/* PAYOUTS */}
       <section>
-       <h2 className="font-semibold mb-3 text-gray-700 tracking-wide uppercase text-sm">Payouts</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <StatCard
-            label="Pending Amount"
-            value={`₹${data.payouts.pendingAmount}`}
-          />
-          <StatCard
-            label="Pending Payouts"
-            value={data.payouts.pendingCount}
-          />
-        </div>
+        <GroupStatCard
+          title="Payouts"
+          icon={<Wallet />}
+          stats={[
+            { label: "Pending Amount", value: `₹${data.payouts.pendingAmount}`, icon: <Wallet />, color: "bg-red-100 text-red-700" },
+            { label: "Pending Payouts", value: data.payouts.pendingCount, icon: <Coins />, color: "bg-yellow-100 text-yellow-700" },
+          ]}
+        />
       </section>
+
+      {/* CHARTS */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-  <ChartCard title="Booking Revenue Timeline">
-    <BookingRevenueChart data={data.bookings.timeline} />
-  </ChartCard>
+        <ChartCard title="Booking Revenue Timeline">
+          <BookingRevenueChart data={data.bookings.timeline} />
+        </ChartCard>
 
-  <ChartCard title="Subscription Revenue Timeline">
-    <SubscriptionRevenueChart data={data.subscriptions.timeline} />
-  </ChartCard>
+        <ChartCard title="Subscription Revenue Timeline">
+          <SubscriptionRevenueChart data={data.subscriptions.timeline} />
+        </ChartCard>
 
-  <ChartCard title="Bookings Count Timeline">
-    <BookingCountChart data={data.bookings.timeline} />
-  </ChartCard>
+        <ChartCard title="Bookings Count Timeline">
+          <BookingCountChart data={data.bookings.timeline} />
+        </ChartCard>
 
-  <ChartCard title="Revenue Split">
-    <RevenuePieChart
-      platform={data.bookings.platformRevenue}
-      organizer={data.bookings.organizerRevenue}
-    />
-  </ChartCard>
-</section>
+        <ChartCard title="Revenue Split">
+          <RevenuePieChart
+            platform={data.bookings.platformRevenue}
+            organizer={data.bookings.organizerRevenue}
+          />
+        </ChartCard>
+      </section>
 
     </div>
   );

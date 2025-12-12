@@ -1,10 +1,14 @@
-import OrganizerDashboardPage from "@/components/organizer/dashboard/OrganizerDashboard";
+import OrganizerDashboardDetail from "@/components/organizer/dashboard/details/OrganizerDashboardOverview";
+
+import ProtectedRoute from "@/components/user/auth/RoleProtection";
 
 
 export default function Page() {
   return (
-     <div className="ml-64 p-6"> 
-  <OrganizerDashboardPage />
-  </div>
+     <ProtectedRoute allowedRoles={["organizer"]}>
+
+       <OrganizerDashboardDetail />
+     </ProtectedRoute>
+  
   )
 }
