@@ -5,9 +5,10 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod"
 import { Tooltip } from "../ui/Tooltip";
 import { FaInfoCircle, FaLock } from "react-icons/fa";
-import { profileService } from "@/services/organizer/profileService";
+
 import { showError, showSuccess } from "@/utils/toastService";
 import { AxiosError } from "axios";
+import { PROFILE_SERVICE } from "@/services/organizer/profileService";
 
 
 interface SecurityTabProp{
@@ -30,7 +31,7 @@ export const SecurityTab = ({organizerId}:SecurityTabProp) => {
     try{
         console.log("submitted ", data);
        
-    const result = await profileService.updatePassword(organizerId,data)
+    const result = await PROFILE_SERVICE.updatePassword(organizerId,data)
     if(result) {
       showSuccess(result.data.message)
     console.log("result is ",result)

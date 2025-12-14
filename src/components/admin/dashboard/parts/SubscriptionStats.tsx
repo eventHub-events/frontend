@@ -22,7 +22,7 @@ export default function SubscriptionStats({ data }: Props) {
   );
 }
 
-function Stat({ label, value }: { label: string; value: any }) {
+function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex justify-between">
       <span className="text-gray-600">{label}</span>

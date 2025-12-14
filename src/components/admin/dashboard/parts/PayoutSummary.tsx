@@ -29,7 +29,7 @@ export default function PayoutSummary({ data }: Props) {
   );
 }
 
-function Stat({ label, value }: { label: string; value: any }) {
+function Stat({ label, value }: { label: string; value:string | number  }) {
   return (
     <div className="flex justify-between items-center">
       <span className="text-gray-600">{label}</span>

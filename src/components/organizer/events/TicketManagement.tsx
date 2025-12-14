@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { TicketStatus } from "@/enums/organizer/events";
 import { ITicketTier } from "@/types/organizer/events";
 import { showError, showSuccess, showWarning } from "@/utils/toastService";
-import { ticketingService } from "@/services/organizer/ticketingService";
+
 import axios, { AxiosError } from "axios";
 import { useAppSelector } from "@/redux/hooks";
+import { TICKETING_SERVICE } from "@/services/organizer/ticketingService";
 
 export interface TicketForm {
   tickets: ITicketTier[];
@@ -51,7 +52,7 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
 
       try {
         setLoading(true);
-        const res = await ticketingService.fetchTicketingDetailsByEvent(eventId);
+        const res = await TICKETING_SERVICE.fetchTicketingDetailsByEvent(eventId);
         const data = res.data.data;
 
         if (data?.tickets && data.tickets.length > 0) {
@@ -112,9 +113,9 @@ export default function TicketManagementPage({ eventId }: TicketManagementPagePr
 
       let res;
       if (isExistingTicketing) {
-        res = await ticketingService.updateTicketingDetails(eventId, payload);
+        res = await TICKETING_SERVICE.updateTicketingDetails(eventId, payload);
       } else {
-        res = await ticketingService.createTicketingDetails(payload);
+        res = await TICKETING_SERVICE.createTicketingDetails(payload);
       }
 
       if (res) {

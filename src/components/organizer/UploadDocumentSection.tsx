@@ -1,20 +1,24 @@
 import { useAppDispatch } from "@/redux/hooks";
 import { updateKycStatus } from "@/redux/slices/organizer/authSlice";
-import { uploadImageToCloudinary } from "@/services/common/cloudinary";
-import { documentService } from "@/services/organizer/documentService";
+import { CLOUDINARY_SERVICE } from "@/services/common/cloudinaryService";
+
+import { uploadKycDocumentToCloudinary } from "@/services/common/uploadDocumentCloudinary";
+import { DOCUMENT_SERVICE } from "@/services/organizer/documentService";
+
 import { KycStatus, UploadDocumentStatus } from "@/types/admin/Enums/organizerVerificationEnum";
 import { documentTypes } from "@/types/organizer/organizerProfile";
 import { showSuccess, showWarning } from "@/utils/toastService";
 import {  isAxiosError } from "axios";
-import Image from "next/image";
+
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaClock, FaCloudUploadAlt, FaTimesCircle, FaTimes, FaPaperPlane } from "react-icons/fa";
 import { toast } from "react-toastify";
+import DocumentPreviewModal from "../ui/DocumentPreviewModal";
 
 interface UploadDocument {
   id: string;
   name: string;
-  url: string | null;
+cloudinaryPublicId: string;
   type: string;
   uploadedAt: string;
   status: UploadDocumentStatus;
@@ -50,14 +54,19 @@ export default function UploadDocumentSection({ organizerId }: Props) {
   const rejectedDocs  = documents. filter(doc => doc.status === "Rejected");
   const [rejectedDocType ,setRejectedDocType] = useState("")
   const [rejectedDocId, setRejectedDocId] = useState("") 
-  const[isUpdating, setIsUpdating] = useState(false)
-  const dispatch  = useAppDispatch()
+ 
+  const dispatch  = useAppDispatch();
+
+ const [activePreviewUrl, setActivePreviewUrl] = useState<string | null>(null);
+
+
+
 
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const docs = await documentService.getDocuments(organizerId);
+        const docs = await DOCUMENT_SERVICE.getDocuments(organizerId);
         console.log("docs is",docs)
         const {documents,...user} = docs.data.data
         setDocuments(documents);
@@ -71,8 +80,10 @@ export default function UploadDocumentSection({ organizerId }: Props) {
       }
     };
     fetchDocuments();
-    setIsUpdating(false)
-  }, [uploading, organizerId,isUpdating,rejectedDocs]);
+    // setIsUpdating(false)
+  }, [ organizerId,]);
+
+ 
 
   const latestStatusMap: Record<string, string> = {};
 documents.forEach((doc) => {
@@ -88,20 +99,22 @@ documents.forEach((doc) => {
   setUploading(true);
 
   try {
-    const fileUrl = await uploadImageToCloudinary(selectedFile);
-    if (!fileUrl) return;
-      console.log("file url", fileUrl)
+    const uploadResult = await uploadKycDocumentToCloudinary(selectedFile, organizerId);
+    if (!uploadResult) return;
+    const { publicId } = uploadResult;
+    if (!publicId) return;
+      console.log("file url", publicId);
     // let newDocData:UploadDocument | null = null;
 
     if (rejectedDocType && documentType === rejectedDocType) {
       // Re-upload case
-      const updatedData = await documentService.updateDocumentDetails(rejectedDocId, {
-        url: fileUrl,
+      const updatedData = await DOCUMENT_SERVICE.updateDocumentDetails(rejectedDocId, {
+        cloudinaryPublicId: publicId,
      status:UploadDocumentStatus.PENDING
       });
 
       if (updatedData) {
-        const newDocData = { ...updatedData.data.data, url: fileUrl };
+        const newDocData = { ...updatedData.data.data, cloudinaryPublicId: publicId};
        
        
         // Replace the old document in state
@@ -119,15 +132,15 @@ documents.forEach((doc) => {
       setRejectedDocType("");
     } else {
       // Fresh upload case
-      const savedDoc = await documentService.saveDocuments({
+      const savedDoc = await DOCUMENT_SERVICE.saveDocuments({
         organizerId,
         type: documentType,
-        url: fileUrl,
+        cloudinaryPublicId: publicId,
         name: selectedFile.name,
       });
 
       if (savedDoc) {
-       const  newDocData = { ...savedDoc.data.data, url: fileUrl };
+       const  newDocData = { ...savedDoc.data.data, cloudinaryPublicId: publicId };
         setDocuments((prev) => [...prev, newDocData
           
         ]);
@@ -167,7 +180,7 @@ documents.forEach((doc) => {
   const handleRemoveDocument = async (docId: string) => {
     try {
       // Optionally call backend to delete
-      await documentService.deleteDocument(docId);
+      await DOCUMENT_SERVICE.deleteDocument(docId);
       console.log("doc id",docId)
 
       // Remove from UI
@@ -188,19 +201,35 @@ documents.forEach((doc) => {
            const data = {
             kycStatus: KycStatus.PENDING
            }
-          const result = await documentService.sentVerificationRequest(organizerId,data) ;
+          const result = await DOCUMENT_SERVICE.sentVerificationRequest(organizerId,data) ;
           if(result) {
               showSuccess("Verification request  submitted successfully")
                  dispatch(updateKycStatus(data.kycStatus));
-                 setIsUpdating(true)
+                //  setIsUpdating(true)
             }
 
            }catch( err ){
              console.log(err)
-              setIsUpdating(false);
+              // setIsUpdating(false);
            }
 
   }
+  
+
+   const handleViewDocument = async (doc: UploadDocument) => {
+  try {
+    const res = await CLOUDINARY_SERVICE.getDocumentSignedUrl(
+      doc.cloudinaryPublicId
+    );
+    console.log("reesss", res)
+    setActivePreviewUrl(res.data.data);
+
+  } catch (err) {
+    console.log("err", err)
+    toast.error("Failed to load document");
+  }
+};
+
 
   return (
     <div className="space-y-6">
@@ -318,18 +347,19 @@ documents.forEach((doc) => {
                   )}
 
                   {/* Image */}
-                  <div className="w-full aspect-[4/3] bg-gray-50 flex items-center justify-center overflow-hidden">
-                    {doc.url && (
-                      <Image
-                        src={doc.url}
-                        alt={doc.type}
-                        width={300}
-                        height={200}
-                        className="object-contain w-full h-full"
-                        unoptimized
-                      />
-                    )}
-                  </div>
+                 {/* View Button */}
+<div className="w-full bg-gray-50 flex items-center justify-center py-4">
+  <button
+    onClick={() => handleViewDocument(doc)}
+    className="text-blue-600 text-sm hover:underline"
+  >
+    View Document
+  </button>
+</div>
+
+{/* Signed Preview */}
+
+
 
                   {/* Info & Status */}
                   <div className="p-4 flex justify-between items-start">
@@ -375,6 +405,13 @@ documents.forEach((doc) => {
           </div>
         </div>
       )}
+      {activePreviewUrl && (
+  <DocumentPreviewModal
+    url={activePreviewUrl}
+    onClose={() => setActivePreviewUrl(null)}
+  />
+)}
+
     </div>
   );
 }

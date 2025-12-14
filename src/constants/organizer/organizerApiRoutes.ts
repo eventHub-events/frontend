@@ -4,6 +4,7 @@ export const ORGANIZER_API_ROUTES = {
      VERIFY: `/api/organizer/stripe/verify`
    },
    SUBSCRIPTION: {
-     FETCH_ALL_PLANS : `/api/organizer/subscription-plans`
+     FETCH_ALL_PLANS : `/api/organizer/subscription-plans`,
+     FETCH_CURRENT_SUBSCRIPTION : (organizerId : string) => `/api/organizer/${organizerId}/subscription`
    }
 }

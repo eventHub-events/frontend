@@ -1,15 +1,16 @@
 import { UserProfileUpdatePayload } from "@/types/user/profile/profileUpdateType";
 import { apiClient } from "../ApiClient";
+import { UserProfileRoutes } from "@/constants/user/userProfileRoutes";
 
-export const userProfileService = {
-  fetchProfile: (userId: string) => apiClient.get(`/api/user/${userId}/profile`,{
-    withCredentials:true
-  }),
-  updateProfile:(profileId: string, data: UserProfileUpdatePayload ) => apiClient.patch(`/api/user/${profileId}/profile`,data,{
-    withCredentials: true
-  })
 
-}
+export const USER_PROFILE_SERVICE = {
+  fetchProfile: (userId: string) =>
+    apiClient.get(UserProfileRoutes.FETCH_PROFILE(userId), {
+      withCredentials: true,
+    }),
 
-                                 
-   
+  updateProfile: (profileId: string, data: UserProfileUpdatePayload) =>
+    apiClient.patch(UserProfileRoutes.UPDATE_PROFILE(profileId), data, {
+      withCredentials: true,
+    }),
+} as const;

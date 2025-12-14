@@ -2,7 +2,7 @@
 
 import { FaCheckCircle, FaStar, FaCamera } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
-import { profileService } from '@/services/organizer/profileService';
+
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import UploadDocumentSection from './UploadDocumentSection';
 import { uploadImageToCloudinary } from '@/services/common/cloudinary';
@@ -15,6 +15,7 @@ import axios from 'axios';
 import { showError, showInfo } from '@/utils/toastService';
 import { setOrganizer, updateKycAndVerificationStatus } from '@/redux/slices/organizer/authSlice';
 import OrganizerPaymentsSection from './payments/OrganizerPaymentsSection';
+import { PROFILE_SERVICE } from '@/services/organizer/profileService';
 
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security',"Payments", 'Notifications'];
@@ -80,9 +81,9 @@ export default function OrganizerProfile() {
     const fetchProfile = async () => {
       try {
         if (!organizerId) return;
-        console.log("organ", organizer);
-        const response = await profileService.getProfile(organizerId);
-        console.log("ress", response)
+      
+        const response = await PROFILE_SERVICE.getProfile(organizerId);
+       
 
         if (response?.data?.data) {
           const flatData: ProfileFormData = {
@@ -124,13 +125,13 @@ export default function OrganizerProfile() {
   if (!file) return;
 
   try {
-    const imageUrl = await uploadImageToCloudinary(file);
-    if (!imageUrl) return;
+    const uploadResult = await uploadImageToCloudinary(file, `organizers/${organizerId}/profile` );
+    if (!uploadResult?.secureUrl) return;
 
     // First, get current form data
     const updatedForm = {
       ...profileFormData,
-      profilePicture: imageUrl,
+      profilePicture: uploadResult.secureUrl,
     };
 
     // Check if profile is complete before updating
@@ -140,7 +141,7 @@ export default function OrganizerProfile() {
     }
 
     // Update profile
-    const result = await profileService.updateProfile(updatedForm.organizerId, updatedForm);
+    const result = await PROFILE_SERVICE.updateProfile(updatedForm.organizerId, updatedForm);
     if (result) {
       setProfileFormData(updatedForm);
       toast.success("Profile image updated");
@@ -160,7 +161,7 @@ export default function OrganizerProfile() {
     e.preventDefault();
     try {
     
- const result = await profileService.updateProfile(profileFormData.organizerId, profileFormData);
+ const result = await PROFILE_SERVICE.updateProfile(profileFormData.organizerId, profileFormData);
   const {id ,name ,email ,isVerified,isBlocked,role, isKycResubmitted}  = result .data?.data
   const userData = {id, name ,email ,isVerified , isBlocked ,role, isKycResubmitted};
   dispatch(setOrganizer(userData));

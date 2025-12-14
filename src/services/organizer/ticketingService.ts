@@ -1,18 +1,26 @@
 import { TicketForm } from "@/components/organizer/events/TicketManagement";
 import { apiClient } from "../ApiClient";
+import { TicketingRoutes } from "@/constants/organizer/ticketRoutes";
 
-export const ticketingService = {
-   createTicketingDetails: (payload: TicketForm) => apiClient.post(`/api/organizer/ticketing/`, payload,{
-    withCredentials : true
-   }),
 
-   updateTicketingDetails: (eventId: string,payload: TicketForm) => apiClient.patch(`/api/organizer/events/${eventId}/ticketing`,payload, {
-    withCredentials : true
-   }),
-   fetchTicketingDetails :(ticketingId: string) => apiClient.get(`/api/organizer/ticketing/${ticketingId}`,{
-    withCredentials : true
-   }),
-   fetchTicketingDetailsByEvent :(eventId: string) => apiClient.get(`/api/organizer/events/${eventId}/ticketing`,{
-    withCredentials : true
-   })
-}
+export const TICKETING_SERVICE = {
+  createTicketingDetails: (payload: TicketForm) =>
+    apiClient.post(TicketingRoutes.CREATE_TICKETING, payload, {
+      withCredentials: true,
+    }),
+
+  updateTicketingDetails: (eventId: string, payload: TicketForm) =>
+    apiClient.patch(TicketingRoutes.UPDATE_TICKETING(eventId), payload, {
+      withCredentials: true,
+    }),
+
+  fetchTicketingDetails: (ticketingId: string) =>
+    apiClient.get(TicketingRoutes.FETCH_TICKETING(ticketingId), {
+      withCredentials: true,
+    }),
+
+  fetchTicketingDetailsByEvent: (eventId: string) =>
+    apiClient.get(TicketingRoutes.FETCH_TICKETING_BY_EVENT(eventId), {
+      withCredentials: true,
+    }),
+} as const;

@@ -6,9 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { passwordSchema, PasswordSchemaType } from "@/validation/organizer/changePasswordValidation";
 import { FaEye, FaEyeSlash, FaLock, FaInfoCircle } from "react-icons/fa";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { profileService } from "@/services/organizer/profileService";
+
 import { showError, showSuccess } from "@/utils/toastService";
 import { AxiosError } from "axios";
+import { PROFILE_SERVICE } from "@/services/organizer/profileService";
 
 interface SecurityTabProps {
   userId: string;
@@ -34,7 +35,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
 
   const onSubmit = async (data: PasswordSchemaType) => {
     try {
-      const result = await profileService.updatePassword(userId, data);
+      const result = await PROFILE_SERVICE.updatePassword(userId, data);
       if (result) {
         showSuccess(result.data.message);
         reset();

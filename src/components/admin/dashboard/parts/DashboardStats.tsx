@@ -1,5 +1,7 @@
+import { BookingRevenueDTO} from "@/types/admin/dashboard";
+
 // DashboardStats.tsx
-export default function DashboardStats({ bookings }: any) {
+export default function DashboardStats({ bookings }: { bookings: BookingRevenueDTO }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <Stat title="Total Revenue" value={`₹${bookings.totalRevenue}`} />
@@ -10,7 +12,7 @@ export default function DashboardStats({ bookings }: any) {
   );
 }
 
-function Stat({ title, value }: { title: string; value: any }) {
+function Stat({ title, value }: { title: string; value: string | number}) {
   return (
     <div className="bg-white p-4 rounded-xl shadow">
       <p className="text-gray-500 text-sm">{title}</p>

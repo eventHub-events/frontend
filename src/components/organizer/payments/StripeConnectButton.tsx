@@ -12,7 +12,7 @@ export default function StripeConnectButton({organizerId,email}:{organizerId: st
     try{
          setLoading(true);
          const res = await stripeOnboardingService.stripeOnboard(organizerId, email);
-         console.log("res-bu", res)
+         
         
          if(res) {
            window.location.href =res.data.data.onBoardingUrl;

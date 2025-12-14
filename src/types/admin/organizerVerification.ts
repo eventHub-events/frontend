@@ -22,7 +22,7 @@ export interface SelectedOrganizerDetail {
 export interface OrganizerDocument {
   id: string;
   type: string;
-  url: string;
+  cloudinaryPublicId :string;
   status: "Pending" | "Approved" | "Rejected";
   uploadedAt: string;
   updatedAt: string;

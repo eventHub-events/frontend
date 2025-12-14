@@ -8,10 +8,11 @@ import { categoryService } from "@/services/admin/categoryService";
 import { useAppSelector } from "@/redux/hooks";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { showError, showSuccess, showWarning } from "@/utils/toastService";
-import { eventService } from "@/services/organizer/eventServices";
+
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
+import { EVENT_SERVICE } from "@/services/organizer/eventServices";
 
 interface Category {
   id: string;
@@ -78,7 +79,7 @@ export default function EventFormPage() {
     const fetchEvent = async () => {
       if (!isEditMode) return;
       try {
-        const response = await eventService.fetchEventById(eventId as string);
+        const response = await EVENT_SERVICE.fetchEventById(eventId as string);
         const eventData = response.data.data;
         console.log("response is", response)
 
@@ -140,8 +141,8 @@ export default function EventFormPage() {
     const uploadedUrls: string[] = [];
     try {
       for (const file of imageFiles) {
-        const imageUrl = await uploadImageToCloudinary(file);
-        if (imageUrl) uploadedUrls.push(imageUrl);
+        const imageUrl = await uploadImageToCloudinary(file,  `events/${organizerId}/${Date.now()}`);
+        if (imageUrl) uploadedUrls.push(imageUrl.secureUrl);
       }
       const allImages = [...uploadedImages, ...uploadedUrls];
       setUploadedImages(allImages);
@@ -185,13 +186,13 @@ export default function EventFormPage() {
        console.log("ppppp", payload);
       
       if (isEditMode) {
-        const res = await eventService.updateEvent(eventId as string, payload);
+        const res = await EVENT_SERVICE.updateEvent(eventId as string, payload);
         if (res) {
           showSuccess("Event updated successfully");
           router.push("/organizer/events");
         }
       } else {
-        const res = await eventService.createEvent(payload);
+        const res = await EVENT_SERVICE.createEvent(payload);
         if (res) {
           showSuccess("Event created successfully");
           router.push(`/organizer/events/${res.data.data.eventId}/tickets`);

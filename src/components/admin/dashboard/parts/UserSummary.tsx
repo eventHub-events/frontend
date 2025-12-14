@@ -1,4 +1,10 @@
-export default function UserSummary({ users }: any) {
+import { UserMetricsDTO } from "@/types/admin/dashboard";
+
+interface UserSummaryProps {
+  users: UserMetricsDTO;
+}
+
+export default function UserSummary({ users }: UserSummaryProps) {
   return (
     <div className="bg-white p-5 rounded-xl shadow space-y-2">
       <h3 className="font-semibold">Users</h3>

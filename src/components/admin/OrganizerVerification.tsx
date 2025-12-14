@@ -15,7 +15,10 @@ import {
   UploadDocumentStatus,
   UploadDocumentVerificationStatus
 } from "@/types/admin/Enums/organizerVerificationEnum";
-import { documentService } from "@/services/organizer/documentService";
+
+import { CLOUDINARY_SERVICE } from "@/services/common/cloudinaryService";
+import DocumentPreviewModal from "../ui/DocumentPreviewModal";
+// 
 
 export default function OrganizerVerification() {
   const [organizers, setOrganizers] = useState<OrganizerDetail[]>([]);
@@ -31,6 +34,8 @@ export default function OrganizerVerification() {
   const [loadingOrganizers, setLoadingOrganizers] = useState(false);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   
   // Track minimum display time for loader
   const loaderTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -100,6 +105,18 @@ export default function OrganizerVerification() {
     };
     fetchDetails();
   }, [selectedId, isUpdated]);
+
+  const handleViewDocument = async (cloudinaryPublicId: string) => {
+  try {
+       console.log("publicid", cloudinaryPublicId)
+    const res = await CLOUDINARY_SERVICE.getDocumentSignedUrl(cloudinaryPublicId);
+    setPreviewUrl(res.data.data); // signed URL
+  } catch (err) {
+    console.log(err)
+    toast.error("Failed to load document");
+  }
+};
+
 
   const handleVerification = async (
     docId: string,
@@ -207,24 +224,29 @@ export default function OrganizerVerification() {
       }
     };
   }, []);
-  const handlePdfDownload = async (imageUrl: string,docType:string) => {
-    
-    const response = await documentService.getDocumentsInPdf({imageUrl,docType})
-    console.log("respo",response)
-     const blob = new Blob([response.data], { type: 'application/pdf' });
+ const handleDownloadDocument = async (
+  cloudinaryPublicId: string,
+  fileName: string
+) => {
+  try {
+    const res = await CLOUDINARY_SERVICE.getDocumentSignedUrl(
+      cloudinaryPublicId
+    );
 
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'organizer-document.pdf'; // File name
-    a.style.display = 'none';
+    const signedUrl = res.data.data;
 
+    const a = document.createElement("a");
+    a.href = signedUrl;
+    a.download = fileName || "document";
     document.body.appendChild(a);
     a.click();
     a.remove();
-    window.URL.revokeObjectURL(url);
-
+  } catch (err) {
+    console.log(err)
+    toast.error("Failed to download document");
   }
+};
+
 
   return (
     <div className="p-6 relative">
@@ -377,11 +399,21 @@ export default function OrganizerVerification() {
                         >
                           <IoClose className="cursor-pointer text-red-600 hover:text-red-700" />
                         </button>
-                        <a href={doc.url} target="_blank" rel="noopener noreferrer">
-                          <FiEye className="cursor-pointer hover:text-blue-600" />
-                        </a>
+                       <button
+  onClick={() => handleViewDocument(doc.cloudinaryPublicId)}
+  className="cursor-pointer hover:text-blue-600"
+>
+  <FiEye />
+</button>
+
                           <div>
-                                 <FiDownload onClick={() =>handlePdfDownload(doc.url, doc.type)}  className="cursor-pointer hover:text-blue-600" />
+                                 <FiDownload
+  onClick={() =>
+    handleDownloadDocument(doc.cloudinaryPublicId, doc.type)
+  }
+  className="cursor-pointer hover:text-blue-600"
+/>
+
                           </div>
                       </div>
                     </div>
@@ -451,6 +483,13 @@ export default function OrganizerVerification() {
           )}
         </div>
       </div>
+      {previewUrl && (
+  <DocumentPreviewModal
+    url={previewUrl}
+    onClose={() => setPreviewUrl(null)}
+  />
+)}
+
     </div>
   );
 }

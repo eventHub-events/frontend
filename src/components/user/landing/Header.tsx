@@ -11,9 +11,9 @@ import { authService } from "@/services/authService";
 import {
   FaUserCircle,
   FaSignOutAlt,
-  FaChartBar,
+  // FaChartBar,
   FaUser,
-  FaKey,
+  // FaKey,
   FaSearch,
   FaTicketAlt,
   FaSignInAlt,
@@ -232,7 +232,7 @@ const Header: React.FC = () => {
 
                     {/* Menu Items */}
                     <div className="p-2">
-                      <Link
+                      {/* <Link
                         href="/user/dashboard"
                         className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-purple-50 rounded-xl transition-all duration-200 group"
                       >
@@ -243,7 +243,7 @@ const Header: React.FC = () => {
                           <p className="font-semibold">Dashboard</p>
                           <p className="text-xs text-gray-500">Your bookings & events</p>
                         </div>
-                      </Link>
+                      </Link> */}
 
                       <Link
                         href="/user/bookings"
@@ -271,7 +271,7 @@ const Header: React.FC = () => {
                         </div>
                       </Link>
 
-                      <Link
+                      {/* <Link
                         href="/change-password"
                         className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-green-50 rounded-xl transition-all duration-200 group"
                       >
@@ -282,7 +282,7 @@ const Header: React.FC = () => {
                           <p className="font-semibold">Change Password</p>
                           <p className="text-xs text-gray-500">Update your password</p>
                         </div>
-                      </Link>
+                      </Link> */}
                     </div>
 
                     {/* Logout */}
