@@ -15,7 +15,7 @@ export const DOCUMENT_SERVICE = {
   saveDocuments: (data: {
     organizerId: string;
     type: string;
-    url: string;
+    cloudinaryPublicId: string;
     name: string;
   }) =>
     apiClient.post(DocumentRoutes.SAVE_DOCUMENT, data),
@@ -39,7 +39,7 @@ export const DOCUMENT_SERVICE = {
 
   updateDocumentDetails: (
     id: string,
-    data: { url: string; status: UploadDocumentStatus }
+    data: { cloudinaryPublicId: string; status: UploadDocumentStatus }
   ) =>
     apiClient.patch(DocumentRoutes.UPDATE_DOCUMENT(id), data, {
       withCredentials: true,

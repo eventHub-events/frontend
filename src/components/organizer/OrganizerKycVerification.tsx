@@ -1,4 +1,5 @@
-import { documentService } from "@/services/organizer/documentService";
+
+import { DOCUMENT_SERVICE } from "@/services/organizer/documentService";
 import { DocumentVerifiedType } from "@/types/organizer/organizerProfile";
 import { useEffect, useState } from "react";
 import {
@@ -23,7 +24,7 @@ export default function KycVerificationStatus({
   useEffect(() => {
     const fetchDocs = async () => {
       try {
-        const docs = await documentService.getDocuments(organizerId);
+        const docs = await DOCUMENT_SERVICE.getDocuments(organizerId);
         console.log("docs is ", docs)
         setDocuments(docs.data?.data.documents);
       } catch (error) {

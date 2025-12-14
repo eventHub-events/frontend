@@ -250,7 +250,7 @@
 
 //       {/* Summary Cards */}
 //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-//         {summaryCards.map((card, index) => (
+//         {summaryCards.map((card) => (
 //           <div 
 //             key={card.label}
 //             className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all"

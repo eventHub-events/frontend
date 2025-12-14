@@ -9,13 +9,14 @@ import Image from "next/image";
 import toast, { Toaster } from "react-hot-toast";
 import clsx from "clsx";
 import { useAppSelector } from "@/redux/hooks";
-import { userProfileService } from "@/services/user/userProfileService";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userProfileSchema, UserProfileFormData } from "@/validation/user/schemas/userProfileSchema";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { Address, FormFieldName, UserProfileData } from "@/types/user/profile/profileUpdateType";
 import { SecurityTab } from "./component/Security";
+import { USER_PROFILE_SERVICE } from "@/services/user/userProfileService";
 
 
 interface Booking {
@@ -94,7 +95,7 @@ const UserProfile: React.FC = () => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const result = await userProfileService.fetchProfile(userId);
+        const result = await USER_PROFILE_SERVICE.fetchProfile(userId);
         const profile = result.data.data;
         console.log("rewsult", result)
        
@@ -186,7 +187,7 @@ const UserProfile: React.FC = () => {
       console.log("user", userData)
       console.log("profile", profileData)
       console.log("updatedUser", updatedUser)
-      await userProfileService.updateProfile(user.profileId!, {user: userData, profile: {address:profileData}});
+      await USER_PROFILE_SERVICE.updateProfile(user.profileId!, {user: userData, profile: {address:profileData}});
       setUser(updatedUser);
       toast.success("Profile updated successfully!");
       setEditMode(false);
@@ -201,10 +202,10 @@ const UserProfile: React.FC = () => {
     if (!file) return;
 
     try {
-      const imageUrl = await uploadImageToCloudinary(file);
+      const imageUrl = await uploadImageToCloudinary(file,  `users/${userId}/profile`);
       if (!imageUrl) return;
       console.log("image url", imageUrl)
-      const updatedUser = { ...user, image: imageUrl };
+      const updatedUser = { ...user, image: imageUrl.secureUrl };
       setUser(updatedUser);
           console.log("userId", userId)
            const userData = {
@@ -213,7 +214,7 @@ const UserProfile: React.FC = () => {
           userId
       }
       // Update backend profile image only
-      await userProfileService.updateProfile(user.profileId, { user:userData, profile: { image: imageUrl } });
+      await USER_PROFILE_SERVICE.updateProfile(user.profileId, { user:userData, profile: { image: imageUrl.secureUrl } });
      
       toast.success("Profile image updated successfully!");
     } catch (err) {

@@ -2,9 +2,10 @@
 
 import ChatDrawer from "@/components/chat/ChatDrawer";
 import { useAppSelector } from "@/redux/hooks";
+import { EVENT_SERVICE } from "@/services/organizer/eventServices";
 
 
-import { eventService } from "@/services/organizer/eventServices";
+
 import { OrganizerChatService } from "@/services/organizer/organizerChatService";
 import { ConversationResponseDTO, ConversationsDataType, ConversationType, SelectedConversationType } from "@/types/organizer/chat";
 import { EventResponseDTO } from "@/types/organizer/events";
@@ -30,7 +31,7 @@ export default function OrganizerChat() {
 
     const fetchEvents = async () => {
       try {
-        const res = await eventService.fetchEvents(organizer.id);
+        const res = await EVENT_SERVICE.fetchEvents(organizer.id);
         setEvents(res.data.data as EventResponseDTO[] );
       } catch (err) {
         console.log(err);

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { FaPlus, FaSearch } from "react-icons/fa";
 
 import Link from "next/link";
-import { eventService } from "@/services/organizer/eventServices";
+
 import { useAppSelector } from "@/redux/hooks";
 import { EventData } from "@/types/organizer/events";
 import { showSuccess } from "@/utils/toastService";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import { EventStatus } from "@/enums/organizer/events";
 import { useRouter } from "next/navigation";
+import { EVENT_SERVICE } from "@/services/organizer/eventServices";
 
 
 
@@ -31,7 +32,7 @@ export const MyEvents: React.FC = () => {
    const fetchEvents = async () => {
      try{
          console.log("organizerId", organizerId)
-        const  response =  await eventService.fetchEvents(organizerId!);
+        const  response =  await EVENT_SERVICE.fetchEvents(organizerId!);
         console.log("ress", response)
         setEvents(response?.data.data);
         
@@ -52,7 +53,7 @@ export const MyEvents: React.FC = () => {
   const handleDelete = async (id: string) => {
            try{
             console.log("event id", id)
-              const response =  await eventService.deleteEvent(id)
+              const response =  await EVENT_SERVICE.deleteEvent(id)
               if(response){
                  showSuccess("Event deleted successfully");
             setEvents((prev) => prev.filter((e) => e.eventId !== id));
@@ -66,7 +67,7 @@ export const MyEvents: React.FC = () => {
   const handleCancel =  async (id: string) => {
         try{
             console.log("event id", id)
-              const response =  await eventService.cancelEvent(id)
+              const response =  await EVENT_SERVICE.cancelEvent(id)
               if(response){
                  showSuccess("Event cancelled successfully");
                 const updated = events.map((e) =>
