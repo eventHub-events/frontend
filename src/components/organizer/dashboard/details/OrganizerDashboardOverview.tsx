@@ -22,6 +22,70 @@ import {
   CartesianGrid
 } from "recharts";
 
+import { LayoutDashboard, CalendarRange } from "lucide-react";
+import {
+  
+
+  Percent,
+  ShieldCheck,
+  ShieldAlert,
+  ShieldQuestion,
+  FileText,
+ 
+ 
+ Crown,
+ 
+  XCircle,
+  RefreshCcw
+  
+} from "lucide-react";
+
+
+const kycStatusMeta = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "approved":
+      return {
+        label: "Approved",
+        icon: ShieldCheck,
+        className: "bg-emerald-50 text-emerald-600"
+      };
+    case "rejected":
+      return {
+        label: "Rejected",
+        icon: ShieldAlert,
+        className: "bg-red-50 text-red-600"
+      };
+    case "pending":
+    default:
+      return {
+        label: "Pending",
+        icon: ShieldQuestion,
+        className: "bg-yellow-50 text-yellow-600"
+      };
+  }
+};
+
+const documentMeta = (status: string) => {
+  switch (status) {
+    case "Approved":
+      return {
+        icon: CheckCircle,
+        className: "text-emerald-600"
+      };
+    case "Rejected":
+      return {
+        icon: XCircle,
+        className: "text-red-600"
+      };
+    default:
+      return {
+        icon: Clock,
+        className: "text-yellow-600"
+      };
+  }
+};
+
+
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
@@ -128,18 +192,52 @@ export default function OrganizerDashboardDetail() {
     <div className="space-y-8">
 
       {/* ---------------- DATE FILTER HEADER ---------------- */}
-      <Card>
-        <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-bold">Organizer Dashboard</h2>
-            <div className="text-sm text-muted-foreground mt-1">
-              Showing: <span className="font-medium">{formattedRange}</span>
-            </div>
-          </div>
+     <Card className="border border-gray-200 shadow-sm bg-white">
+  <CardContent className="p-6">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
 
-          <DatePickerWithRange value={selectedRange} onChange={onDateChange} />
-        </CardContent>
-      </Card>
+      {/* LEFT: TITLE + RANGE */}
+      <div className="flex items-start gap-4">
+
+        {/* Icon */}
+        <div className="
+          w-12 h-12 rounded-2xl
+          bg-gradient-to-br from-indigo-500 to-purple-600
+          text-white flex items-center justify-center
+          shadow-md
+        ">
+          <LayoutDashboard size={22} />
+        </div>
+
+        {/* Text */}
+        <div>
+          <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
+            Organizer Dashboard
+          </h2>
+
+          <div className="mt-1 flex items-center gap-1 text-sm text-gray-500">
+            <CalendarRange size={14} />
+            <span>
+              Showing data for
+              <span className="font-medium text-gray-700 ml-1">
+                {formattedRange}
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: DATE PICKER */}
+      <div className="flex items-center gap-2">
+        <DatePickerWithRange
+          value={selectedRange}
+          onChange={onDateChange}
+        />
+      </div>
+
+    </div>
+  </CardContent>
+</Card>
 
      {/* ---------------- SUMMARY CARDS (COMBINED & BEAUTIFIED) ---------------- */}
 {/* ---------------- SUMMARY CARDS (DYNAMIC DATA) ---------------- */}  
@@ -385,122 +483,296 @@ export default function OrganizerDashboardDetail() {
 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
   {/* KYC STATUS CARD */}
-  <Card>
-    <CardContent className="p-4">
-      <h3 className="font-semibold text-lg">KYC Verification</h3>
+  <Card className="border border-gray-200 shadow-sm bg-white">
+  <CardContent className="p-6 space-y-5">
 
-      <p className="mt-2 text-sm">
-        Status: <b>{kyc.kycStatus}</b>
-      </p>
+    {/* ===== HEADER ===== */}
+    <div className="flex items-center gap-4">
+      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-md">
+        <ShieldCheck size={22} />
+      </div>
 
-      <p className="text-sm text-gray-500">
-        Resubmitted: {kyc.isKycResubmitted ? "Yes" : "No"}
-      </p>
+      <div>
+        <h3 className="text-xl font-extrabold text-gray-900">
+          KYC Verification
+        </h3>
+        <p className="text-sm text-gray-500">
+          Identity and document verification status
+        </p>
+      </div>
+    </div>
 
-      <h4 className="mt-4 text-sm font-semibold">Documents</h4>
-      <ul className="text-sm mt-2 space-y-1">
-        {kyc.documents.map((doc, i) => (
-          <li key={i} className="flex justify-between">
-            <span>• {doc.type}</span>
-            <span
-              className={
-                doc.status === "Approved"
-                  ? "text-green-600"
-                  : doc.status === "Rejected"
-                  ? "text-red-600"
-                  : "text-yellow-600"
-              }
-            >
-              {doc.status}
+    {/* ===== STATUS ===== */}
+    {(() => {
+      const meta = kycStatusMeta(kyc.kycStatus);
+      const Icon = meta.icon;
+
+      return (
+        <div className="flex items-center gap-3">
+          <span
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${meta.className}`}
+          >
+            <Icon size={16} />
+            {meta.label}
+          </span>
+
+          {kyc.isKycResubmitted && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium">
+              <RefreshCcw size={12} />
+              Resubmitted
             </span>
-          </li>
-        ))}
+          )}
+        </div>
+      );
+    })()}
+
+    {/* ===== DOCUMENTS ===== */}
+    <div className="pt-2">
+      <h4 className="text-sm font-semibold text-gray-700 mb-3">
+        Submitted Documents
+      </h4>
+
+      <ul className="space-y-2">
+        {kyc.documents.map((doc, i) => {
+          const meta = documentMeta(doc.status);
+          const Icon = meta.icon;
+
+          return (
+            <li
+              key={i}
+              className="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 hover:bg-gray-50 transition"
+            >
+              {/* Document Name */}
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <FileText size={16} className="text-gray-600" />
+                </div>
+                <span className="font-medium text-gray-900">
+                  {doc.type}
+                </span>
+              </div>
+
+              {/* Status */}
+              <div className={`flex items-center gap-1 font-medium ${meta.className}`}>
+                <Icon size={14} />
+                {doc.status}
+              </div>
+            </li>
+          );
+        })}
       </ul>
-    </CardContent>
-  </Card>
+    </div>
+
+  </CardContent>
+</Card>
 
   {/* SUBSCRIPTION SUMMARY */}
-  <Card>
-    <CardContent className="p-4">
-      <h3 className="font-semibold text-lg">Subscription Plan</h3>
+  <Card className="border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all">
+  <CardContent className="p-6 space-y-5">
 
-      {subscription ? (
-        <div className="mt-3 space-y-2 text-sm">
-          <p>
-            <b>{subscription.planName}</b> — ₹{subscription.price}
-          </p>
-          <p>
-            Valid: {subscription.startDate} → {subscription.endDate}
-          </p>
-          <p className="text-green-600 font-semibold">
-            {subscription.isActive ? "Active" : "Expired"}
-          </p>
+    {/* ===== HEADER ===== */}
+    <div className="flex items-center gap-4">
+      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-md">
+        <Crown size={22} />
+      </div>
+
+      <div>
+        <h3 className="text-xl font-extrabold text-gray-900">
+          Subscription Plan
+        </h3>
+        <p className="text-sm text-gray-500">
+          Current plan and billing details
+        </p>
+      </div>
+    </div>
+
+    {/* ===== CONTENT ===== */}
+    {subscription ? (
+      <div className="space-y-4">
+
+        {/* Plan Name + Price */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500">Plan</p>
+            <p className="text-lg font-bold text-gray-900">
+              {subscription.planName}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1 text-lg font-bold text-emerald-600">
+            <IndianRupee size={16} />
+            {subscription.price}
+          </div>
         </div>
-      ) : (
-        <p className="text-gray-500 mt-3 text-sm">No active subscription</p>
-      )}
-    </CardContent>
-  </Card>
+
+        {/* Validity */}
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <CalendarRange size={14} />
+          <p className="text-sm text-gray-600">
+  {new Date(subscription.startDate).toLocaleDateString("en-IN")} →
+  {new Date(subscription.endDate).toLocaleDateString("en-IN")}
+</p>
+
+        </div>
+
+        {/* Status */}
+        <div>
+          {subscription.isActive ? (
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 font-semibold text-sm">
+              <CheckCircle size={14} />
+              Active
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-50 text-red-600 font-semibold text-sm">
+              <XCircle size={14} />
+              Expired
+            </span>
+          )}
+        </div>
+
+      </div>
+    ) : (
+      <div className="flex items-center gap-3 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+        <XCircle className="text-gray-400" size={18} />
+        <p className="text-sm text-gray-500">
+          No active subscription plan
+        </p>
+      </div>
+    )}
+
+  </CardContent>
+</Card>
 
 </div>
 
 
     {/* ---------------- EVENT PERFORMANCE TABLE ---------------- */}
-<Card>
-  <CardContent className="p-4">
-    <h3 className="text-lg font-bold mb-3">Event Performance</h3>
+<Card className="border border-gray-200 shadow-sm bg-white">
+  <CardContent className="p-6 space-y-4">
 
-    <div className="overflow-x-auto">
+    {/* ===== TABLE HEADER ===== */}
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-md">
+        <TrendingUp size={20} />
+      </div>
+
+      <div>
+        <h3 className="text-xl font-extrabold text-gray-900">
+          Event Performance
+        </h3>
+        <p className="text-sm text-gray-500">
+          Revenue, payouts, and ticket sales per event
+        </p>
+      </div>
+    </div>
+
+    {/* ===== TABLE ===== */}
+    <div className="overflow-x-auto rounded-xl border border-gray-200">
       <table className="w-full text-sm">
-        <thead className="bg-gray-50">
+        <thead className="bg-gray-50 text-gray-600 sticky top-0 z-10">
           <tr>
-            <th className="p-3 text-left">Event</th>
-            <th className="p-3 text-left">Tickets</th>
-            <th className="p-3 text-left">Gross</th>
-            <th className="p-3 text-left">Refunds</th>
-            <th className="p-3 text-left">Net</th>
-            <th className="p-3 text-left">Organizer Revenue</th>
-            <th className="p-3 text-left">Platform Fee</th>
-            <th className="p-3 text-left">Payout Pending</th>
-            <th className="p-3 text-left">Payout Received</th>
+            <th className="p-4 text-left">Event</th>
+            <th className="p-4 text-center">Tickets</th>
+            <th className="p-4 text-right">Gross</th>
+            <th className="p-4 text-right">Refunds</th>
+            <th className="p-4 text-right">Net</th>
+            <th className="p-4 text-right">Organizer</th>
+            <th className="p-4 text-right">Platform</th>
+            <th className="p-4 text-right">Pending</th>
+            <th className="p-4 text-right">Paid</th>
           </tr>
         </thead>
 
         <tbody>
           {events.data.map((ev) => (
-            <tr key={ev.eventId} className="border-b hover:bg-gray-50">
-              <td className="p-3">{ev.eventTitle}</td>
-
-              <td className="p-3">{ev.ticketsSold}</td>
-
-              <td className="p-3">₹{ev.grossRevenue}</td>
-
-              <td className="p-3 text-red-600">₹{ev.refundedAmount}</td>
-
-              <td className="p-3 text-emerald-600">₹{ev.netRevenue}</td>
-
-              <td className="p-3 text-blue-600 font-semibold">
-                ₹{ev.organizerRevenue}
+            <tr
+              key={ev.eventId}
+              className="border-t hover:bg-gray-50 transition"
+            >
+              {/* Event */}
+              <td className="p-4 font-semibold text-gray-900">
+                {ev.eventTitle}
               </td>
 
-              <td className="p-3 text-purple-600 font-semibold">
-                ₹{ev.platformFee}
+              {/* Tickets */}
+              <td className="p-4 text-center">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-medium">
+                  <Ticket size={14} />
+                  {ev.ticketsSold}
+                </span>
               </td>
 
-              <td className="p-3">
+              {/* Gross */}
+              <td className="p-4 text-right font-medium text-gray-900">
+                ₹{ev.grossRevenue}
+              </td>
+
+              {/* Refunds */}
+              <td className="p-4 text-right">
+                <span className="inline-flex items-center gap-1 text-red-600 font-medium">
+                  <RefreshCcw size={14} />
+                  ₹{ev.refundedAmount}
+                </span>
+              </td>
+
+              {/* Net */}
+              <td className="p-4 text-right">
+                <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold">
+                  <TrendingUp size={14} />
+                  ₹{ev.netRevenue}
+                </span>
+              </td>
+
+              {/* Organizer Revenue */}
+              <td className="p-4 text-right">
+                <span className="inline-flex items-center gap-1 text-blue-600 font-semibold">
+                  <Wallet size={14} />
+                  ₹{ev.organizerRevenue}
+                </span>
+              </td>
+
+              {/* Platform Fee */}
+              <td className="p-4 text-right">
+                <span className="inline-flex items-center gap-1 text-purple-600 font-semibold">
+                  <Percent size={14} />
+                  ₹{ev.platformFee}
+                </span>
+              </td>
+
+              {/* Payout Pending */}
+              <td className="p-4 text-right">
+                <span className="inline-flex items-center gap-1 text-orange-600 font-medium">
+                  <Clock size={14} />
                   ₹{ev.payoutPending}
+                </span>
               </td>
-              <td className="p-3">
+
+              {/* Payout Received */}
+              <td className="p-4 text-right">
+                <span className="inline-flex items-center gap-1 text-emerald-600 font-medium">
+                  <CheckCircle size={14} />
                   ₹{ev.payoutReceived}
+                </span>
               </td>
             </tr>
           ))}
+
+          {!events.data.length && (
+            <tr>
+              <td
+                colSpan={9}
+                className="p-6 text-center text-gray-500"
+              >
+                No event performance data available
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
+
   </CardContent>
 </Card>
-
 
     </div>
   );

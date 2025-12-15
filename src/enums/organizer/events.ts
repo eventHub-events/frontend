@@ -27,3 +27,14 @@ export enum EventApprovalStatus {
     Approved = "approved",
     Blocked = "blocked"
 }
+export enum RefundStatus {
+  NONE = 'none',
+  PENDING = 'pending',
+  SUCCEEDED = 'succeeded',
+  FAILED = 'failed',
+}
+
+export enum PaymentMethod {
+  CARD = 'card',
+  UPI = 'upi',
+}
