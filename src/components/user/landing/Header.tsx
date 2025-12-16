@@ -31,18 +31,37 @@ const Header: React.FC = () => {
   const [mode, setMode] = useState<"login" | "signup">("signup");
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/events?search=${encodeURIComponent(searchQuery)}`);
-    }
+  // const handleSearch = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (searchQuery.trim()) {
+  //     router.push(`/events?search=${encodeURIComponent(searchQuery)}`);
+  //   }
+  // };
+
+  useEffect(() => {
+  if (!searchQuery.trim()) return;
+
+  if (debounceRef.current) {
+    clearTimeout(debounceRef.current);
+  }
+    console.log("hello")
+  debounceRef.current = setTimeout(() => {
+    router.push(`/user/events?search=${encodeURIComponent(searchQuery)}`);
+  }, 400); // ⏱️ debounce time
+
+  return () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
   };
+}, [searchQuery]);
+
+
 
   const handleLogout = async () => {
     try {
@@ -99,16 +118,21 @@ const Header: React.FC = () => {
 
           {/* Search Bar */}
           <div className="flex-1 max-w-2xl mx-8">
-            <form onSubmit={handleSearch} className="relative">
-              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
-              <input
-                type="text"
-                placeholder="Search events, concerts, conferences..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:bg-white transition-all duration-200 text-sm"
-              />
-            </form>
+            <div className="relative">
+    <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+    <input
+      type="text"
+      placeholder="Search events, categories, organizers..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="
+        w-full pl-12 pr-4 py-3
+        bg-gray-100 rounded-2xl
+        focus:outline-none focus:ring-2 focus:ring-purple-500/50
+        transition-all
+      "
+    />
+  </div>
           </div>
 
           {/* Right Section */}

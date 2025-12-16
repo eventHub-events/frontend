@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Categories from "../Categories";
-import EventsList from "../EventsList";
+import EventsList from "../UpcomingEventsSection";
 import FeaturedEvents from "../FeaturedEvents";
 import HeroSection from "../HeroSection";
 import SkeletonBlocks from "../SkeletonBlocks";

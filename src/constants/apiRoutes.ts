@@ -15,6 +15,7 @@ export const API_ROUTES = {
   GET_USER_CHAT_COUNT : (eventId :string)=> `/api/user/chat/event/${eventId}`,
   CANCEL_BOOKING :(bookingId :string) => `/api/user/bookings/cancel/${bookingId}`,
 
+
    REPORT : {
       CREATE_EVENT_REPORT: `/api/user/report/event`,
       CREATE_ORGANIZER_REPORT :`/api/user/report/organizer`,
@@ -30,11 +31,13 @@ export const API_ROUTES = {
          FETCH_DASHBOARD_DETAILS :`/api/organizer/dashboard-details`
    },
     EVENTS : {
+      FETCH_UPCOMING_EVENTS :"/api/user/events/upcoming",
       FETCH_BY_FILTER: `/api/user/search/events`,
       FETCH_TRENDING_EVENTS : "/api/user/events/trending",
       FETCH_FEATURED_EVENTS :  "/api/user/events/featured",
       FETCH_EVENT_DETAILS_BY_ID : (eventId: string) =>  `/api/user/events/${eventId}`,
       FETCH_ALL_FEATURED_EVENTS :  `/api/user/events/featured/all`,
+      FETCH_SEARCH_EVENTS : `/api/user/search/events`
 
     },
     CATEGORY: {

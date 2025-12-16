@@ -14,3 +14,9 @@ export interface EventFilterParams {
   page?: number;
   limit?: number;
 }
+
+export interface SearchEventsParams {
+    search? : string;
+    page?: number;
+    limit?: number;
+}
