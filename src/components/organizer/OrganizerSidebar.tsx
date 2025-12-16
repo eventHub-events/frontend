@@ -7,7 +7,6 @@ import {
   MdQrCodeScanner,
   MdLocalOffer,
   MdFeedback,
-  MdPhotoLibrary,
   MdPayments,
   MdPerson,
   MdChevronLeft,
@@ -15,7 +14,8 @@ import {
   MdRocket,
   MdTrendingUp,
   MdSubscriptions,
-  MdMessage
+  MdMessage,
+  MdInsights
 } from "react-icons/md";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
@@ -27,7 +27,8 @@ const menuItems = [
   { name: "Check-In", icon: <MdQrCodeScanner />, href: "/organizer/check-in" },
   { name: "Promo Codes", icon: <MdLocalOffer />, href: "/organizer/promo-codes" },
   { name: "Feedback", icon: <MdFeedback />, href: "/organizer/feedback" },
-  { name: "Media Gallery", icon: <MdPhotoLibrary />, href: "/organizer/media" },
+   { name: "Event Analytics", icon: <MdInsights />, href: "/organizer/event-analytics" },
+
   { name: "Payouts", icon: <MdPayments />, href: "/organizer/payouts" },
   { name: "Subscription Plans", icon: <MdSubscriptions />, href: "/organizer/subscription-plans" },
   { name: "Profile", icon: <MdPerson />, href: "/organizer/profile" },

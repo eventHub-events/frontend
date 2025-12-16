@@ -141,7 +141,7 @@ const getCategoryStyle = (name: string) => {
   return (
     <button
       key={category.id}
-      //  onClick={() => router.push(`/user/events/category/${encodeURIComponent(category.name)}`)}
+        onClick={() => router.push(`/user/events/category/${encodeURIComponent(category.name)}`)}
       className="group relative rounded-3xl bg-white px-8 py-10 text-center
                  shadow-[0_10px_35px_rgba(0,0,0,0.08)]
                  hover:-translate-y-2 transition-all duration-300"

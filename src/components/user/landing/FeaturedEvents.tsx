@@ -229,9 +229,9 @@ const FeaturedEvents = () => {
               size={18}
             />
           </button>
-          <p className="text-gray-500 mt-4 text-sm">
+          {/* <p className="text-gray-500 mt-4 text-sm">
             Join 50,000+ attendees in unforgettable experiences
-          </p>
+          </p> */}
         </div>
       </div>
     </section>

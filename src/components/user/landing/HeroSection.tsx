@@ -51,7 +51,7 @@ const EventPosterCarousel = () => {
     const fetchTrendingEvents = async () => {
       try {
         const res = await eventDisplayService.fetchTrendingEvents();
-        console.log(res.data.data)
+        console.log("trending",res.data.data)
         setTrendingEvents(res.data.data);
       } catch (err) {
         console.log(err);
