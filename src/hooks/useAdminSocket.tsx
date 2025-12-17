@@ -13,7 +13,7 @@ export const useAdminSocket=()=>{
   const socketRef=useRef<Socket|null>(null)
   useEffect(()=>{
      if(!adminId)return
-     const socket=io("http://localhost:8000/admin",{
+     const socket=io(process.env.NEXT_PUBLIC_ADMIN_SOCKET_URL!,{
   auth:{
     userId:adminId,
     role:"admin"

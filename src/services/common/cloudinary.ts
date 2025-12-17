@@ -21,7 +21,7 @@ export const uploadImageToCloudinary =  async(file:File, folder: string): Promis
 
   try{
     const response= await fetch(
-       `https://api.cloudinary.com/v1_1/dzypi6gbs/raw/upload`,
+        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL!,
         {
           method: "POST",
           body: formData,

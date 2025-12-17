@@ -24,6 +24,7 @@ export interface BookingPayload {
         organizerId: string;
         eventImages: string[];
         userEmail?:string;
+        stripeAccountId : string
 
 }
 
