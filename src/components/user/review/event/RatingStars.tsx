@@ -1,4 +1,13 @@
-export default function RatingStars({ summary }) {
+
+interface RatingSummary {
+  averageRating?: number;
+}
+
+interface RatingStarsProps {
+  summary: RatingSummary | null;
+}
+
+export default function RatingStars({ summary }: RatingStarsProps) {
   if (!summary) {
     return (
       <div className="flex items-center gap-2 mb-4">
