@@ -18,6 +18,7 @@ export interface EventCreationForm {
     featured?: boolean;
     createdBy?: string;
     tags?:string[];
+    stripeAccountId: string;
     organizerEmail?:string;
     visibility: EventVisibility
 

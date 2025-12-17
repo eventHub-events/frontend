@@ -34,6 +34,12 @@ type ProfileFormData = {
   bio: string;
   profilePicture: string;
 };
+interface StripeAccount {
+  id: string;
+  label: string;
+  onboarded: boolean;
+  isDefault: boolean;
+}
 
 // Only include fields allowed in input fields (string values)
 const editableFields: Array<keyof Pick<ProfileFormData,
@@ -47,7 +53,9 @@ export default function OrganizerProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const [stripeAccounts, setStripeAccounts] = useState<StripeAccount[]>([]);
+
 
   const [profileFormData, setProfileFormData] = useState<ProfileFormData>({
     organizerId: '',
@@ -76,6 +84,25 @@ export default function OrganizerProfile() {
       }));
     }
   }, [organizer, profileFormData.organizerId]);
+
+  useEffect(() => {
+  if (activeTab !== "Payments" || !organizerId) return;
+
+  const fetchStripeAccounts = async () => {
+    try {
+      const res = await PROFILE_SERVICE.getStripeAccounts(organizerId);
+      console.log("accounts", res)
+      setStripeAccounts(res.data.data);
+    } catch {
+      showError("Failed to load Stripe accounts");
+    }
+  };
+
+  fetchStripeAccounts();
+}, [activeTab, organizerId]);
+
+
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -371,11 +398,13 @@ export default function OrganizerProfile() {
           <SecurityTab organizerId={organizerId}  />
         </div>
       )}
-      {activeTab === 'Payments' && organizerId && (
-        <div className="mt-4">
-             <OrganizerPaymentsSection organizer= {organizer} />
-        </div>
-      )}
+      {activeTab === "Payments" && organizerId && organizer && (
+  <OrganizerPaymentsSection
+    stripeAccounts={stripeAccounts}
+    organizerId={organizerId}
+    organizerEmail={organizer.email}
+  />
+)}
 
       {activeTab === "Notifications" && (
         <div className="text-gray-500 text-sm py-10 text-center">

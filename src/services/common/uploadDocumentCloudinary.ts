@@ -7,7 +7,7 @@ export const uploadKycDocumentToCloudinary = async (file: File, organizerId: str
   const signedData  = await CLOUDINARY_SERVICE.getDocumentCloudinarySignature(organizerId);
 
   console.log("signedData", signedData);
-   const { signature, timestamp, apiKey, cloudName, folder } = signedData.data.data;
+   const { signature, timestamp, apiKey,  folder } = signedData.data.data;
 
     const formData = new FormData();
     formData.append("file", file);
@@ -21,7 +21,7 @@ export const uploadKycDocumentToCloudinary = async (file: File, organizerId: str
   
     try{
              const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`,
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL!,
     {
       method: "POST",
       body: formData,

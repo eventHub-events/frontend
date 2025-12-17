@@ -31,7 +31,7 @@ const socketRef = useRef<Socket | null>(null);
       
      } ;
  
-const socket=io("http://localhost:8000/user",{
+const socket=io(process.env.NEXT_PUBLIC_USER_SOCKET_URL!,{
     auth:{userId:activeAccount.id,role:role},
     transports:["websocket"],
     withCredentials: true,
