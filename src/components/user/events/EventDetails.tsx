@@ -53,6 +53,7 @@ interface EventDetailsData {
   tickets: TicketData[];
   totalCapacity: number;
   organizerId: string;
+  stripeAccountId: string;
   venue: string;
   organizerName: string;
   category: string;
@@ -88,6 +89,7 @@ const EventDetails: React.FC = () => {
           eventId as string
         );
         const fetchedEvent = res.data.data;
+        console.log("fecthecd event", fetchedEvent);
         setEvent(fetchedEvent);
 
         const initialSelection = fetchedEvent.tickets.map((t: TicketData) => ({
@@ -177,7 +179,8 @@ const EventDetails: React.FC = () => {
      tickets: selectedTickets,
      organizerId: event.organizerId,
      eventImages : event.images,
-     userEmail: user.email
+     userEmail: user.email,
+     stripeAccountId : event.stripeAccountId
      
 
   };

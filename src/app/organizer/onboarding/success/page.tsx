@@ -2,18 +2,22 @@
 "use client";
 import { useAppSelector } from "@/redux/hooks";
 import { stripeOnboardingService } from "@/services/organizer/stripeOnboarding";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function OnboardingSuccessPage() {
   const [verified, setVerified] = useState<boolean | null>(null);
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+  const searchParams = useSearchParams();
+const stripeAccountId = searchParams.get("account");
+
 
   useEffect(() => {
       
     (async () => {
            if(!organizer) return
           try{
-                const res = await stripeOnboardingService.verify(organizer.id)
+                const res = await stripeOnboardingService.verify(stripeAccountId!)
           console.log("rerss", res)
           const data =  res.data.data;
       setVerified(data.verified);

@@ -25,4 +25,5 @@ export const PROFILE_SERVICE = {
     apiClient.patch(ProfileRoutes.UPDATE_PASSWORD(id), passwordData, {
       withCredentials: true,
     }),
+    getStripeAccounts : (organizerId :string) => apiClient.get(ProfileRoutes.GET_STRIPE_ACCOUNTS(organizerId),{withCredentials :true})
 } as const;

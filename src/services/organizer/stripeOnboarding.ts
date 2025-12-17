@@ -3,6 +3,6 @@ import { apiClient } from "../ApiClient";
 import { ORGANIZER_API_ROUTES } from "@/constants/organizer/organizerApiRoutes";
 
 export const stripeOnboardingService = {
-   stripeOnboard : (organizerId: string, email: string) => apiClient.post(ORGANIZER_API_ROUTES.STRIPE.ONBOARDING,{organizerId,email},{withCredentials: true}),
-   verify: (organizerId: string) => apiClient.post(ORGANIZER_API_ROUTES.STRIPE.VERIFY,{organizerId},{withCredentials: true})
+   stripeOnboard : (data:{organizerId: string, email: string,accountId?: string,label?:string}) => apiClient.post(ORGANIZER_API_ROUTES.STRIPE.ONBOARDING,data,{withCredentials: true}),
+   verify: (stripeAccountId: string) => apiClient.post(ORGANIZER_API_ROUTES.STRIPE.VERIFY,{stripeAccountId},{withCredentials: true})
 }

@@ -13,10 +13,22 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import { EVENT_SERVICE } from "@/services/organizer/eventServices";
+import { PROFILE_SERVICE } from "@/services/organizer/profileService";
 
 interface Category {
   id: string;
   name: string;
+}
+interface StripeAccount {
+     organizerId : string;
+  stripeAccountId : string;
+  label : string;
+  createdAt? :Date;
+  
+onboarded?: boolean;
+  id? :string;
+  isDefault? : boolean;
+  isActive?: boolean
 }
 
 export default function EventFormPage() {
@@ -29,6 +41,8 @@ export default function EventFormPage() {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [mapUrl, setMapUrl] = useState<string>("");
+  const [stripeAccounts, setStripeAccounts] = useState<StripeAccount[]>([]);
+
 
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
@@ -53,9 +67,22 @@ export default function EventFormPage() {
         country: "",
       },
       totalCapacity: 1,
+
       visibility: EventVisibility.Public,
     },
   });
+
+
+   // Fetch stripe account //
+
+   useEffect(() => {
+  const fetchStripeAccounts = async () => {
+    const res = await PROFILE_SERVICE.getStripeAccounts(organizerId!);
+    setStripeAccounts(res.data.data);
+  };
+
+  fetchStripeAccounts();
+}, []);
 
   // 🔹 Fetch categories
   useEffect(() => {
@@ -176,6 +203,7 @@ export default function EventFormPage() {
       const payload: EventCreationForm = {
         ...data,
         organizerId: organizerId,
+        stripeAccountId: data.stripeAccountId,
         organizerEmail:organizer?.email,
         images: uploadedImages,
         startTime,
@@ -184,6 +212,7 @@ export default function EventFormPage() {
         tags: data.tagsInput ? data.tagsInput.split(",").map((t: string) => t.trim()) : [],
       };
        console.log("ppppp", payload);
+     
       
       if (isEditMode) {
         const res = await EVENT_SERVICE.updateEvent(eventId as string, payload);
@@ -430,6 +459,33 @@ export default function EventFormPage() {
                   </select>
                 </div>
               </div>
+              {/* Payout Account */}
+<div className="md:col-span-3">
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Payout Account <span className="text-red-500">*</span>
+  </label>
+
+  <select
+    {...register("stripeAccountId", { required: true })}
+    className="w-full px-4 py-3 border border-gray-300 rounded-lg
+               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+  >
+    <option value="">Select payout account</option>
+
+    {stripeAccounts.map((acc) => (
+      <option key={acc.id} value={acc.id}>
+        {acc.label} {acc.isDefault ? "(Default)" : ""}
+      </option>
+    ))}
+  </select>
+
+  {errors.stripeAccountId && (
+    <p className="text-sm text-red-600 mt-1">
+      Please select a payout account
+    </p>
+  )}
+</div>
+
             </section>
 
             {/* Tags & Images */}
