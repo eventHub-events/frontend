@@ -1,35 +1,44 @@
+"use client";
 
-import Payment from "@/components/user/payment/payment";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Payment, { UserBookingData } from "@/components/user/payment/payment";
 import { bookingService } from "@/services/user/bookingService";
 
+export default function PaymentConfirmationPage() {
+  const { bookingId } = useParams<{ bookingId: string }>();
+  const [booking, setBooking] = useState<UserBookingData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-async function getBooking(bookingId: string){
-  try{
+  useEffect(() => {
+    if (!bookingId) return;
 
-    const res = await bookingService.fetchBookingById(bookingId)
-    if(!res) return null;
-    return res.data.data;
-  }catch(err){
-     console.log(err)
+    const fetchBooking = async () => {
+      try {
+        const res = await bookingService.fetchBookingById(bookingId);
+        setBooking(res.data.data);
+      } catch (err) {
+        console.error(err);
+        setBooking(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooking();
+  }, [bookingId]);
+
+  if (loading) {
+    return <div className="p-10 text-center">Loading booking...</div>;
   }
-}
 
-export default async function paymentConfirmationPage({ params }: { params: { bookingId: string } }) {
-      const bookingId = params.bookingId;
-      console.log("bookignId", bookingId)
-   const booking  = await getBooking(bookingId);
-   console.log("booking is", booking)
-   if(!booking) {
-      return(
-          <div className="p-10 text-center text-red-600 text-xl">
+  if (!booking) {
+    return (
+      <div className="p-10 text-center text-red-600 text-xl">
         Booking not found
       </div>
-      );
-   }
-   return (
-   
+    );
+  }
 
-      <Payment booking={booking} />
-  
-   )
+  return <Payment booking={booking} />;
 }
