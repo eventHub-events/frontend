@@ -17,8 +17,15 @@ export function useChatSocketCommunity(
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_COMMUNITY_CHAT, {
-      auth: { userId, role }
+      const url = process.env.NEXT_PUBLIC_COMMUNITY_CHAT;
+        if (!url) {
+      console.error("❌ NEXT_PUBLIC_COMMUNITY_CHAT is missing");
+      return;
+    }
+    const socket = io(url, {
+      auth: { userId, role },
+      transports: ["websocket"],
+      withCredentials: true,
     });
 
     socketRef.current = socket;

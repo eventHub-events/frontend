@@ -23,9 +23,16 @@ export function useChatSocketPrivate(
     console.warn("⚠️ No conversationId — NOT initializing socket");
     return;
   }
+   const url = process.env.NEXT_PUBLIC_PRIVATE_CHAT;
+   if (!url) {
+      console.error("❌ NEXT_PUBLIC_PRIVATE_CHAT is missing");
+      return;
+    }
    console.log("🔌 Connecting private socket for:", conversationId);
-    const socket = io(process.env.NEXT_PUBLIC_PRIVATE_CHAT, {
-      auth: { userId, role }
+    const socket = io(url, {
+      auth: { userId, role },
+      transports: ["websocket"],
+       withCredentials: true,
     });
 
     socketRef.current = socket;
