@@ -17,7 +17,7 @@ export function useChatSocketCommunity(
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const socket = io("http://localhost:8000/chat/community", {
+    const socket = io(process.env.NEXT_PUBLIC_COMMUNITY_CHAT, {
       auth: { userId, role }
     });
 

@@ -24,7 +24,7 @@ export function useChatSocketPrivate(
     return;
   }
    console.log("🔌 Connecting private socket for:", conversationId);
-    const socket = io("http://localhost:8000/chat/private", {
+    const socket = io(process.env.NEXT_PUBLIC_PRIVATE_CHAT, {
       auth: { userId, role }
     });
 
