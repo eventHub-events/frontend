@@ -19,7 +19,7 @@ export function useChatSocketCommunity(
   useEffect(() => {
       const url = process.env.NEXT_PUBLIC_COMMUNITY_CHAT;
         if (!url) {
-      console.error("❌ NEXT_PUBLIC_COMMUNITY_CHAT is missing");
+      console.log("❌ NEXT_PUBLIC_COMMUNITY_CHAT is missing");
       return;
     }
     const socket = io(url, {

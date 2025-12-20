@@ -32,6 +32,7 @@ export function useChatSocketPrivate(
     const socket = io(url, {
       auth: { userId, role },
       transports: ["websocket"],
+        upgrade: false,
        withCredentials: true,
     });
 
