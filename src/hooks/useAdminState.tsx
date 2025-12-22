@@ -24,7 +24,7 @@ if (stored && stored !== "undefined") {
     localStorage.removeItem("adminInfo"); 
   }
 } else {
-  router.push("/admin/login");
+  router.push("/admin-login");
 }
   }
   },[admin,dispatch,router])

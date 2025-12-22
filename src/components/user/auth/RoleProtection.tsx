@@ -41,8 +41,11 @@ const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
  useEffect(() => {
     if (isClient) {
       if (!currentUser) {
-         router.push(`/${allowedRoles[0]}/login`);
-            // router.push("/");
+         if (allowedRoles.includes("admin")) {
+           router.push("/admin-login");
+         } else {
+           router.push(`/login/${allowedRoles[0]}`);
+         }
       } else if (!allowedRoles.includes(currentUser.role)) {
         router.push("/unauthorized");
       }
