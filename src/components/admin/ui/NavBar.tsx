@@ -3,14 +3,14 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearAdmin } from "@/redux/slices/admin/authSlice";
 import { authService } from "@/services/authService";
 import { UserCircle, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
+
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function Navbar() {
   const admin = useAppSelector(s => s.adminAuth.admin);
   const dispatch = useAppDispatch();
-  const router = useRouter();
+ 
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => setIsClient(true), []);
