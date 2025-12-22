@@ -11,7 +11,7 @@ import { BookingStatus } from "@/enums/organizer/booking";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AdminBookingDetails } from "./AdminBookingDetails";
-// import { AdminBookingDetails } from "@/components/admin/AdminBookingDetails";
+
 
 interface BookingAdmin {
   id: string;
@@ -61,7 +61,7 @@ export default function AdminBookingList() {
         endDate: appliedFilters.endDate,
         organizerName: appliedFilters.organizerName
       };
-
+       
       const res = await bookingService_admin.getBookings(query);
       setBookings(res.data.data.bookings);
       setTotalPages(res.data.data.totalPages);
@@ -71,12 +71,12 @@ export default function AdminBookingList() {
       setLoading(false);
     }
   },
-  [limit, filters] // ← dependencies of the callback
+  [limit, filters] 
 );
 
   useEffect(() => {
     fetchBookings(page, filters);
-  }, [page, filters,fetchBookings]);
+  }, [page, filters]);
 
   const filterConfig = [
     {
