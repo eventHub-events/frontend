@@ -239,6 +239,7 @@ export default function OrganizerDashboardDetail() {
   </CardContent>
 </Card>
 
+  <OrganizerProfileQuickCard />
      {/* ---------------- SUMMARY CARDS (COMBINED & BEAUTIFIED) ---------------- */}
 {/* ---------------- SUMMARY CARDS (DYNAMIC DATA) ---------------- */}  
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -794,6 +795,7 @@ import {
   Bolt
 } from "lucide-react";
 import type { ComponentType } from "react";
+import OrganizerProfileQuickCard from "./OrganizerProfileQuickCard";
 
 
 type HeaderIconType = "ticket" | "revenue" | "payout";

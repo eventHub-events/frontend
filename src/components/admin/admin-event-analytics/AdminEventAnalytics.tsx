@@ -1,25 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAppSelector } from "@/redux/hooks";
-import { EVENT_SERVICE } from "@/services/organizer/eventServices";
+
+
 import { EventData } from "@/types/organizer/events";
 import { CreditCard, Ticket } from "lucide-react";
 
-import { AnalyticsFilters } from "./AnalyticsFilter";
-import { AnalyticsSummaryCards } from "./AnalyticsSummaryCards";
-import { AnalyticsPieCharts } from "./AnalyticsPieCharts";
-import { TicketRevenueLineCharts } from "./TicketRevenueLineCharts";
-import { BookingTable } from "./BookingsTable";
+// import { AnalyticsFilters } from "./AnalyticsFilter";
+// import { AnalyticsSummaryCards } from "./AnalyticsSummaryCards";
+// import { AnalyticsPieCharts } from "./AnalyticsPieCharts";
+// import { TicketRevenueLineCharts } from "./TicketRevenueLineCharts";
+// import { BookingTable } from "./BookingsTable";
 
-import { useDebounce } from "./useDebounce";
-import { EventSelector } from "./EventSelector";
+// import { useDebounce } from "./useDebounce";
+// import { EventSelector } from "./EventSelector";
 import { EVENT_ANALYTICS_SERVICE } from "@/services/event-analytics/eventAnalyticsService";
-import { TicketTypeAnalytics } from "./TicketTypeAnalytics";
+// import { TicketTypeAnalytics } from "./TicketTypeAnalytics";
 import Pagination from "@/components/ui/Pagination";
 import { EventAnalyticsData } from "@/interface/common/event-analytics";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+
+
+import { EventSelector } from "@/components/organizer/event-analytics/EventSelector";
+import { AnalyticsFilters } from "@/components/organizer/event-analytics/AnalyticsFilter";
+import { AnalyticsSummaryCards } from "@/components/organizer/event-analytics/AnalyticsSummaryCards";
+import { TicketRevenueLineCharts } from "@/components/organizer/event-analytics/TicketRevenueLineCharts";
+import { AnalyticsPieCharts } from "@/components/organizer/event-analytics/AnalyticsPieCharts";
+import { BookingTable } from "@/components/organizer/event-analytics/BookingsTable";
+import { useDebounce } from "@/components/organizer/event-analytics/useDebounce";
+import { TicketTypeAnalytics } from "@/components/organizer/event-analytics/TicketTypeAnalytics";
+import { eventManagementService } from "@/services/admin/eventManagementService";
 
 /* ---------------- TYPES ---------------- */
 
@@ -45,8 +54,8 @@ export interface EventAnalyticsFilter {
 }
 /* ---------------- PAGE ---------------- */
 
-export default function EventAnalyticsPage() {
-  const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+export default function EventAnalyticsAdmin() {
+  
   const [events, setEvents] = useState<{ id: string; title: string }[]>([]);
   const [eventId, setEventId] = useState<string>();
   const [filters, setFilters] = useState<FiltersState>({});
@@ -57,26 +66,32 @@ export default function EventAnalyticsPage() {
   const [data, setData] = useState<EventAnalyticsData| null>(null);
   const [page, setPage] = useState(1);
 const limit = 10;
- const router = useRouter()
+ 
 
   /* ---------------- API CALL ---------------- */
 
   useEffect(() => {
-    if (!organizer?.id) return;
+
     const fetchEvents = async () => {
       try {
-        const res = await EVENT_SERVICE.fetchEvents(organizer.id);
-        const formattedEvents = res.data.data.map((e: EventData) => ({
-          id: e.eventId || "",
-          title: e.title
-        }));
+        const res = await eventManagementService.fetchAllEvents();
+        console.log("evneeee", res)
+        const formattedEvents = res.data.data
+  .filter((e: EventData) => typeof e.id === "string" && e.id.trim() !== "")
+  .map((e: EventData) => ({
+    id: e.id,
+    title: e.title
+  }));
+
+setEvents(formattedEvents);
+
         setEvents(formattedEvents);
       } catch (err) {
         console.error("Failed to fetch events", err);
       }
     };
     fetchEvents();
-  }, [organizer?.id]);
+  }, []);
 
   useEffect(() => {
     if (!eventId) return;
@@ -109,28 +124,7 @@ const limit = 10;
 }, [eventId, filters, debouncedSearch]);
 
 
-     if (!organizer) {
-     return null; // or loader
-   }
    
-   if (!organizer.isVerified) {
-     return (
-       <div className="min-h-[60vh] flex items-center justify-center">
-         <div className="max-w-md text-center space-y-4">
-           <h2 className="text-xl font-semibold text-gray-800">
-             Verification Required
-           </h2>
-           <p className="text-gray-600">
-             Please complete your verification to access event Analytics.
-           </p>
-           <Button onClick={() => router.push("/organizer/profile")}>
-             Go to Profile
-           </Button>
-         </div>
-       </div>
-     );
-   }
-
 
   /* ---------------- RENDER ---------------- */
 

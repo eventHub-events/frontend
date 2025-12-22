@@ -87,58 +87,62 @@ export function TicketTypeAnalytics({
     </div>
 
     {/* Chart */}
-    <div className="h-[300px] bg-gray-50 rounded-xl p-4">
-      <ResponsiveContainer width="100%" height="100%">
-         {/* Legend */}
-<div className="grid grid-cols-2 gap-3 pt-2">
-  {ticketRevenueSplit.map((item, index) => (
-    <div
-      key={item.name}
-      className="flex items-center justify-between text-sm"
-    >
-      <div className="flex items-center gap-2">
-        <span
-          className="w-3 h-3 rounded-full"
-          style={{ backgroundColor: COLORS[index % COLORS.length] }}
-        />
-        <span className="text-gray-700 font-medium">
-          {item.name}
+   <div className="bg-gray-50 rounded-xl p-4 space-y-4">
+
+  {/* LEGEND (outside chart container) */}
+  <div className="grid grid-cols-2 gap-3">
+    {ticketRevenueSplit.map((item, index) => (
+      <div
+        key={item.name}
+        className="flex items-center justify-between text-sm"
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          <span
+            className="w-3 h-3 rounded-full shrink-0"
+            style={{ backgroundColor: COLORS[index % COLORS.length] }}
+          />
+          <span className="text-gray-700 font-medium truncate">
+            {item.name}
+          </span>
+        </div>
+
+        <span className="font-semibold text-gray-900">
+          ₹{item.value}
         </span>
       </div>
+    ))}
+  </div>
 
-      <span className="font-semibold text-gray-900">
-        ₹{item.value}
-      </span>
-    </div>
-  ))}
+  {/* CHART */}
+  <div className="h-[260px]">
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={ticketRevenueSplit}
+          dataKey="value"
+          nameKey="name"
+          outerRadius={110}
+          innerRadius={65}
+          paddingAngle={3}
+        >
+          {ticketRevenueSplit.map((_, i) => (
+            <Cell key={i} fill={COLORS[i % COLORS.length]} />
+          ))}
+        </Pie>
+
+        <Tooltip
+          formatter={(value, name) => [`₹${value}`, name]}
+          contentStyle={{
+            borderRadius: "12px",
+            border: "none",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+          }}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
 </div>
 
-        <PieChart>
-          <Pie
-            data={ticketRevenueSplit}
-            dataKey="value"
-            nameKey="name"
-            outerRadius={110}
-            innerRadius={65}
-            paddingAngle={3}
-          >
-            {ticketRevenueSplit.map((_, i) => (
-              <Cell
-                key={i}
-                fill={COLORS[i % COLORS.length]}
-              />
-            ))}
-          </Pie>
-          <Tooltip
-            contentStyle={{
-              borderRadius: "12px",
-              border: "none",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.12)"
-            }}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
 
   </CardContent>
 </Card>

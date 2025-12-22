@@ -27,10 +27,22 @@ export const MyEvents: React.FC = () => {
   const organizerId = organizer?.id;
   const router = useRouter()
 
+
+
+
+  
+
+
+
+
   useEffect(() => {
     // Simulate fetch (replace with actual API)
+    
+   
+
    const fetchEvents = async () => {
      try{
+          if(!organizer) return
          console.log("organizerId", organizerId)
         const  response =  await EVENT_SERVICE.fetchEvents(organizerId!);
         console.log("ress", response)
@@ -45,6 +57,8 @@ export const MyEvents: React.FC = () => {
     
     
   }, [organizerId]);
+
+
 
   const handleEdit = (id: string) => {
        router.push(`/organizer/events/edit/${id}`);
@@ -89,8 +103,33 @@ setEvents(updated);
   );
   const handleViewReviews = (id: string) => {
     router.push(`/organizer/events/${id}/reviews`);
+    
   }
+   
+    if (!organizer) {
+  return null; // or loader
+}
 
+if (!organizer.isVerified) {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="max-w-md text-center space-y-4">
+        <h2 className="text-xl font-semibold text-gray-800">
+          Verification Required
+        </h2>
+        <p className="text-gray-600">
+          Please complete your verification to access event management.
+        </p>
+        <Button onClick={() => router.push("/organizer/profile")}>
+          Go to Profile
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+
+      
   return (
     <div className="p-6 space-y-6">
       {/* Header */}

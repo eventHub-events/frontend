@@ -36,7 +36,7 @@ export  default function AdminLogin(){
 
   }catch(err:unknown){
       const error= err instanceof Error? err.message:"Error in admin  login"
-      console.log(error)
+      console.log("err is",error)
     toast.error(error)
 
   }finally{

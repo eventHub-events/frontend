@@ -20,7 +20,7 @@ export default function Navbar() {
       await authService.adminLogout();
       dispatch(clearAdmin());
       toast.success("Logged out");
-      router.push("/admin-login");
+      window.location.href = "/admin-login";
     } catch {
       toast.error("Logout failed");
     }

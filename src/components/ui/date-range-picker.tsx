@@ -7,7 +7,12 @@ import { format } from "date-fns";
 // import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 
 export function DatePickerWithRange({
   value,
@@ -43,7 +48,8 @@ export function DatePickerWithRange({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="p-0 w-auto">
+      <PopoverContent className="p-0 w-auto z-[9999]" align="start">
+
         <DayPicker
           mode="range"
           selected={range}
