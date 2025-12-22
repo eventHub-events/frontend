@@ -152,8 +152,7 @@ export default function UserBookings() {
     status: "",
     title: "",
     search: "",
-    startDate: "",
-    endDate: "",
+    bookingDate: "",
   });
   const [loading, setLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
@@ -177,6 +176,7 @@ export default function UserBookings() {
           organizerName: appliedFilters.organizerName,
           status: appliedFilters.status,
           title: appliedFilters.title,
+          startDate: appliedFilters.bookingDate || undefined,
         };
         const res = await bookingService.fetchAllBookings(user.id, payload);
         console.log("bookings", res)

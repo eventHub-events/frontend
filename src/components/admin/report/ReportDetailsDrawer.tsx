@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { adminReportService } from "@/services/admin/adminReportService";
 import { ReportActions, ReportData, ReportStatus, ReportTypes } from "@/types/admin/report";
+import { showSuccess } from "@/utils/toastService";
 
 interface Props {
   report: ReportData;
@@ -30,8 +31,12 @@ export default function ReportDetailsDrawer({
         adminNote: note
       };
 
-      await adminReportService.takeAction(report.id!, payload);
+     const result = await adminReportService.takeAction(report.id!, payload);
+     if(result){
+       showSuccess("Action taken successfully")
 
+     }
+      
       onActionComplete();
       onClose();
     } catch (err) {
