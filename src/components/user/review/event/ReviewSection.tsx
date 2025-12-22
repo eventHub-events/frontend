@@ -38,7 +38,7 @@ export default function ReviewSection({ mode, targetId, userId, userName }: Prop
       }
 
       setSummary(summaryRes.data.data);
-      const mine = reviewRes.data.data.find((r: EventReview) => r.userId === userId);
+      const mine = reviewRes.data.data.reviews.find((r: EventReview) => r.userId === userId);
       setMyReview(mine || null);
     } catch (err) {
       console.log(err);
@@ -47,19 +47,35 @@ export default function ReviewSection({ mode, targetId, userId, userName }: Prop
     }
   }, [mode, targetId, userId]); // dependencies
 
+  const refreshReviews = async () => {
+  setPage(1);
+  await fetchData(1);
+};
+
+
   const loadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
     fetchData(nextPage);
   };
+ 
+
+
 
   useEffect(() => {
     fetchData(1);
   }, [targetId, fetchData]);
 
-  if (loading) return <p>Loading reviews...</p>;
+  // if (loading) return <p>Loading reviews...</p>;
 
   return (
+    <>
+     {loading && (
+  <p className="text-sm text-gray-400 mb-2">
+    Updating reviews...
+  </p>
+)}
+
     <div className="mt-8 bg-white p-5 rounded-xl shadow-sm">
       <h2 className="text-xl font-semibold mb-4">
         {mode === "event" ? "Event Reviews" : "Organizer Reviews"}
@@ -68,11 +84,11 @@ export default function ReviewSection({ mode, targetId, userId, userName }: Prop
       <RatingStars summary={summary} />
 
       {myReview ? (
-        <YourReviewCard review={myReview} refresh={fetchData} />
+        <YourReviewCard review={myReview} refresh={refreshReviews} />
       ) : (
         <ReviewForm
           targetId={targetId}
-          refresh={fetchData}
+          refresh={refreshReviews}
           userId={userId}
           userName={userName}
           mode={mode}
@@ -86,5 +102,6 @@ export default function ReviewSection({ mode, targetId, userId, userName }: Prop
         loading={loading}
       />
     </div>
+    </>
   );
 }

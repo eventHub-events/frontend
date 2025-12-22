@@ -198,6 +198,10 @@ documents.forEach((doc) => {
                 showWarning("Upload all the documents for verification");
                 return
               }
+              if(user.isVerified){
+                showWarning("You are already verified");
+                return
+              }
            const data = {
             kycStatus: KycStatus.PENDING
            }

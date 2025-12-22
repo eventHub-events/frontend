@@ -12,7 +12,7 @@ export  default function YourReviewCard({review, refresh}:{review:EventReview; r
     try{
        await reviewService.updateReview(review.id,{rating: newRating, review: newText});
        setEditing(false);
-       refresh();
+      await  refresh();
 
     }catch(err){
        console.log(err);
@@ -22,7 +22,7 @@ export  default function YourReviewCard({review, refresh}:{review:EventReview; r
     const handleDelete  = async () => {
       try{
          await reviewService.deleteReview(review.id);
-        refresh();
+        await refresh();
       }catch(err){
          console.log(err)
       }

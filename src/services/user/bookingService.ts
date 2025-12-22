@@ -9,5 +9,5 @@ export const bookingService = {
   cancelBookings:(bookingId :string) => apiClient.patch(API_ROUTES.CANCEL_BOOKING(bookingId),{},{withCredentials: true}),
   fetchAllBookings:(userId: string, filters: BookingsFilter) => apiClient.get(API_ROUTES.FETCH_USER_BOOKINGS(userId),{params: filters, withCredentials: true}),
   fetchBookingById:(bookingId: string) => apiClient.get(API_ROUTES.FETCH_USER_BOOKING_BY_ID(bookingId),{withCredentials: true}),
-  fetchBookingBySessionId:(sessionId: string) => apiClient.get(API_ROUTES.FETCH_USER_BOOKING_BY_SESSION_ID(sessionId),{withCredentials: true})
+   fetchBookingBySessionId:(sessionId: string) => apiClient.get(API_ROUTES.FETCH_USER_BOOKING_BY_SESSION_ID(sessionId),{withCredentials: true})
 }

@@ -59,7 +59,7 @@ apiClient.interceptors.response.use(
         if (originalRequest.url?.includes(ApiRoutes.ADMIN_BASE)) role = "admin";
 
         window.location.href =
-          role === "admin" ? `/admin/login` : `/login/${role}`;
+          role === "admin" ? `/admin-login` : `/login/${role}`;
 
         return Promise.reject(refreshError);
       }
