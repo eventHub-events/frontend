@@ -19,6 +19,10 @@ export default function ReviewForm ({targetId, refresh, userId, userName, mode}:
 
   const handleSubmit = async () => {
     try{
+         if(rating<1){
+          showError("rating is required");
+           return;
+         };
         if(mode === "event"){
           const res = await reviewService.addEventReview(targetId,{rating,review,userId,targetId, targetType: mode, userName});
           

@@ -41,7 +41,7 @@ export default memo(function MessageBubble({ isMine, message, createdAt, senderN
           {message}
           <div className="text-[10px] text-gray-400 mt-1">{createdAt}</div>
             {/* ✅ Hover Actions */}
-          {!isMine && showActions && (
+          {!isMine && showActions && messageId && (
             <div className="absolute -right-8 top-1/2 -translate-y-1/2 z-50">
               <ReportIcon
                 targetId={messageId!}

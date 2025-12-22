@@ -1,5 +1,6 @@
 import { reviewService } from "@/services/review/reviewService";
 import { EventReview } from "@/types/user/review/reviewTypes";
+import { showError, showSuccess } from "@/utils/toastService";
 import { useState } from "react";
 
 
@@ -10,8 +11,10 @@ export  default function YourReviewCard({review, refresh}:{review:EventReview; r
 
   const handleUpdate = async () => {
     try{
+        if(newRating<1) showError("Rating can't be empty")
        await reviewService.updateReview(review.id,{rating: newRating, review: newText});
        setEditing(false);
+       showSuccess("Review updated successfully")
       await  refresh();
 
     }catch(err){

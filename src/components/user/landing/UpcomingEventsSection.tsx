@@ -41,22 +41,31 @@ export default function UpcomingEventsSection() {
 
           <div className="relative z-10">
             {/* ================= HEADER ================= */}
-            <div className="flex flex-col md:flex-row items-baseline justify-between mb-12 border-b border-slate-100 pb-8">
+            <div className="relative flex flex-col md:flex-row items-baseline justify-between mb-12 border-b border-slate-100 pb-8">
+
                
                {/* Left: Title */}
-               <div>
-                  <div className="flex items-center gap-2 mb-3">
-                     <span className="relative flex h-2.5 w-2.5">
-                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                     </span>
-                     <span className="text-xs font-bold text-slate-900 uppercase tracking-widest">Happening Now</span>
-                  </div>
+              {/* Left: Title */}
+{/* Centered Title */}
+<div className="absolute left-1/2 -translate-x-1/2 text-center">
+  <div className="flex items-center justify-center gap-2 mb-3">
+    <span className="relative flex h-2.5 w-2.5">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+    </span>
+    <span className="text-xs font-bold text-slate-900 uppercase tracking-widest">
+      Happening Now
+    </span>
+  </div>
 
-                  <h2 className="text-4xl md:text-5xl  text-slate-900 font-bold tracking-tight">
-                    Upcoming <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-500  font-bold">Events.</span>
-                  </h2>
-               </div>
+  <h2 className="text-4xl md:text-5xl text-slate-900 font-bold tracking-tight">
+    Upcoming{" "}
+    <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-500 font-bold">
+      Events.
+    </span>
+  </h2>
+</div>
+
 
                {/* Right: Context Badge */}
                <div className="mt-4 md:mt-0 hidden md:flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full border border-slate-100">

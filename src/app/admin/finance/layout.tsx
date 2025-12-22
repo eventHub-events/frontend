@@ -10,6 +10,7 @@ const tabs = [
   { name: "Refunds", href: "/admin/finance/refunds" },
   { name: "Payouts", href: "/admin/finance/payouts" },
   { name: "Event Revenue", href: "/admin/finance/event-revenue" },
+  { name: "Event Analytics", href: "/admin/finance/event-analytics" },
   { name: "Subscription Revenue", href: "/admin/finance/subscription-revenue" },
 ];
 
