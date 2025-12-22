@@ -10,5 +10,5 @@ export const ApiRoutes = {
 export const RedirectRoutes = {
   LOGIN_USER: `/login/user`,
   LOGIN_ORGANIZER: `/login/organizer`,
-  LOGIN_ADMIN: `/admin/login`,
+  LOGIN_ADMIN: `/admin-login`,
 } as const;
