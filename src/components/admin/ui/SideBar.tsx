@@ -8,9 +8,9 @@ import {
   RiCalendarEventLine,
   RiBook2Line,
   RiMoneyDollarCircleLine,
-  RiCoupon3Line,
+  // RiCoupon3Line,
   RiPriceTag3Line,
-  RiMailLine,
+  // RiMailLine,
   RiVipCrownLine,
   RiFlagLine,
 } from "react-icons/ri";
@@ -22,9 +22,9 @@ const links = [
   { name: "Event Management", path: "/admin/events", icon: RiCalendarEventLine },
   { name: "Bookings", path: "/admin/bookings", icon: RiBook2Line },
   { name: "Finance & Payments", path: "/admin/finance", icon: RiMoneyDollarCircleLine },
-  { name: "Promo Codes", path: "/admin/promo-codes", icon: RiCoupon3Line },
+  // { name: "Promo Codes", path: "/admin/promo-codes", icon: RiCoupon3Line },
   { name: "Categories & Tags", path: "/admin/categories", icon: RiPriceTag3Line },
-  { name: "Communication", path: "/admin/communication", icon: RiMailLine },
+  // { name: "Communication", path: "/admin/communication", icon: RiMailLine },
   { name: "Subscription Plans", path: "/admin/subscription-plans", icon: RiVipCrownLine },
   { name: "Reports", path: "/admin/reports", icon: RiFlagLine },
 ];
