@@ -3,6 +3,7 @@
 import { useAppDispatch } from "@/redux/hooks"
 import { setAdmin } from "@/redux/slices/admin/authSlice"
 import { authService } from "@/services/authService"
+import { AxiosError } from "axios"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-toastify"
@@ -35,8 +36,8 @@ export  default function AdminLogin(){
 
 
   }catch(err:unknown){
-      const error= err instanceof Error? err.message:"Error in admin  login"
-      console.log("err is",error)
+      const error= err instanceof AxiosError? err.response?.data.message:"Error in admin  login"
+      console.log("err is",err)
     toast.error(error)
 
   }finally{
