@@ -4,15 +4,15 @@ import { usePathname } from "next/navigation";
 import {
   MdDashboard,
   MdEvent,
-  MdQrCodeScanner,
-  MdLocalOffer,
-  MdFeedback,
-  MdPayments,
+  // MdQrCodeScanner,
+  // MdLocalOffer,
+  // MdFeedback,
+  // MdPayments,
   MdPerson,
   MdChevronLeft,
   MdChevronRight,
-  MdRocket,
-  MdTrendingUp,
+  // MdRocket,
+  // MdTrendingUp,
   MdSubscriptions,
   MdMessage,
   MdInsights
@@ -23,13 +23,13 @@ import { useAppSelector } from "@/redux/hooks";
 const menuItems = [
   { name: "Dashboard", icon: <MdDashboard />, href: "/organizer/dashboard" },
   { name: "My Events", icon: <MdEvent />, href: "/organizer/events" },
-  { name: "Bookings", icon: <MdPayments />, href: "/organizer/bookings" },
-  { name: "Check-In", icon: <MdQrCodeScanner />, href: "/organizer/check-in" },
-  { name: "Promo Codes", icon: <MdLocalOffer />, href: "/organizer/promo-codes" },
-  { name: "Feedback", icon: <MdFeedback />, href: "/organizer/feedback" },
+  // { name: "Bookings", icon: <MdPayments />, href: "/organizer/bookings" },
+  // { name: "Check-In", icon: <MdQrCodeScanner />, href: "/organizer/check-in" },
+  // { name: "Promo Codes", icon: <MdLocalOffer />, href: "/organizer/promo-codes" },
+  // { name: "Feedback", icon: <MdFeedback />, href: "/organizer/feedback" },
    { name: "Event Analytics", icon: <MdInsights />, href: "/organizer/event-analytics" },
 
-  { name: "Payouts", icon: <MdPayments />, href: "/organizer/payouts" },
+  // { name: "Payouts", icon: <MdPayments />, href: "/organizer/payouts" },
   { name: "Subscription Plans", icon: <MdSubscriptions />, href: "/organizer/subscription-plans" },
   { name: "Profile", icon: <MdPerson />, href: "/organizer/profile" },
   { name: "Reviews", icon: <MdPerson />, href: "/organizer/reviews" },
@@ -146,7 +146,7 @@ export const OrganizerSidebar: React.FC = () => {
           </div>
 
           {/* Stats Card */}
-          {!isCollapsed && (
+          {/* {!isCollapsed && (
             <div className="mt-8 mx-1">
               <div className="relative p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 overflow-hidden group hover:shadow-lg transition-all duration-300">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-3xl"></div>
@@ -176,10 +176,10 @@ export const OrganizerSidebar: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Upgrade Card */}
-          {!isCollapsed && (
+          {/* {!isCollapsed && (
             <div className="mt-4 mx-1">
               <div className="relative p-5 bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 rounded-2xl overflow-hidden group/upgrade cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
                 <div className="absolute inset-0 bg-black/5"></div>
@@ -200,7 +200,7 @@ export const OrganizerSidebar: React.FC = () => {
                 </button>
               </div>
             </div>
-          )}
+          )} */}
         </nav>
 
         {/* User Profile Section */}
@@ -220,7 +220,7 @@ export const OrganizerSidebar: React.FC = () => {
                 <div className="text-sm font-bold text-slate-800 truncate">
                   {organizer?.name || "John Doe"}
                 </div>
-                <div className="text-xs text-slate-600 truncate font-medium">Premium Organizer</div>
+                {/* <div className="text-xs text-slate-600 truncate font-medium">Premium Organizer</div> */}
               </div>
             )}
           </div>
