@@ -18,7 +18,8 @@ import OrganizerPaymentsSection from './payments/OrganizerPaymentsSection';
 import { PROFILE_SERVICE } from '@/services/organizer/profileService';
 
 
-const tabs = ['Profile', 'Documents', 'Verification', 'Security',"Payments", 'Notifications'];
+const tabs = ['Profile', 'Documents', 'Verification', 'Security',"Payments"];
+// const tabs = ['Profile', 'Documents', 'Verification', 'Security',"Payments", 'Notifications'];
 
 type ProfileFormData = {
   organizerId: string;
@@ -406,11 +407,11 @@ export default function OrganizerProfile() {
   />
 )}
 
-      {activeTab === "Notifications" && (
+      {/* {activeTab === "Notifications" && (
         <div className="text-gray-500 text-sm py-10 text-center">
           {activeTab} section content goes here.
         </div>
-      )}
+      )} */}
     </div>
   );
 }
