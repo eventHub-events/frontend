@@ -111,7 +111,7 @@ export default function BookingSuccess({sessionId}: {sessionId: string}) {
 
       <p className="mt-6 text-gray-500 text-center">
         You can also view them later in{" "}
-        <a href="/profile/bookings" className="underline">
+        <a href="/user/bookings" className="underline">
           My Bookings
         </a>.
       </p>
