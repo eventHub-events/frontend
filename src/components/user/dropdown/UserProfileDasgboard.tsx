@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  FaUser, FaLock, FaHeart, FaTicketAlt, FaCreditCard, FaBell, FaCog,
+  FaUser, FaLock, 
+  // FaUser, FaLock, FaHeart, FaTicketAlt, FaCreditCard, FaBell, FaCog,
    FaUpload, FaEdit, FaCheck, FaTimes
 } from "react-icons/fa";
 import Image from "next/image";
@@ -37,6 +38,8 @@ const UserProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [user, setUser] = useState<UserProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  
+
  
   const [twoFA, setTwoFA] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -267,11 +270,11 @@ const UserProfile: React.FC = () => {
   const tabs = [
     { key: "profile", label: "Profile", icon: FaUser },
     { key: "security", label: "Security", icon: FaLock },
-    { key: "bookings", label: "Bookings", icon: FaTicketAlt },
-    { key: "favorites", label: "Favorites", icon: FaHeart },
-    { key: "payments", label: "Payments", icon: FaCreditCard },
-    { key: "notifications", label: "Notifications", icon: FaBell },
-    { key: "settings", label: "Settings", icon: FaCog },
+    // { key: "bookings", label: "Bookings", icon: FaTicketAlt },
+    // { key: "favorites", label: "Favorites", icon: FaHeart },
+    // { key: "payments", label: "Payments", icon: FaCreditCard },
+    // { key: "notifications", label: "Notifications", icon: FaBell },
+    // { key: "settings", label: "Settings", icon: FaCog },
   ];
 
   const formFieldsWithNames = [

@@ -7,6 +7,7 @@ export interface IUser{
   role: "user"|"organizer"|"admin";
   image?:string,
   isVerified?:boolean,
+  hasPassword?: boolean
   
 }
 
