@@ -13,4 +13,6 @@ export const USER_PROFILE_SERVICE = {
     apiClient.patch(UserProfileRoutes.UPDATE_PROFILE(profileId), data, {
       withCredentials: true,
     }),
-} as const;
+   userRequestPasswordSetOtp: () => apiClient.post(UserProfileRoutes.REQUEST_PASSWORD_SET_OTP,{},{withCredentials :true}),
+   userSetPasswordWithOtp : (data : {otp :string,newPassword : string, confirmNewPassword:string,}) => apiClient.post(UserProfileRoutes.SET_PASSWORD_WITH_OTP,{otp:data.otp,newPassword: data.newPassword},{withCredentials : true}),
+  }
