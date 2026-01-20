@@ -66,7 +66,7 @@ export default function Sidebar() {
               )}
 
               <Icon className="text-2xl" />
-              <span>{name}</span>
+              <span className="whitespace-nowrap">{name}</span>
             </Link>
           );
         })}
