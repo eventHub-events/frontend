@@ -1,11 +1,19 @@
-export const validateName=(name:string)=>{
-  const nameRegex= /^[A-Z][a-zA-Z]{0,19}$/;
-  if(!name.trim())return "Name is required";
-  if(!nameRegex.test(name)){
-    return "Only alphabets allowed ,first letter capital ,max 20 characters";
+export const validateName = (name: string) => {
+  const nameRegex = /^[A-Z][a-zA-Z]*(?: [A-Z][a-zA-Z]*){0,3}$/;
+
+  if (!name.trim()) return "Name is required";
+
+  if (!nameRegex.test(name)) {
+    return "Only alphabets allowed, each word must start with capital letter, spaces allowed between words only";
   }
+
+  if (name.length > 20) {
+    return "Name must be maximum 20 characters";
+  }
+
   return "";
-}
+};
+
 
 export const validateEmail=(email:string)=>{
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

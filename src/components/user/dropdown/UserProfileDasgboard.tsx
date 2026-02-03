@@ -203,6 +203,11 @@ const UserProfile: React.FC = () => {
     if (!user || !userId) return;
     const file = e.target.files?.[0];
     if (!file) return;
+     if (!file.type.startsWith("image/")) {
+    toast.error("Please select a valid image file (PNG, JPG, JPEG, WEBP)");
+    e.target.value = ""; // reset file input
+    return;
+  }
 
     try {
       const imageUrl = await uploadImageToCloudinary(file,  `users/${userId}/profile`);

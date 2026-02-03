@@ -151,6 +151,11 @@ export default function OrganizerProfile() {
   const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    showError("Only image files (JPG, PNG, WEBP) are allowed");
+    e.target.value = ""; // reset input
+    return;
+  }
 
   try {
     const uploadResult = await uploadImageToCloudinary(file, `organizers/${organizerId}/profile` );

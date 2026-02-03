@@ -32,6 +32,26 @@ export default function UpcomingEventsSection() {
       
       {/* Container to constrain width */}
       <div className=" mx-auto px-4 md:px-6">
+        {/* ===== OUTER CENTER TITLE ===== */}
+<div className="mb-10 text-center">
+  <div className="flex items-center justify-center gap-2 mb-3">
+    <span className="relative flex h-2.5 w-2.5">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+    </span>
+    <span className="text-xs font-bold text-slate-900 uppercase tracking-widest">
+      Happening Now
+    </span>
+  </div>
+
+  <h2 className="text-4xl md:text-5xl text-slate-900 font-bold tracking-tight">
+    Upcoming{" "}
+    <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-500">
+      Events.
+    </span>
+  </h2>
+</div>
+
 
         {/* 2. THE BOX (White, Rounded, Shadowed) */}
         <div className="relative bg-white rounded-[3rem] p-8 md:p-16 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden">
@@ -47,7 +67,7 @@ export default function UpcomingEventsSection() {
                {/* Left: Title */}
               {/* Left: Title */}
 {/* Centered Title */}
-<div className="absolute left-1/2 -translate-x-1/2 text-center">
+{/* <div className="absolute left-1/2 -translate-x-1/2 text-center">
   <div className="flex items-center justify-center gap-2 mb-3">
     <span className="relative flex h-2.5 w-2.5">
       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -64,7 +84,7 @@ export default function UpcomingEventsSection() {
       Events.
     </span>
   </h2>
-</div>
+</div> */}
 
 
                {/* Right: Context Badge */}

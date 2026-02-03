@@ -14,8 +14,16 @@ import {
   FiMessageCircle,
   FiShare2,
   FiHeart,
+  FiCheck,
+  
+  FiAward,
+  // FiPlus,
+  // FiMinus,
 } from "react-icons/fi";
-import { HiPlus, HiMinus } from "react-icons/hi";
+// import { HiPlus, HiMinus } from "react-icons/hi";
+import {
+  BsTicket,   // Regular + Header (ticket stub)
+} from "react-icons/bs";
 import { motion, AnimatePresence } from "framer-motion";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
 import { showError } from "@/utils/toastService";
@@ -25,6 +33,7 @@ import { useAppSelector } from "@/redux/hooks";
 import Swal from "sweetalert2";
 import ReviewSection from "../review/event/ReviewSection";
 import ReportIcon from "../report/ReportIcon";
+import { BadgeCheck, RefreshCw, Shield, ShieldCheck, ShoppingBag, Sparkles, Ticket } from "lucide-react";
 
 interface TicketData {
   name: string;
@@ -186,6 +195,8 @@ const EventDetails: React.FC = () => {
   };
    
   try {
+    console.log("paayload is",payload);
+  
     const res = await bookingService.bookTicket(event.id, payload);
     console.log("rseeee", res)
     const bookingId = res.data.data.id;
@@ -219,6 +230,7 @@ const EventDetails: React.FC = () => {
 
    
   } catch (err) {
+    console.log(err)
     console.error("Booking failed:", err);
     showError("Failed to book tickets. Please try again.");
   }
@@ -339,7 +351,7 @@ const EventDetails: React.FC = () => {
 
             {/* Enhanced Tickets Section */}
             <div className="bg-[#ededed] rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="p-6 bg-gradient-to-r from-yellow-500 to-yellow-500 border-b border-gray-200">
+              {/* <div className="p-6 bg-gradient-to-r from-yellow-500 to-yellow-500 border-b border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-gradient-to-r from-green-500 to-green-500 rounded-xl shadow-md">
                     <FiTag className="text-white text-lg" />
@@ -349,184 +361,323 @@ const EventDetails: React.FC = () => {
                     <p className="text-gray-600 text-sm">Choose your preferred ticket type</p>
                   </div>
                 </div>
-              </div>
-              
-              <div className="p-6 space-y-4">
-                {ticketSelections.map((item, index) => (
-                  <motion.div
-                    key={item.ticket.name}
-                    whileHover={{ scale: 1.005, y: -2 }}
-                    className={`p-5 rounded-xl border-2 transition-all duration-300 shadow-sm ${
-                      item.count > 0
-                        ? "border-purple-500 bg-gradient-to-r from-purple-50 to-blue-50 shadow-md"
-                        : "border-gray-200 hover:border-purple-300 bg-white hover:shadow-md"
-                    }`}
-                  >
-                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-                      <div className="flex-1 space-y-3">
-                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                          <div className="space-y-1">
-                            <h4 className="text-lg font-bold text-gray-800">{item.ticket.name}</h4>
-                            <p className="text-gray-600 text-sm leading-relaxed">{item.ticket.description}</p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
-                              ₹{item.ticket.price}
-                            </div>
-                            <div className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                              {item.ticket.totalSeats - item.ticket.bookedSeats-(ticketSelections.find(t => t.ticket.name === item.ticket.name)?.count || 0)} seats left
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-1.5">
-                          {item.ticket.benefits.slice(0, 3).map((benefit, i) => (
-                            <span key={i} className="bg-white text-gray-700 px-2.5 py-1 rounded-full text-xs font-medium border border-gray-200 shadow-sm">
-                              ✓ {benefit}
-                            </span>
-                          ))}
-                          {item.ticket.benefits.length > 3 && (
-                            <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full text-xs font-medium">
-                              +{item.ticket.benefits.length - 3} more
-                            </span>
-                          )}
-                        </div>
-                      </div>
+              </div> */}
+{/* ... inside your component */}
 
-                      {/* Enhanced Quantity Counter */}
-                      <div className="flex items-center gap-3">
-                        <div className="flex flex-col items-center gap-2">
-                          <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2 border border-gray-300">
-                            <button
-                              onClick={() => handleDecrease(index)}
-                              className="p-1.5 rounded-lg hover:bg-white transition-all text-gray-600 hover:text-gray-800 hover:shadow-sm disabled:opacity-30"
-                              disabled={item.count === 0}
-                            >
-                              <HiMinus className="text-sm" />
-                            </button>
-                            <span className="w-6 text-center font-bold text-gray-800 text-sm">{item.count}</span>
-                            <button
-                              onClick={() => handleIncrease(index)}
-                              className="p-1.5 rounded-lg hover:bg-white transition-all text-gray-600 hover:text-gray-800 hover:shadow-sm"
-                            >
-                              <HiPlus className="text-sm" />
-                            </button>
-                          </div>
-                          {item.count > 0 && (
-                            <div className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
-                              ₹{(item.ticket.price * item.count).toFixed(2)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+<section className="bg-slate-50/50 rounded-[3rem] border border-slate-200 p-8 md:p-12 shadow-inner">
+  {/* HEADER */}
+  <div className="flex items-center gap-3 mb-10">
+    <div className="p-3 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-100 text-white">
+      <BsTicket size={24} />
+    </div>
+    <h3 className="text-3xl font-black text-slate-900 tracking-tight">
+      Choose Your Experience
+    </h3>
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+    {ticketSelections.map((item, index) => {
+      const seatsLeft =
+        item.ticket.totalSeats -
+        item.ticket.bookedSeats -
+        item.count;
+
+      const isVIP = item.ticket.name.toLowerCase().includes("vip");
+      const isPremium = item.ticket.name.toLowerCase().includes("premium");
+
+      const theme = isVIP
+        ? {
+            icon: FiAward,
+            accentBg: "bg-purple-500",
+            badge: true,
+          }
+        : isPremium
+        ? {
+            icon: FiStar,
+            accentBg: "bg-orange-500",
+            badge: false,
+          }
+        : {
+            icon: BsTicket,
+            accentBg: "bg-blue-500",
+            badge: false,
+          };
+
+      const Icon = theme.icon;
+
+      return (
+        <div
+          key={item.ticket.name}
+          className={`
+            relative rounded-[2.5rem] border-2 border-slate-200
+            flex flex-col bg-white shadow-xl transition-all duration-500
+            ${isVIP ? "scale-[1.05] z-10 shadow-2xl" : "hover:scale-[1.02]"}
+            p-8
+          `}
+        >
+          {/* MOST POPULAR BADGE */}
+          {theme.badge && (
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2
+              bg-orange-500 text-white text-[10px] font-black
+              px-5 py-2 rounded-full shadow-lg uppercase">
+              Most Popular
+            </div>
+          )}
+
+          {/* ICON */}
+          <div className="flex justify-center mb-6">
+            <div
+              className={`
+                w-16 h-16 rounded-2xl flex items-center justify-center
+                ${theme.accentBg} text-white text-2xl shadow-md
+              `}
+            >
+              <Icon />
+            </div>
+          </div>
+
+          {/* TITLE & PRICE */}
+          <div className="text-center mb-6">
+            <h4 className="text-xl font-extrabold text-slate-800 uppercase">
+              {item.ticket.name}
+            </h4>
+            <div className="mt-2 flex items-baseline justify-center gap-1">
+              <span className="text-4xl font-black text-slate-900">
+                ₹{item.ticket.price}
+              </span>
+              <span className="text-slate-400 text-sm font-bold">
+                /person
+              </span>
+            </div>
+          </div>
+
+          {/* DESCRIPTION */}
+          <p className="text-sm text-slate-500 text-center leading-relaxed font-medium mb-8">
+            {item.ticket.description}
+          </p>
+
+          {/* BENEFITS */}
+          <ul className="space-y-4 mb-10 flex-grow">
+            {item.ticket.benefits.map((benefit, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <div className="mt-0.5 rounded-full p-1 bg-emerald-100 text-emerald-600 shadow-sm">
+                  <FiCheck size={12} strokeWidth={4} />
+                </div>
+                <span className="text-sm font-semibold text-slate-700">
+                  {benefit}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {/* AVAILABILITY (MATCHES SCREENSHOT) */}
+          <div className="mt-auto pt-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs font-medium text-slate-400">
+                Available
+              </span>
+              <span className="text-sm font-semibold text-emerald-600">
+                {seatsLeft} left
+              </span>
+            </div>
+
+            <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-emerald-500 rounded-full"
+                style={{
+                  width: `${Math.max(
+                    5,
+                    (seatsLeft / item.ticket.totalSeats) * 100
+                  )}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* QUANTITY CONTROL (UNCHANGED) */}
+          <div className="mt-8 flex justify-center">
+            <div className="flex items-center gap-6 rounded-2xl px-6 py-3 shadow-xl">
+              <button
+                onClick={() => handleDecrease(index)}
+                className="text-2xl font-light text-slate-400"
+                disabled={item.count === 0}
+              >
+                −
+              </button>
+
+              <div className="flex flex-col items-center min-w-[24px]">
+                <span className="text-slate-900 font-black text-lg">
+                  {item.count}
+                </span>
+                <span className="text-[8px] text-slate-500 font-bold uppercase">
+                  Qty
+                </span>
               </div>
+
+              <button
+                onClick={() => handleIncrease(index)}
+                className="text-2xl font-light text-slate-400"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</section>
+
+ 
+
             </div>
 
             {/* Event Details Section */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="p-6 bg-gradient-to-r from-gray-50 to-blue-50 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-r from-gray-600 to-blue-600 rounded-xl shadow-md">
-                    <FiLayers className="text-white text-lg" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-800">Event Details</h3>
-                </div>
-              </div>
+<div className="bg-white rounded-[20px] border border-gray-200 shadow-lg overflow-hidden">
 
-              <div className="p-6 space-y-6">
-                {/* Image Gallery */}
-                {event.images?.length > 0 && (
-                  <div className="space-y-3">
-                    <h4 className="font-bold text-gray-800 text-lg">Event Gallery</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {event.images.map((img, idx) => (
-                        <div key={idx} className="relative aspect-video rounded-lg overflow-hidden group shadow-md hover:shadow-lg transition-shadow">
-                          <Image
-                            src={img}
-                            alt={`Event image ${idx + 1}`}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+  {/* ================= HEADER ================= */}
+  <div className="px-8 py-6 border-b border-gray-200">
+    <div className="flex items-center gap-4">
+      <div className="p-3 rounded-xl bg-indigo-600 text-white">
+        <FiLayers className="text-xl" />
+      </div>
+      <div>
+        <h3 className="text-2xl font-bold text-gray-900">
+          Event Details
+        </h3>
+        <p className="text-sm text-gray-500">
+          Everything you need to know about this event
+        </p>
+      </div>
+    </div>
+  </div>
 
-                {/* Event Info Grid */}
-               <div className="space-y-3">
-                  <h4 className="font-bold text-gray-800 text-lg">Event Information</h4>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 shadow-sm">
-                      <div className="p-2 bg-blue-500 rounded-lg shadow-sm">
-                        <FiCalendar className="text-white text-sm" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 font-medium">Date & Time</p>
-                        <p className="font-semibold text-gray-800 text-sm">
-                          {new Date(event.startDate).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
+  <div className="p-8 space-y-12">
 
-                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200 shadow-sm">
-                      <div className="p-2 bg-green-500 rounded-lg shadow-sm">
-                        <FiMapPin className="text-white text-sm" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 font-medium">Location</p>
-                        <p className="font-semibold text-gray-800 text-sm">
-                          {event.venue}, {event.location.city}
-                        </p>
-                      </div>
-                    </div>
+    {/* ================= GALLERY ================= */}
+    {event.images?.length > 0 && (
+      <section className="space-y-4">
+        <h4 className="text-xl font-semibold text-gray-900">
+          Event Gallery
+        </h4>
 
-                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200 shadow-sm">
-                      <div className="p-2 bg-purple-500 rounded-lg shadow-sm">
-                        <FiUsers className="text-white text-sm" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 font-medium">Capacity</p>
-                        <p className="font-semibold text-gray-800 text-sm">{event.totalCapacity} attendees</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200 shadow-sm">
-                      <div className="p-2 bg-orange-500 rounded-lg shadow-sm">
-                        <FiTag className="text-white text-sm" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600 font-medium">Starting from</p>
-                        <p className="font-semibold text-gray-800 text-sm">₹{startingPrice}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* About Event */}
-               <div className="space-y-3">
-                  <h4 className="font-bold text-gray-800 text-lg">About this Event</h4>
-                  <p className="text-gray-600 leading-relaxed text-sm">{event.description}</p>
-
-                  {/* Tags */}
-                  {event.tags && event.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {event.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-blue-100 text-gray-700 rounded-full text-xs font-semibold border border-gray-300 shadow-sm"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {event.images.map((img, idx) => (
+            <div
+              key={idx}
+              className="relative aspect-video rounded-xl overflow-hidden group"
+            >
+              <Image
+                src={img}
+                alt={`Event image ${idx + 1}`}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* ================= EVENT INFORMATION ================= */}
+    <section className="space-y-6">
+      <h4 className="text-xl font-semibold text-gray-900">
+        Event Information
+      </h4>
+
+      <div className="divide-y divide-gray-200">
+
+        {/* Date & Time */}
+        <div className="flex items-start gap-6 py-5">
+          <div className="text-indigo-600 mt-1">
+            <FiCalendar className="text-xl" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500">
+              Date & Time
+            </p>
+            <p className="text-lg font-semibold text-gray-900">
+              {new Date(event.startDate).toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        {/* Location */}
+        <div className="flex items-start gap-6 py-5">
+          <div className="text-emerald-600 mt-1">
+            <FiMapPin className="text-xl" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500">
+              Location
+            </p>
+            <p className="text-lg font-semibold text-gray-900">
+              {event.venue}, {event.location.city}
+            </p>
+          </div>
+        </div>
+
+        {/* Capacity */}
+        <div className="flex items-start gap-6 py-5">
+          <div className="text-purple-600 mt-1">
+            <FiUsers className="text-xl" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500">
+              Capacity
+            </p>
+            <p className="text-lg font-semibold text-gray-900">
+              {event.totalCapacity} Attendees
+            </p>
+          </div>
+        </div>
+
+        {/* Price */}
+        <div className="flex items-start gap-6 py-6">
+          <div className="text-orange-600 mt-1">
+            <FiTag className="text-xl" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-500">
+              Starting From
+            </p>
+            <p className="text-3xl font-extrabold text-gray-900">
+              ₹{startingPrice}
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    {/* ================= ABOUT ================= */}
+    <section className="space-y-4 max-w-3xl">
+      <h4 className="text-xl font-semibold text-gray-900">
+        About This Event
+      </h4>
+
+      <p className="text-gray-700 leading-relaxed">
+        {event.description}
+      </p>
+
+      {(event.tags?.length ?? 0) > 0 && (
+        <div className="flex flex-wrap gap-2 pt-2">
+          {event.tags?.map(tag => (
+            <span
+              key={tag}
+              className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </section>
+
+  </div>
+</div>
+
+
             <ReviewSection mode={"event"} targetId={event.id} userId={user?.id??""} userName={user?.name??""} />
           </div>
 
@@ -534,107 +685,195 @@ const EventDetails: React.FC = () => {
           <div className="space-y-6">
             {/* Sticky Booking Card */}
             <div className="sticky top-6">
-              <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-300 overflow-hidden">
-                <div className="p-5 bg-gradient-to-r from-red-600 to-red-600">
-                  <h3 className="text-lg font-bold text-white text-center">Booking Summary</h3>
-                </div>
+           <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.4 }}
+  className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-300 overflow-hidden"
+>
+  {/* Header */}
+  <div className="p-5 bg-gradient-to-r from-red-600 to-red-700">
+    <div className="flex items-center justify-center gap-2">
+      <ShoppingBag className="w-5 h-5 text-white" />
+      <h3 className="text-lg font-bold text-white text-center">
+        Booking Summary
+      </h3>
+    </div>
+  </div>
 
-                <div className="p-5 space-y-5">
-                  {/* Enhanced Price Display */}
-                  <div className="text-center space-y-2">
-                    <div className="text-3xl font-bold text-transparent bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text">
-                      ₹{totalPrice}
+  <div className="p-5 space-y-6">
+    {/* Price Display */}
+    <motion.div
+      animate={totalTicketsSelected > 0 ? { scale: [1, 1.03, 1] } : {}}
+      transition={{ duration: 0.4 }}
+      className="text-center space-y-2"
+    >
+      <div className="text-4xl font-black text-gray-900">
+        ₹{totalPrice}
+      </div>
+
+      <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-50 rounded-full border border-purple-200">
+        <Ticket className="w-4 h-4 text-purple-600" />
+        <span className="text-sm font-semibold text-purple-900">
+          {totalTicketsSelected > 0
+            ? `${totalTicketsSelected} ticket${
+                totalTicketsSelected > 1 ? "s" : ""
+              } selected`
+            : "Select tickets to continue"}
+        </span>
+      </div>
+    </motion.div>
+
+    {/* Selected Tickets */}
+    <AnimatePresence>
+      {totalTicketsSelected > 0 && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          className="space-y-3"
+        >
+          <div className="text-xs font-bold uppercase tracking-wide text-gray-500">
+            Selected Tickets
+          </div>
+
+          {ticketSelections
+            .filter(item => item.count > 0)
+            .map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -15 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.08 }}
+                className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-purple-600 p-2 rounded-lg">
+                    <Ticket className="w-4 h-4 text-white" />
+                  </div>
+
+                  <div>
+                    <div className="text-sm font-bold text-gray-800">
+                      {item.ticket.name}
                     </div>
-                    <div className="text-gray-600 text-sm font-medium">
-                      {totalTicketsSelected > 0 
-                        ? `${totalTicketsSelected} ticket${totalTicketsSelected > 1 ? 's' : ''} selected`
-                        : 'Select tickets to continue'
-                      }
+                    <div className="text-xs text-gray-600">
+                      Quantity: {item.count}
                     </div>
                   </div>
-                  {/* Selected Tickets */}
-                   <AnimatePresence>
-                    {totalTicketsSelected > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="space-y-3"
-                      >
-                        <div className="text-sm font-semibold text-gray-800 border-b border-gray-200 pb-2">
-                          Selected Tickets
-                        </div>
-                        {ticketSelections
-                          .filter(item => item.count > 0)
-                          .map((item, index) => (
-                            <div key={index} className="flex justify-between items-center text-sm p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
-                              <div className="space-y-1">
-                                <span className="font-semibold text-gray-800 block">{item.ticket.name}</span>
-                                <span className="text-gray-600 text-xs">Quantity: {item.count}</span>
-                              </div>
-                              <span className="font-bold text-purple-600">₹{(item.ticket.price * item.count).toFixed(2)}</span>
-                            </div>
-                          ))
-                        }
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Book Now Button */}
-                   <button  onClick={ handleBooking}
-                    className={`w-full py-4 rounded-xl font-bold text-white transition-all duration-300 shadow-lg ${
-                      totalTicketsSelected > 0
-                        ? 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 hover:shadow-xl hover:scale-105 active:scale-95'
-                        : 'bg-[#7B059B] text-gray-500 cursor-not-allowed'
-                    }`}
-                    disabled={totalTicketsSelected === 0}
-                  >
-                    {totalTicketsSelected > 0 ? 'Proceed to Checkout' : 'Select Tickets'}
-                  </button>
-
-                  {/* Security Badge */}
-                  <div className="text-center space-y-2">
-                    <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                        Secure checkout
-                      </div>
-                      <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                        100% refundable
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              </div>
+
+                <div className="text-sm font-bold text-black-900">
+                  ₹{(item.ticket.price * item.count).toFixed(2)}
+                </div>
+              </motion.div>
+            ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
+
+    {/* Checkout Button */}
+    <motion.button
+      onClick={handleBooking}
+      disabled={totalTicketsSelected === 0}
+      whileHover={totalTicketsSelected > 0 ? { scale: 1.03 } : {}}
+      whileTap={totalTicketsSelected > 0 ? { scale: 0.97 } : {}}
+      className={`w-full py-4 rounded-xl font-bold text-white transition-all duration-300 shadow-lg ${
+        totalTicketsSelected > 0
+          ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-900"
+          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+      }`}
+    >
+      {totalTicketsSelected > 0
+        ? "Proceed to Checkout"
+        : "Select Tickets"}
+    </motion.button>
+
+    {/* Trust Badges */}
+    <div className="space-y-2">
+      <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
+        <div className="p-2 bg-green-500 rounded-lg">
+          <Shield className="w-4 h-4 text-white" />
+        </div>
+        <div>
+          <div className="text-xs font-bold text-green-700">
+            Secure checkout
+          </div>
+          <div className="text-[11px] text-green-600">
+            SSL encrypted payment
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
+        <div className="p-2 bg-blue-500 rounded-lg">
+          <RefreshCw className="w-4 h-4 text-white" />
+        </div>
+        <div>
+          <div className="text-xs font-bold text-blue-700">
+            100% refundable
+          </div>
+          <div className="text-[11px] text-blue-600">
+            Cancel 24 hours before event
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</motion.div>
+
 
               {/* Organizer Info */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5 mt-6">
-  <div className="flex items-center justify-between mb-4">
-    <h4 className="font-bold text-gray-800 text-sm">Organized by</h4>
+{/* Added mt-8 for spacing and max-w-md to keep it elegant in the sidebar */}
+ <div className="relative mt-8 flex items-center justify-between gap-6 rounded-2xl 
+      bg-white/70 backdrop-blur-xl px-6 py-5 
+      shadow-[0_20px_60px_-25px_rgba(0,0,0,0.25)] 
+      border border-gray-200">
 
-    {/* 🚩 Report Organizer */}
-    <ReportIcon
-      targetId={event.organizerId}
-      targetType="organizer"
-      reporterId={user?.id ?? ""}
-      reporterName={user?.name??""}
-      reporterRole="user"
-    />
-  </div>
+      {/* LEFT SIDE */}
+      <div className="flex items-center gap-4">
 
-  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-300">
-    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md">
-      {event.organizerName.charAt(0)}
-    </div>
-    <div>
-      <p className="font-bold text-gray-800 text-sm">{event.organizerName}</p>
-      <p className="text-gray-600 text-xs">Event Organizer</p>
-    </div>
-  </div>
-</div>
-                <ReviewSection 
+        {/* Avatar */}
+        <div className="relative flex h-14 w-14 items-center justify-center rounded-xl 
+          bg-gradient-to-br from-red-600 to-purple-600 text-white shadow-lg">
+          <ShieldCheck className="h-7 w-7" />
+          {event.organizerName && (
+            <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-yellow-300" />
+          )}
+        </div>
+
+        {/* Name + Meta */}
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <h4 className="text-xl font-semibold text-gray-900 tracking-tight">
+              {event.organizerName}
+            </h4>
+
+            {event.organizerName && (
+              <span className="inline-flex items-center gap-1 rounded-full 
+                bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                <BadgeCheck className="h-4 w-4" />
+                Verified
+              </span>
+            )}
+          </div>
+
+          <p className="text-sm text-gray-500">
+            Trusted official organizer
+          </p>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE ACTION */}
+     <div className="p-3 bg-gray-50 border border-gray-100 rounded-2xl hover:bg-red-50 hover:border-red-100 hover:text-red-500 transition-all cursor-pointer opacity-60 hover:opacity-100">
+           <ReportIcon
+            targetId={event.organizerId}
+            targetType="organizer"
+            reporterId={user?.id ?? ""}
+            reporterName={user?.name??""}
+            reporterRole="user"
+          />
+        </div>
+    </div>   <ReviewSection 
                   mode="organizer" 
                   targetId={event.organizerId} 
                   userId={user?.id ?? ""} 
