@@ -81,7 +81,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
     };
     fetchDocuments();
     // setIsUpdating(false)
-  }, [ organizerId,]);
+  }, [ organizerId,documents]);
 
  
 
@@ -93,6 +93,11 @@ documents.forEach((doc) => {
  const handleUpload = async () => {
   if (!selectedFile || !documentType) {
     toast.error("Please select a file and document type");
+    return;
+  }
+   if (!selectedFile.type.startsWith("image/")) {
+    showWarning("Only image files (JPG, PNG, WEBP) are allowed");
+    setSelectedFile(null);
     return;
   }
 
@@ -268,7 +273,7 @@ documents.forEach((doc) => {
 
         <input
           type="file"
-          accept="image/*,application/pdf"
+          accept="image/*"
           onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
           className="border border-gray-300 px-4 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -287,7 +292,8 @@ documents.forEach((doc) => {
   </button>
 
   {/* Send Verification Request Button */}
-  <button
+ {documents.length>=3 &&(
+     <button
     onClick={handleVerificationRequest}
     className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 flex items-center gap-2"
      disabled={documents.length === 0 || user.kycStatus === KycStatus.REJECTED && rejectedDocs.length>0 ||user.kycStatus === KycStatus.PENDING &&documents.length ===3 } // disable if no documents uploaded
@@ -295,6 +301,8 @@ documents.forEach((doc) => {
     <FaPaperPlane />
    {user.kycStatus === KycStatus.REJECTED? "Send ReVerification Request":"Send Verification Request"} 
   </button>
+ )}
+ 
 </div>
 
       {/* Uploaded Documents */}

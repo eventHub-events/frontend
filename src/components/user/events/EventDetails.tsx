@@ -195,6 +195,8 @@ const EventDetails: React.FC = () => {
   };
    
   try {
+    console.log("paayload is",payload);
+  
     const res = await bookingService.bookTicket(event.id, payload);
     console.log("rseeee", res)
     const bookingId = res.data.data.id;
@@ -228,6 +230,7 @@ const EventDetails: React.FC = () => {
 
    
   } catch (err) {
+    console.log(err)
     console.error("Booking failed:", err);
     showError("Failed to book tickets. Please try again.");
   }

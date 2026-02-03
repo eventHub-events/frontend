@@ -213,7 +213,7 @@ const handleGoogleError = () => {
 
         <p className="text-xs text-center mt-4">
           {"Don't have an account? "}
-          <Link href="/signup" className="text-blue-500">
+          <Link href={`/signup/${userType}`} className="text-blue-500">
             Sign up for free
           </Link>
         </p>

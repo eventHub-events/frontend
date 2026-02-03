@@ -2,11 +2,17 @@
 import type { AxiosError } from "axios";
 import Link from "next/link";
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+
 import { authService } from "../../services/authService"
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { validateConfirmPassword, validateEmail, validateName, validatePassword, validatePhone } from "@/utils/validation";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUser } from "@/redux/slices/user/authSlice";
+import { setOrganizer } from "@/redux/slices/organizer/authSlice";
+
+
 
 interface SignupPageProps {
   userType: "user" | "organizer";
@@ -34,6 +40,43 @@ export default function SignupPage({ userType }: SignupPageProps) {
   })
 
   const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+  try {
+    const token = credentialResponse.credential;
+    if (!token) {
+      toast.error("Google authentication failed");
+      return;
+    }
+
+    // Call backend API
+    const response = await authService.googleLogin({ token, role: userType });
+  
+    const { data } = response.data;
+    
+
+    // Decide based on role
+    if (data.role === "user") {
+      dispatch(setUser(data));
+      router.push("/user/home");
+    } else if (data.role === "organizer") {
+      dispatch(setOrganizer(data));
+      router.push("/organizer/dashboard");
+    }
+
+    toast.success("Google login successful!");
+  } catch (error: unknown) {
+    console.error("Google login error", error);
+
+    const axiosError = error as AxiosError<{ message: string }>;
+    toast.error(axiosError.response?.data?.message || "Google login failed");
+  }
+};
+
+const handleGoogleError = () => {
+  toast.error("Google authentication was cancelled or failed.");
+};
 
   // update form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,13 +241,30 @@ export default function SignupPage({ userType }: SignupPageProps) {
           </form>
 
           {/* Google Button */}
-          <div className="mt-4 text-center">
+          {/* <div className="mt-4 text-center">
             <p className="text-xs text-gray-500 mb-2">or continue with</p>
             <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2">
               <FcGoogle />
               <span>Continue with Google</span>
             </button>
-          </div>
+          </div> */}
+{/* Divider */}
+<div className="flex items-center gap-3 my-4">
+  <div className="flex-1 h-[1px] bg-gray-300" />
+  <span className="text-xs text-gray-400 whitespace-nowrap">
+    or continue with
+  </span>
+  <div className="flex-1 h-[1px] bg-gray-300" />
+</div>
+
+{/* Google Login Button */}
+     <GoogleLogin
+             onSuccess={handleGoogleSuccess}
+             onError={handleGoogleError}
+             useOneTap
+              />
+
+
 
           {/* Already have account */}
           <p className="text-xs text-center mt-4 text-gray-500">
