@@ -174,7 +174,7 @@ export default function EventRevenueDashboard() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} />
                   <YAxis />
-                  <Tooltip formatter={(v: number) => currency(v)} />
+                  <Tooltip formatter={(v: number | undefined) => currency(v ?? 0)} />
                   <Legend />
                   <Bar dataKey="revenue" fill="#0ea5a3" />
                 </BarChart>
@@ -229,7 +229,7 @@ export default function EventRevenueDashboard() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} />
                   <YAxis />
-                  <Tooltip formatter={(v: number) => currency(v)} />
+                 <Tooltip formatter={(v: number | undefined) => currency(v ?? 0)} />
                   <Legend />
                   <Bar dataKey="gross" fill="#4f46e5" />
                   <Bar dataKey="refunds" fill="#ef4444" />
