@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+     "build": "NEXT_DISABLE_TURBOPACK=1 next build",
+    
+    "start": "next start -p 10000",
+
+
     "lint": "next lint"
   },
   "dependencies": {

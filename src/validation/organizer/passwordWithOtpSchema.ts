@@ -2,6 +2,7 @@
 import {z} from "zod"
 import { basePasswordSchema } from "./baseSchema";
 
+import { passwordBaseSchema } from "./passwordBaseSchema";
 
 export const setPasswordWithOtpSchema = basePasswordSchema
   .omit({ currentPassword: true })
