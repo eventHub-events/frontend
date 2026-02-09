@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
-  withCredentials: true,
+ 
 });
 
 apiClient.interceptors.request.use(

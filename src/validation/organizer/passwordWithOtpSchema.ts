@@ -1,10 +1,10 @@
 
 import {z} from "zod"
+import { basePasswordSchema } from "./baseSchema";
 
 import { passwordBaseSchema } from "./passwordBaseSchema";
 
-
-export const setPasswordWithOtpSchema = passwordBaseSchema
+export const setPasswordWithOtpSchema = basePasswordSchema
   .omit({ currentPassword: true })
   .extend({
     otp: z.string().length(6, "OTP must be 6 digits"),
@@ -14,7 +14,5 @@ export const setPasswordWithOtpSchema = passwordBaseSchema
     path: ["confirmNewPassword"],
   });
 
-export type SetPasswordWithOtpSchemaType = z.infer<
-  typeof setPasswordWithOtpSchema
->;
-
+export type SetPasswordWithOtpSchemaType =
+  z.infer<typeof setPasswordWithOtpSchema>;
