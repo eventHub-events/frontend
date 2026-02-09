@@ -201,6 +201,14 @@ const UserProfile: React.FC = () => {
   };
    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user || !userId) return;
+     if (profileCompletion() < 100) {
+   toast("Complete profile first to unlock image upload 🔒", {
+  icon: "⚠️"
+});
+
+    e.target.value = ""; // reset file input
+    return;
+  }
     const file = e.target.files?.[0];
     if (!file) return;
      if (!file.type.startsWith("image/")) {
@@ -265,7 +273,7 @@ const UserProfile: React.FC = () => {
   if (loading || !user) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="animate-pulse flex flex-col items-center space-y-4">
-        <div className="w-20 h-20 bg-gradient-to-r from-purple-400 to-blue-500 rounded-full"></div>
+        <div className="w-20 h-20 bg-linear-to-r from-purple-400 to-blue-500 rounded-full"></div>
         <div className="h-4 bg-gray-200 rounded w-48"></div>
         <div className="h-3 bg-gray-200 rounded w-32"></div>
       </div>
@@ -304,7 +312,7 @@ const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50/30 py-8 px-4 sm:px-6 lg:px-8">
       <Toaster 
         position="top-center"
         toastOptions={{
@@ -346,7 +354,7 @@ const UserProfile: React.FC = () => {
                   )}
                 </div>
                 {editMode && activeTab === "profile" && (
-                  <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-purple-500 to-blue-500 p-2 rounded-full text-white shadow-lg">
+                  <div className="absolute -bottom-2 -right-2 bg-linear-to-r from-purple-500 to-blue-500 p-2 rounded-full text-white shadow-lg">
                     <FaUpload className="text-sm" />
                   </div>
                 )}
@@ -354,7 +362,7 @@ const UserProfile: React.FC = () => {
               
               <div className="space-y-3">
                 <div>
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  <h1 className="text-3xl font-bold bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                     {currentDraftUser.name}
                   </h1>
                   <p className="text-gray-600 mt-1">{currentDraftUser.email}</p>
@@ -371,7 +379,7 @@ const UserProfile: React.FC = () => {
                   </div>
                   <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500"
+                      className="h-full bg-linear-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500"
                       style={{ width: `${profileCompletion()}%` }}
                     />
                   </div>
@@ -385,7 +393,7 @@ const UserProfile: React.FC = () => {
                 {!editMode ? (
                   <button
                     onClick={() => setEditMode(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     <FaEdit className="text-sm" />
                     Edit Profile
@@ -394,14 +402,14 @@ const UserProfile: React.FC = () => {
                   <div className="flex gap-3">
                     <button
                       onClick={handleSubmit(handleSave)}
-                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                     >
                       <FaCheck className="text-sm" />
                       Save Changes
                     </button>
                     <button
                       onClick={handleCancel}
-                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-500 to-slate-500 text-white rounded-xl hover:from-gray-600 hover:to-slate-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-gray-500 to-slate-500 text-white rounded-xl hover:from-gray-600 hover:to-slate-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                     >
                       <FaTimes className="text-sm" />
                       Cancel
@@ -424,7 +432,7 @@ const UserProfile: React.FC = () => {
                 className={clsx(
                   "flex items-center gap-3 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 shadow-md border backdrop-blur-sm",
                   activeTab === tab.key
-                    ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg scale-105 border-transparent"
+                    ? "bg-linear-to-r from-purple-500 to-blue-500 text-white shadow-lg scale-105 border-transparent"
                     : "bg-white/80 text-gray-600 hover:bg-white hover:shadow-lg border-white/60 hover:-translate-y-0.5"
                 )}
               >
@@ -496,14 +504,14 @@ const UserProfile: React.FC = () => {
           {/* Bookings Tab */}
           {activeTab === "bookings" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-bold bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 Your Bookings
               </h2>
               <div className="space-y-4">
                 {dummyBookings.map((booking) => (
                   <div
                     key={booking.id}
-                    className="flex items-center justify-between p-6 rounded-2xl bg-gradient-to-r from-white to-gray-50/80 border border-gray-200/60 hover:border-purple-200 hover:shadow-md transition-all duration-300 group"
+                    className="flex items-center justify-between p-6 rounded-2xl bg-linear-to-r from-white to-gray-50/80 border border-gray-200/60 hover:border-purple-200 hover:shadow-md transition-all duration-300 group"
                   >
                     <div className="space-y-1">
                       <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
@@ -528,7 +536,7 @@ const UserProfile: React.FC = () => {
           {/* Other Tabs Placeholder */}
           {!["profile", "security", "bookings"].includes(activeTab) && (
             <div className="text-center py-12">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-gradient-to-r from-purple-100 to-blue-100 flex items-center justify-center">
+              <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-linear-to-r from-purple-100 to-blue-100 flex items-center justify-center">
                 {React.createElement(tabs.find(tab => tab.key === activeTab)?.icon || FaUser, {
                   className: "text-3xl text-purple-500"
                 })}

@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 // ---------------- REGEX RULES ----------------
-const nameRegex = /^[A-Z][a-zA-Z]{0,14}$/;
+const nameRegex = /^(?=.{3,20}$)[A-Z][a-zA-Z]*(?: [A-Z][a-zA-Z]*)*$/
+;
 const phoneRegex = /^[0-9]{10}$/;
 const addressRegex = /^[A-Z][A-Za-z0-9\s,]{0,34}$/;
 const cityStateCountryRegex = /^[A-Z][a-zA-Z]{0,14}$/;
@@ -12,7 +13,7 @@ export const userProfileSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
-    .regex(nameRegex, "Must start with a capital letter, only English letters, max 15 characters"),
+    .regex(nameRegex, "Must start with a capital letter, only English letters, max 20 characters"),
 
   phone: z
     .string()

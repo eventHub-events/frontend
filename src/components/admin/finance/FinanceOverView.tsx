@@ -519,7 +519,11 @@ export default function FinanceOverview() {
               <XAxis dataKey={xKey} />
               <YAxis yAxisId="left" />
               <YAxis yAxisId="right" orientation="right" />
-              <Tooltip formatter={(v: number) => `₹${v}`} />
+              <Tooltip
+  formatter={(value: number | string | undefined) =>
+    `₹${Number(value) || 0}`
+  }
+/>
 
               <Line
                 yAxisId="left"
@@ -553,7 +557,12 @@ export default function FinanceOverview() {
             <LineChart data={subscriptionTrend}>
               <XAxis dataKey={xKey} />
               <YAxis />
-              <Tooltip formatter={(v: number) => `₹${v}`} />
+              <Tooltip
+  formatter={(value: number | string | undefined) =>
+    `₹${Number(value) || 0}`
+  }
+/>
+
               <Line
                 dataKey="revenue"
                 stroke="#10b981"
