@@ -30,11 +30,11 @@ export const OrganizerNavbar: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-20  bg-white/80 backdrop-blur-lg border-b border-slate-100/80 flex items-center justify-between px-8 z-40 transition-all duration-300 shadow-sm supports-[backdrop-filter]:bg-white/60">
+    <header className="fixed top-0 left-0 right-0 h-20  bg-white/80 backdrop-blur-lg border-b border-slate-100/80 flex items-center justify-between px-8 z-40 transition-all duration-300 shadow-sm supports-backdrop-filter:bg-white/60">
       
       {/* Left: Logo for mobile */}
       <div className="lg:hidden flex items-center">
-        <div className="w-10 h-10 bg-gradient-to-tr from-violet-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-violet-500/20">
+        <div className="w-10 h-10 bg-linear-to-tr from-violet-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-violet-500/20">
           <span className="text-white font-black text-lg">E</span>
         </div>
       </div>
@@ -53,7 +53,7 @@ export const OrganizerNavbar: React.FC = () => {
         <div className="relative group cursor-pointer">
           {/* Modernized container: lighter background, ring instead of heavy border */}
           <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-50/80 hover:bg-slate-100 rounded-2xl ring-1 ring-slate-200/50 hover:ring-slate-300 transition-all duration-300">
-            <div className="relative flex-shrink-0">
+            <div className="relative shrink-0">
               {organizer?.image ? (
                 <Image
                   src={organizer.image}
@@ -63,24 +63,24 @@ export const OrganizerNavbar: React.FC = () => {
                   className="rounded-xl object-cover shadow-sm"
                 />
               ) : (
-                <div className="w-10 h-10 bg-gradient-to-tr from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                <div className="w-10 h-10 bg-linear-to-tr from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
                   <FaUserCircle size={22} className="text-white/90" />
                 </div>
               )}
               {/* Verified Status Indicator */}
-              <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-[2px] border-white ring-1 ring-emerald-100"></div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white ring-1 ring-emerald-100"></div>
             </div>
 
             <div className="hidden lg:flex flex-col items-start min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-slate-800 truncate max-w-[140px]">
+                <span className="text-sm font-bold text-slate-800 truncate max-w-35">
                   {organizer.name}
                 </span>
                 {organizer.isVerified && (
-                  <MdVerified size={16} className="text-indigo-500 flex-shrink-0" />
+                  <MdVerified size={16} className="text-indigo-500 shrink-0" />
                 )}
               </div>
-              <span className="text-xs text-slate-500 font-medium truncate max-w-[140px]">
+              <span className="text-xs text-slate-500 font-medium truncate max-w-35">
                 {organizer.companyName ?? "Organizer"}
               </span>
             </div>
@@ -95,7 +95,7 @@ export const OrganizerNavbar: React.FC = () => {
         {/* Logout Button - Refined Gradient */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2.5 px-5 py-3 bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white rounded-xl transition-all shadow-md hover:shadow-lg shadow-rose-500/20 font-bold text-sm group active:scale-95"
+          className="flex items-center gap-2.5 px-5 py-3 bg-linear-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white rounded-xl transition-all shadow-md hover:shadow-lg shadow-rose-500/20 font-bold text-sm group active:scale-95"
         >
           <BiLogOut size={20} className="group-hover:-translate-x-0.5 transition-transform" />
           <span className="hidden sm:inline">Logout</span>

@@ -85,7 +85,7 @@ const FeaturedEvents = () => {
               className="group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-indigo-100 aspect-[4/5] flex flex-col"
             >
               {/* Image Container */}
-              <div className="relative w-full overflow-hidden flex-shrink-0">
+              <div className="relative w-full overflow-hidden shrink-0">
                 <div className="relative h-56 w-full overflow-hidden">
                   <Image
                     src={event.images[0]}
@@ -156,21 +156,21 @@ const FeaturedEvents = () => {
 
               {/* Content */}
               <div className="flex-1 p-6 flex flex-col">
-                <p className="text-gray-600 mb-4 leading-relaxed text-sm line-clamp-3 flex-shrink-0">
+                <p className="text-gray-600 mb-4 leading-relaxed text-sm line-clamp-3 shrink-0">
                   {event.description}
                 </p>
 
-                <div className="space-y-3 mb-4 flex-shrink-0">
+                <div className="space-y-3 mb-4 shrink-0">
                   <div className="flex items-center text-gray-700">
                     <DateIcon
-                      className="mr-3 text-purple-500 flex-shrink-0"
+                      className="mr-3 text-purple-500 shrink-0"
                       size={16}
                     />
                     <span className="font-medium text-sm">{event.startDate}</span>
                   </div>
                   <div className="flex items-center text-gray-700">
                     <OrganizerIcon
-                      className="mr-3 text-amber-500 flex-shrink-0"
+                      className="mr-3 text-amber-500 shrink-0"
                       size={16}
                     />
                     <span className="text-sm">By {event.organizer}</span>
@@ -178,7 +178,7 @@ const FeaturedEvents = () => {
                 </div>
 
                 {/* Book Now Button */}
-                <div className="mb-4 flex-shrink-0">
+                <div className="mb-4 shrink-0">
                   <button onClick={() => router.push(`/user/events/${event.id}`) } className="w-full group relative px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm">
                     <HiTicket className="text-white" size={16} />
                     Book Now
@@ -190,9 +190,9 @@ const FeaturedEvents = () => {
                 </div>
 
                 {/* Tickets Remaining */}
-                <div className="flex items-center text-gray-700 mb-2 flex-shrink-0">
+                <div className="flex items-center text-gray-700 mb-2 shrink-0">
                   <TicketIcon
-                    className="mr-3 text-red-500 flex-shrink-0"
+                    className="mr-3 text-red-500 shrink-0"
                     size={16}
                   />
                   <span className="font-semibold text-sm">
@@ -201,7 +201,7 @@ const FeaturedEvents = () => {
                 </div>
 
                 {/* Availability Bar */}
-                {/* <div className="mt-auto pt-4 flex-shrink-0">
+                {/* <div className="mt-auto pt-4 shrink-0">
                   <div className="flex justify-between text-xs text-gray-600 mb-1">
                     <span>Almost gone!</span>
                     <span className="font-semibold text-emerald-600">

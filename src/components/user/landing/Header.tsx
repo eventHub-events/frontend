@@ -24,7 +24,7 @@ import GetStartedModal from "./GetStartedModal";
 // Import the new logo image.
 // Make sure the path is correct. It should be relative to this file or an absolute path from the public directory.
 // Based on your previous code, it seems like it should be:
-import eventHubLogo from "../../../../public/Gemini_Generated_Image_tnbt85tnbt85tnbt.png"; // Adjust path if necessary
+import eventHubLogo from "../../../../public/Gemini_Generated_Image_tnbt85tnbt85tnbt-Photoroom.png"; // Adjust path if necessary
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,7 +98,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo Section - UPDATED */}
-          <Link href="/" className="flex items-center flex-shrink-0 gap-3 group">
+          <Link href="/" className="flex items-center shrink-0 gap-3 group">
             {/* The Logo Image */}
             <Image
               src={eventHubLogo}
@@ -136,7 +136,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
             {user ? (
               <div className="relative flex border-b-orange-800 items-center space-x-3" ref={dropdownRef}>
                 {/* Profile Button */}
@@ -162,7 +162,7 @@ const Header: React.FC = () => {
           />
         ) : (
           <div className="w-9 h-9 rounded-full 
-                          bg-gradient-to-br from-gray-700 to-gray-900 
+                          bg-linear-to-br from-gray-700 to-gray-900 
                           flex items-center justify-center">
             <FaUserCircle className="text-gray-300 text-lg" />
           </div>
@@ -171,7 +171,7 @@ const Header: React.FC = () => {
         {/* Premium Border */}
        <span
   className="absolute inset-0 rounded-full pointer-events-none
-             ring-2 ring-yellow-600/100
+             ring-2 ring-yellow-600
              group-hover:ring-yellow-500/90 
              transition"
 />
@@ -210,7 +210,7 @@ const Header: React.FC = () => {
                 {isDropdownOpen && (
                   <div className="absolute right-0 top-14 w-72 bg-white/95 backdrop-blur-xl border border-gray-200/60 rounded-2xl shadow-2xl z-50 overflow-hidden">
                     {/* User Info */}
-                    <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-200/60">
+                    <div className="p-4 bg-linear-to-r from-purple-50 to-blue-50 border-b border-gray-200/60">
                       <div className="flex items-center gap-3">
                         {user.image ? (
                           <Image
@@ -221,7 +221,7 @@ const Header: React.FC = () => {
                             height={48}
                           />
                         ) : (
-                          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-sm">
+                          <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-sm">
                             <FaUserCircle size={24} className="text-white" />
                           </div>
                         )}
@@ -347,7 +347,7 @@ const Header: React.FC = () => {
       setIsOpen(true);
       setMode("signup");
     }}
-    className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-yellow-600 to-red-700 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
+    className="flex items-center gap-2 px-5 py-2 bg-linear-to-r from-yellow-600 to-red-700 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
   >
     <FaUserPlus className="text-sm" />
     <span>Get Started</span>

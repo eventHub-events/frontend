@@ -244,7 +244,7 @@ export default function UserBookings() {
               onClick={() => setSelectedBooking(booking)}
             >
               <CardContent className="flex gap-3 items-center p-4">
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                   {booking.eventImages && booking.eventImages.length > 0 ? (
                     <Image
                       src={booking.eventImages[0]}
@@ -370,7 +370,7 @@ export default function UserBookings() {
       >
         {/* Header Section */}
         <div className="flex gap-6 items-start">
-          <div className="relative flex-shrink-0">
+          <div className="relative shrink-0">
             {selectedBooking.eventImages && selectedBooking.eventImages.length > 0 ? (
               <Image
                 src={selectedBooking.eventImages[0]}
