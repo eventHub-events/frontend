@@ -45,7 +45,7 @@ const Footer: React.FC = () => {
             <h3 className="text-xl font-bold">Contact Us</h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <FaMapMarkerAlt className="mt-1 flex-shrink-0" />
+                <FaMapMarkerAlt className="mt-1 shrink-0" />
                 <span className="text-gray-400">123 Event Street, San Francisco, CA 94107</span>
               </div>
               <div className="flex items-center space-x-3">

@@ -51,20 +51,20 @@ export const OrganizerSidebar: React.FC = () => {
       `}>
         
         {/* Subtle Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/30 via-purple-50/20 to-pink-50/30"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-indigo-50/30 via-purple-50/20 to-pink-50/30"></div>
         
         {/* Header Section */}
         <div className="relative h-20 px-6 flex items-center border-b border-slate-200">
           <div className={`flex items-center gap-3 transition-all duration-300 ${isCollapsed ? 'justify-center w-full' : ''}`}>
             {/* Logo */}
-            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 flex-shrink-0">
+            <div className="w-12 h-12 bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
               <MdEvent className="text-white text-2xl" />
             </div>
 
             {/* Brand Text */}
             {!isCollapsed && (
               <div className="flex flex-col">
-                <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <div className="text-2xl font-bold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                   EventHub
                 </div>
                 <div className="text-xs font-semibold text-indigo-600 tracking-wider uppercase">
@@ -79,7 +79,7 @@ export const OrganizerSidebar: React.FC = () => {
             onClick={() => setIsCollapsed(!isCollapsed)}
             className={`
               absolute -right-4 top-1/2 -translate-y-1/2
-              w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full
+              w-8 h-8 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full
               shadow-lg shadow-indigo-500/30 flex items-center justify-center
               text-white hover:scale-110 hover:shadow-indigo-500/50
               transition-all duration-300
@@ -105,7 +105,7 @@ export const OrganizerSidebar: React.FC = () => {
                     ${isCollapsed ? 'justify-center px-3' : 'px-5'}
                     py-4 rounded-2xl font-semibold text-base
                     ${isActive 
-                      ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]" 
+                      ? "bg-linear-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]" 
                       : "text-black hover:text-indigo-600 hover:bg-indigo-50/80 hover:scale-[1.01]"
                     }
                   `}
@@ -207,8 +207,8 @@ export const OrganizerSidebar: React.FC = () => {
         <div className="relative p-5 border-t border-slate-200 bg-slate-50/50 backdrop-blur-sm">
           <div className={`flex items-center gap-4 ${isCollapsed ? 'justify-center' : ''}`}>
             {/* Avatar */}
-            <div className="relative flex-shrink-0">
-              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <div className="relative shrink-0">
+              <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
                 <MdPerson className="text-white text-xl" />
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-3 border-white rounded-full shadow-md"></div>
@@ -228,7 +228,7 @@ export const OrganizerSidebar: React.FC = () => {
       </aside>
 
       {/* Spacer for main content */}
-      <div className={`${isCollapsed ? 'w-20' : 'w-80'} flex-shrink-0 transition-all duration-300`} />
+      <div className={`${isCollapsed ? 'w-20' : 'w-80'} shrink-0 transition-all duration-300`} />
     </>
   );
 };

@@ -265,7 +265,7 @@ export default function OrganizerBookingList({eventId}:{eventId: string}) {
                           {/* Event & Customer */}
                           <div className="col-span-4">
                             <div className="flex items-start space-x-3">
-                              <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                              <div className="shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                                 <FiCalendar className="w-5 h-5 text-blue-600" />
                               </div>
                               <div className="min-w-0 flex-1">
