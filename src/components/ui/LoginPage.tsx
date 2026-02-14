@@ -1,222 +1,222 @@
 "use client";
-import type { AxiosError } from "axios";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
-
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
-// import { FcGoogle } from "react-icons/fc";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { authService } from "../../services/authService"; // shared login API
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { Mail, Lock, Ticket, LayoutDashboard, UserCheck } from "lucide-react"; 
+import { AxiosError } from "axios";
+
+// Auth & Redux
+import { authService } from "../../services/authService";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setUser } from "@/redux/slices/user/authSlice";
-// import { GiConsoleController } from "react-icons/gi";
 import { setOrganizer } from "@/redux/slices/organizer/authSlice";
+import { useNotify } from "./NotifyContext";
+
+// Premium Notification Hook
 
 
 interface LoginPageProps {
   userType: "user" | "organizer" | "admin";
 }
-  
+
 const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
   const router = useRouter();
-  const isUser = userType === "user";
-  const isOrganizer = userType === "organizer";
-
-
+  const dispatch = useAppDispatch();
+  const { notify } = useNotify(); // Initialize global notification
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const dispatch= useAppDispatch();
-  const user= useAppSelector((state) => state.auth.user);
+
+  const user = useAppSelector((state) => state.auth.user);
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
-  const active = user? user: organizer;
-  
-  useEffect(() =>{
-      if(active) {
-          if(active === user){
+  const active = user ? user : organizer;
 
-             router.push("/user/home")
-          }else{
-            router.push("/organizer/dashboard")
-          }
+  const isUser = userType === "user";
+  const isOrganizer = userType === "organizer";
+
+  const brandGradient = "from-[#f16307] to-[#e43a15]"; 
+  const accentColor = "text-[#f16307]";
+
+  useEffect(() => {
+    if (active) {
+      if (active === user) {
+        router.push("/user/home");
+      } else {
+        router.push("/organizer/dashboard");
       }
-  })
-
-  // Handle login
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!email || !password) {
-    toast.error("Please enter both email and password");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const response = await authService.login({ email, password });
-    console.log("response is",response)
-    const { role } = response.data.data;
-
-   
-
-    
-   
-
-    toast.success("Login successful!");
-
-    // Redirect based on role from backend
-    if (role === "admin") router.push("/admin/dashboard");
-    else if (role === "organizer") {
-          dispatch(setOrganizer(response.data.data))
-      router.push("/organizer/dashboard");
     }
-    else if(role==="user"){
-      console.log("user data is",response)
-      console.log("user data",response.data.data)
-       dispatch(setUser(response.data.data));
-      router.push("/user/home");
-    }else{
-      throw new Error("Unknown role");
-    }
-    
-      
+  }, [active, user, router]);
 
-  } catch (err: unknown) {
-    console.log(err)
-    const axiosErr = err as AxiosError<{ message: string }>;
-    console.log("axios error",axiosErr)
-    toast.error(axiosErr.response?.data?.message || "Login failed");
-    console.log(axiosErr.response?.data.message)
-    
-  } finally {
-    setLoading(false);
-  }
-};
- 
- const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
-  try {
-    const token = credentialResponse.credential;
-    if (!token) {
-      toast.error("Google authentication failed");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      notify("Input Required", "Please enter both email and password to proceed.", "warning");
       return;
     }
+    try {
+      setLoading(true);
+      const response = await authService.login({ email, password });
+      const { role } = response.data.data;
 
-    // Call backend API
-    const response = await authService.googleLogin({ token, role: userType });
-  
-    const { data } = response.data;
-    
+      // Premium Success Notification
+      notify("Welcome Back!", "Successfully signed into Event Hub.", "success");
 
-    // Decide based on role
-    if (data.role === "user") {
-      dispatch(setUser(data));
-      router.push("/user/home");
-    } else if (data.role === "organizer") {
-      dispatch(setOrganizer(data));
-      router.push("/organizer/dashboard");
+      if (role === "admin") router.push("/admin/dashboard");
+      else if (role === "organizer") {
+        dispatch(setOrganizer(response.data.data));
+        router.push("/organizer/dashboard");
+      } else if (role === "user") {
+        dispatch(setUser(response.data.data));
+        router.push("/user/home");
+      }
+    } catch (err: unknown) {
+      const axiosErr = err as AxiosError<{ message: string }>;
+      // Premium Error Notification
+      notify("Login Failed", axiosErr.response?.data?.message || "Invalid credentials, please try again.", "error");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    toast.success("Google login successful!");
-  } catch (error: unknown) {
-    console.error("Google login error", error);
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    try {
+      const token = credentialResponse.credential;
+      if (!token) return;
+      const response = await authService.googleLogin({ token, role: userType });
+      const { data } = response.data;
 
-    const axiosError = error as AxiosError<{ message: string }>;
-    toast.error(axiosError.response?.data?.message || "Google login failed");
-  }
-};
+      notify("Google Login", "Successfully authenticated with Google.", "success");
 
-const handleGoogleError = () => {
-  toast.error("Google authentication was cancelled or failed.");
-};
+      if (data.role === "user") {
+        dispatch(setUser(data));
+      } else {
+        dispatch(setOrganizer(data));
+      }
+      router.push(data.role === "user" ? "/user/home" : "/organizer/dashboard");
+    } catch (error: unknown) {
+      console.log(error)
+      notify("Auth Error", "Google authentication was unsuccessful.", "error");
+    }
+  };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-xl shadow-lg w-[90%] max-w-md">
-        {/* Header */}
-        <div className="flex flex-col items-center mb-6">
-          <div
-            className={`p-3 rounded-full ${
-              isUser
-                ? "bg-gradient-to-r from-purple-500 to-blue-500"
-                : isOrganizer
-                ? "bg-gradient-to-r from-orange-500 to-red-500"
-                : "bg-gradient-to-r from-gray-700 to-black"
-            }`}
-          >
-            {isUser ? "👤" : isOrganizer ? "📅" : "🛡️"}
+    <div className="flex min-h-screen bg-[#0a0a0a] font-sans selection:bg-[#f16307]/30">
+      
+      {/* Left Side: Visual Branding */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-zinc-950">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] rounded-full bg-[#f16307]/10 blur-[130px]"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[#e43a15]/10 blur-[130px]"></div>
+        </div>
+        
+        <div className="relative z-10 p-12 text-center">
+          <div className="inline-flex items-center justify-center p-5 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] mb-10 shadow-2xl">
+             <Ticket className={`w-14 h-14 ${accentColor} rotate-12`} />
           </div>
-          <h2
-            className={`text-xl font-bold mt-3 ${
-              isUser ? "text-purple-600" : isOrganizer ? "text-orange-600" : "text-gray-700"
-            }`}
-          >
-            Welcome Back, {isUser ? "User" : isOrganizer ? "Organizer" : "Admin"}!
+          <h2 className="text-6xl font-black text-white mb-6 tracking-tighter leading-[1.1]">
+            Your Next <br /> 
+            <span className={`bg-linear-to-r ${brandGradient} bg-clip-text text-transparent`}>
+                Adventure
+            </span> Awaits.
           </h2>
-          <p className="text-gray-500 text-sm text-center mt-2">
-            {isUser
-              ? "Sign in to discover amazing events."
-              : isOrganizer
-              ? "Sign in to manage your events."
-              : "Sign in to manage the platform."}
+          <p className="text-zinc-400 text-xl max-w-sm mx-auto leading-relaxed">
+            Discover the most exciting events happening near you on <strong>Event Hub</strong>.
           </p>
         </div>
-
-        {/* Form */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border rounded-lg"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border rounded-lg"
-          />
-        <Link href={`/forgetPassword/${userType}`} className="text-xs text-right block text-blue-500">
-  Forgot your password?
-</Link>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full p-3 rounded-lg text-white ${
-              isUser
-                ? "bg-gradient-to-r from-purple-500 to-blue-500"
-                : isOrganizer
-                ? "bg-gradient-to-r from-orange-500 to-red-500"
-                : "bg-gradient-to-r from-gray-700 to-black"
-            }`}
-          >
-            {loading ? "Signing in..." : `Sign In to ${isUser ? "User" : isOrganizer ? "Organizer" : "Admin"} Account`}
-          </button>
-        </form>
-
-        {/* Google Login */}
-        <div className="flex items-center gap-2 my-4">
-          <div className="h-[1px] bg-gray-300 flex-1"></div>
-          <span className="text-xs text-gray-400">or continue with</span>
-          <div className="h-[1px] bg-gray-300 flex-1"></div>
-        </div>
-       <div className="flex justify-center">
-         <GoogleLogin
-         onSuccess={handleGoogleSuccess}
-         onError={handleGoogleError}
-         useOneTap
-          />
       </div>
 
-        <p className="text-xs text-center mt-4">
-          {"Don't have an account? "}
-          <Link href={`/signup/${userType}`} className="text-blue-500">
-            Sign up for free
-          </Link>
-        </p>
+      {/* Right Side: Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-[#0f0f0f]">
+        <div className="w-full max-w-[420px]">
+          
+          <div className="mb-12">
+            <h3 className="text-4xl font-bold text-white mb-3 flex items-center gap-3">
+              Sign In <UserCheck className={accentColor} size={32} />
+            </h3>
+            <p className="text-zinc-500 text-lg">
+              Manage your <span className="text-zinc-200 font-medium">{userType}</span> profile.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-zinc-400 ml-1">Email Address</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-[#f16307] transition-colors" size={20} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full pl-12 pr-4 py-4 bg-zinc-900 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-[#f16307]/20 focus:border-[#f16307] outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center px-1">
+                <label className="text-sm font-semibold text-zinc-400">Password</label>
+                <Link href={`/forgetPassword/${userType}`} className={`text-sm font-bold ${accentColor} hover:brightness-125 transition-all`}>
+                  Forgot?
+                </Link>
+              </div>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-[#f16307] transition-colors" size={20} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-12 pr-4 py-4 bg-zinc-900 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-[#f16307]/20 focus:border-[#f16307] outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-4 px-6 rounded-2xl text-white font-black text-lg flex items-center justify-center gap-3 transition-all transform active:scale-[0.97] shadow-xl shadow-[#f16307]/20 bg-gradient-to-r ${brandGradient} disabled:opacity-50 hover:brightness-110`}
+            >
+              {loading ? (
+                <div className="h-6 w-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <LayoutDashboard size={22} />
+                  Sign In to Event Hub
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Social Login */}
+          <div className="mt-10">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-[1px] bg-zinc-800 flex-1"></div>
+              <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Quick Access</span>
+              <div className="h-[1px] bg-zinc-800 flex-1"></div>
+            </div>
+            
+            <div className="flex justify-center transition-transform hover:scale-[1.01]">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => notify("Auth Error", "Google authentication was cancelled.", "error")}
+                useOneTap
+                width="420"
+                theme="filled_black"
+                shape="pill"
+              />
+            </div>
+          </div>
+
+          <p className="text-center mt-10 text-zinc-500">
+            Don&apos;t have an account?{" "}
+            <Link href={`/signup/${userType}`} className={`font-black ${accentColor} hover:underline decoration-2 underline-offset-4`}>
+              Register Now
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

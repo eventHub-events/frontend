@@ -3,6 +3,7 @@ import { EventReview } from "@/types/user/review/reviewTypes";
 import { showError, showSuccess } from "@/utils/toastService";
 import { useState } from "react";
 import { Pencil, Trash2, Save, X, MessageSquare, Star, CheckCircle2 } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function YourReviewCard({
   review,
@@ -19,6 +20,28 @@ export default function YourReviewCard({
   const handleUpdate = async () => {
     try {
       if (newRating < 1) return showError("Rating can't be empty");
+        if (!newText.trim()) {
+  showError("Review cannot be empty");
+  return;
+}
+
+if (newText.trim().length < 10) {
+  showError("Review must be at least 10 characters");
+  return;
+}
+
+if (newText.length > 500) {
+  showError("Review cannot exceed 500 characters");
+  return;
+}
+if (!/^[A-Za-z]/.test(newText.trim())) {
+  showError("Review must start with a letter");
+  return;
+}
+if (!/[a-zA-Z0-9]/.test(newText)) {
+  showError("Please write a meaningful review");
+  return;
+}
       await reviewService.updateReview(review.id, {
         rating: newRating,
         review: newText,
@@ -32,7 +55,18 @@ export default function YourReviewCard({
   };
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this review?")) return;
+    const result = await Swal.fire({
+  title: "Delete Review?",
+  text: "You won't be able to undo this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#ef4444",
+  cancelButtonColor: "#6b7280",
+  confirmButtonText: "Yes, delete it",
+  cancelButtonText: "Cancel",
+});
+
+if (!result.isConfirmed) return;
     try {
       setIsDeleting(true);
       await reviewService.deleteReview(review.id);

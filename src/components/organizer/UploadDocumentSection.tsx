@@ -81,7 +81,7 @@ export default function UploadDocumentSection({ organizerId }: Props) {
     };
     fetchDocuments();
     // setIsUpdating(false)
-  }, [ organizerId,documents]);
+  }, [ organizerId]);
 
  
 

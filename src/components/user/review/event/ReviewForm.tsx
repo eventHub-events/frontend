@@ -25,6 +25,28 @@ export default function ReviewForm({ targetId, refresh, userId, userName, mode }
         showError("Rating is required");
         return;
       }
+      if (!review.trim()) {
+  showError("Review cannot be empty");
+  return;
+}
+
+if (review.trim().length < 10) {
+  showError("Review must be at least 10 characters");
+  return;
+}
+
+if (review.length > 500) {
+  showError("Review cannot exceed 500 characters");
+  return;
+}
+if (!/^[A-Za-z]/.test(review.trim())) {
+  showError("Review must start with a letter");
+  return;
+}
+if (!/[a-zA-Z0-9]/.test(review)) {
+  showError("Please write a meaningful review");
+  return;
+}
       setIsSubmitting(true);
       
       const payload = { rating, review, userId, targetId, targetType: mode, userName };

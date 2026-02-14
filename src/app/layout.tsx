@@ -2,6 +2,7 @@ import "./globals.css";
 // import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import AppProviders from "./providers";
+import { NotifyProvider } from "@/components/ui/NotifyContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,7 +28,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AppProviders>
+          <NotifyProvider>
+
           <main>{children}</main>
+          </NotifyProvider>
         </AppProviders>
       </body>
     </html>

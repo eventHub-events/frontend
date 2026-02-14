@@ -1,9 +1,12 @@
 "use client";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useState, useEffect } from "react";
-import { authService } from "../../services/authService";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { AxiosError } from "axios";
+import axios from "axios";
+import { Mail, ShieldCheck, ArrowLeft, RotateCw, Timer } from "lucide-react";
+
+// Services
+import { authService } from "../../services/authService";
 import { passwordService } from "@/services/user/passwordService";
 
 interface OTPPageProps {
@@ -17,35 +20,34 @@ export default function OTPPage({ userType }: OTPPageProps) {
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(120); // 2 min timer
+  const [timeLeft, setTimeLeft] = useState(120);
   const [resendLoading, setResendLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [type, setType] = useState<"register" | "reset">("register");
 
-  // Timer logic
+  // Brand Palette
+  const brandGradient = "from-[#f16307] via-[#e43a15] to-[#f16307]";
+  const accentColor = "text-[#f16307]";
+
   useEffect(() => {
     if (timeLeft <= 0) return;
     const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // Handle email & type
   useEffect(() => {
     const t = (searchParams.get("type") || "register") as "register" | "reset";
     setType(t);
 
     if (t === "reset") {
       const storedEmail = sessionStorage.getItem("resetEmail");
-      if (storedEmail) {
-        setEmail(storedEmail);
-      }
+      if (storedEmail) setEmail(storedEmail);
     } else {
       const emailFromURL = searchParams.get("email") || "";
       setEmail(emailFromURL);
     }
   }, [searchParams]);
 
-  // Handle OTP submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!otp || !email) {
@@ -61,20 +63,22 @@ export default function OTPPage({ userType }: OTPPageProps) {
         toast.success("OTP Verified! Please log in.");
         router.push(`/login/${result.data.data.role}`);
       } else if (type === "reset") {
-        result = await passwordService.verifyResetPasswordOtp(userType, { email, otp });
-        toast.success("OTP Verified! You can now change your password.");
+        await passwordService.verifyResetPasswordOtp(userType, { email, otp });
+        toast.success("OTP Verified! Create your new password.");
         sessionStorage.removeItem("resetEmail");
         router.push(`/changePassword/${userType}`);
       }
     } catch (error) {
-      const err = error as AxiosError<{ message: string }>;
-      toast.error(err?.response?.data?.message || "OTP Verification failed");
+      let message = "OTP Verification failed";
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || error.message || message;
+      }
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle Resend OTP
   const handleResendOtp = async () => {
     setResendLoading(true);
     try {
@@ -84,77 +88,111 @@ export default function OTPPage({ userType }: OTPPageProps) {
         toast.info("New OTP sent!");
       }
     } catch (error) {
-      const err = error as AxiosError<{ message: string }>;
-      toast.error(err?.response?.data?.message || "Error resending OTP");
+      let message = "Error resending OTP";
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || error.message || message;
+      }
+      toast.error(message);
     } finally {
       setResendLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-50">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center">
-        <h2
-          className={`text-2xl font-bold mb-4 ${
-            isUser ? "text-purple-600" : "text-orange-600"
-          }`}
-        >
-          {isUser ? "Verify Your Account" : "Organizer OTP Verification"}
-        </h2>
-        <p className="text-gray-500 text-sm mb-6">
-          Please enter the OTP sent to <span className="font-semibold">{email}</span>
-        </p>
+    <div className="relative min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 overflow-hidden font-sans">
+      {/* Dynamic Background Mesh */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#f16307]/5 blur-[120px] rounded-full animate-pulse" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#e43a15]/5 blur-[120px] rounded-full animate-pulse delay-1000" />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            maxLength={6}
-            placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 text-sm text-center focus:ring-2 focus:ring-purple-500"
-          />
+      <div className="relative w-full max-w-md">
+        {/* Outer Glow Effect */}
+        <div className={`absolute -inset-1 bg-gradient-to-r ${brandGradient} rounded-[2.5rem] opacity-20 blur-xl`} />
 
-          <button
-            type="submit"
-            disabled={loading || !otp}
-            className={`w-full py-2 rounded-lg text-white font-medium ${
-              isUser
-                ? "bg-gradient-to-r from-purple-500 to-blue-500"
-                : "bg-gradient-to-r from-orange-500 to-red-500"
-            }`}
-          >
-            {loading ? "Verifying..." : "Verify OTP"}
-          </button>
-        </form>
+        <div className="relative bg-[#111111]/90 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden">
+          
+          {/* Internal Accent Light */}
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#f16307]/10 blur-3xl rounded-full" />
 
-        {/* Timer & Resend */}
-        <div className="mt-4 text-center text-sm">
-          {timeLeft > 0 ? (
-            <p>
-              Resend OTP in{" "}
-              <span className="font-semibold">
-                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
+          <div className="text-center mb-10">
+            <div className="relative inline-flex mb-6">
+              <div className="absolute -inset-3 bg-[#f16307]/20 blur-lg rounded-full animate-pulse" />
+              <div className="relative p-5 bg-zinc-900 border border-zinc-800 rounded-3xl">
+                <ShieldCheck className={`w-10 h-10 ${accentColor}`} />
+              </div>
+            </div>
+            
+            <h2 className="text-3xl font-black text-white mb-3 tracking-tight">
+              Verify <span className={`bg-gradient-to-r ${brandGradient} bg-clip-text text-transparent`}>Identity</span>
+            </h2>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-zinc-500 text-sm font-medium">
+                We&apos;ve sent a 6-digit code to
+              </p>
+              <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-full">
+                <Mail size={14} className="text-zinc-400" />
+                <span className="text-zinc-200 text-xs font-bold">{email}</span>
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-4">
+              <div className="relative group">
+                <input
+                  type="text"
+                  maxLength={6}
+                  placeholder="0 0 0 0 0 0"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                  className="w-full tracking-[1em] text-center text-2xl font-black py-5 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-800 focus:ring-4 focus:ring-[#f16307]/10 focus:border-[#f16307] outline-none transition-all duration-300"
+                />
+              </div>
+              
+              {/* Timer UI */}
+              <div className="flex justify-center items-center gap-2 py-2">
+                <Timer size={16} className={timeLeft > 0 ? "text-zinc-500" : "text-red-500"} />
+                <span className={`text-sm font-mono font-bold ${timeLeft > 0 ? "text-zinc-400" : "text-red-500"}`}>
+                  {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || otp.length < 6}
+              className={`relative w-full group overflow-hidden py-4.5 px-6 rounded-2xl text-white font-black text-lg transition-all transform active:scale-[0.96] shadow-2xl shadow-[#f16307]/20 disabled:opacity-50 disabled:scale-100 disabled:shadow-none`}
+            >
+              <div className={`absolute inset-0 bg-gradient-to-r ${brandGradient} group-hover:scale-105 transition-transform duration-500`} />
+              <span className="relative flex items-center justify-center gap-3">
+                {loading ? "Verifying..." : "Confirm Code"}
               </span>
-            </p>
-          ) : (
+            </button>
+          </form>
+
+          {/* Footer Actions */}
+          <div className="mt-10 pt-8 border-t border-zinc-800/50 flex flex-col items-center gap-6">
             <button
               onClick={handleResendOtp}
-              disabled={resendLoading}
-              className="text-purple-600 font-semibold"
+              disabled={timeLeft > 0 || resendLoading}
+              className={`flex items-center gap-2 text-sm font-bold transition-all ${
+                timeLeft > 0 
+                ? "text-zinc-700 cursor-not-allowed" 
+                : "text-zinc-400 hover:text-white"
+              }`}
             >
-              {resendLoading ? "Sending..." : "Resend OTP"}
+              <RotateCw size={16} className={resendLoading ? "animate-spin" : ""} />
+              {resendLoading ? "Resending..." : "Resend OTP"}
             </button>
-          )}
-        </div>
 
-        {/* Back button */}
-        <button
-          className="mt-4 text-sm text-gray-600 hover:underline"
-          onClick={() => router.back()}
-        >
-          Go Back
-        </button>
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-2 text-zinc-500 hover:text-white font-bold transition-all text-xs group"
+            >
+              <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+              Change Email Address
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
