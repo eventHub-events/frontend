@@ -16,6 +16,7 @@ import { AxiosError } from "axios";
 import { EventStatus } from "@/enums/organizer/events";
 import { useRouter } from "next/navigation";
 import { EVENT_SERVICE } from "@/services/organizer/eventServices";
+import StripeRequiredScreen from "../StripeRequiredScreen";
 
 
 
@@ -126,6 +127,9 @@ if (!organizer.isVerified) {
       </div>
     </div>
   );
+}
+if (!organizer.isStripeConnected) {
+  return <StripeRequiredScreen />;
 }
 
 

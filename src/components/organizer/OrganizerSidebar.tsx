@@ -40,6 +40,10 @@ export const OrganizerSidebar: React.FC = () => {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+const isProfileDone = organizer?.isProfileCompleted;
+const isDocsDone = organizer?.isKycSubmitted;
+const isVerified = organizer?.kycStatus === "Approved";
+const isSubscribed = organizer?.isSubscribed;
 
   return (
     <>
@@ -92,57 +96,76 @@ export const OrganizerSidebar: React.FC = () => {
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 overflow-y-auto">
           <div className="space-y-2">
-            {menuItems.map((item) => {
-              const isActive = pathname === item.href;
-              
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`
-                    group relative flex items-center gap-4
-                    transition-all duration-300
-                    ${isCollapsed ? 'justify-center px-3' : 'px-5'}
-                    py-4 rounded-2xl font-semibold text-base
-                    ${isActive 
-                      ? "bg-linear-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]" 
-                      : "text-black hover:text-indigo-600 hover:bg-indigo-50/80 hover:scale-[1.01]"
-                    }
-                  `}
-                >
-                  {/* Icon Container */}
-                  <div className={`
-                    relative z-10 flex items-center justify-center
-                    transition-all duration-300
-                    ${!isActive && 'group-hover:scale-110'}
-                  `}>
-                    <span className="text-2xl">
-                      {item.icon}
-                    </span>
-                  </div>
+           {menuItems.map((item) => {
+  const isActive = pathname === item.href;
+  let locked = false;
 
-                  {/* Label */}
-                  {!isCollapsed && (
-                    <span className="relative z-10 tracking-wide">
-                      {item.name}
-                    </span>
-                  )}
+  // 🔒 Lock everything until profile complete
+  if (!isProfileDone && item.name !== "Profile") {
+    locked = true;
+  }
 
-                  {/* Active indicator dot for collapsed */}
-                  {isActive && isCollapsed && (
-                    <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/50"></div>
-                  )}
+  // 🔒 Lock dashboard/events until KYC submitted
+  if (isProfileDone && !isDocsDone) {
+    if (["Dashboard","My Events","Event Analytics","Messages","Reviews","Subscription Plans"].includes(item.name)) {
+      locked = true;
+    }
+  }
 
-                  {/* Tooltip for collapsed state */}
-                  {isCollapsed && (
-                    <div className="absolute left-full ml-4 px-4 py-2.5 bg-slate-800 text-white text-sm font-medium rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap z-50">
-                      {item.name}
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-800 rotate-45"></div>
-                    </div>
-                  )}
-                </Link>
-              );
-            })}
+  // 🔒 Lock dashboard/events until admin verified
+  if (isDocsDone && !isVerified) {
+    if (["Dashboard","My Events","Event Analytics","Messages","Reviews"].includes(item.name)) {
+      locked = true;
+    }
+  }
+
+  // 🔒 Lock dashboard/events until subscription
+  if (isVerified && !isSubscribed) {
+    if (["Dashboard","My Events","Event Analytics","Messages","Reviews"].includes(item.name)) {
+      locked = true;
+    }
+  }
+
+  // 🔥 IF LOCKED → DISABLED UI
+  if (locked) {
+    return (
+      <div
+        key={item.name}
+        className={`
+          flex items-center gap-4
+          ${isCollapsed ? 'justify-center px-3' : 'px-5'}
+          py-4 rounded-2xl font-semibold text-base
+          text-gray-400 cursor-not-allowed
+        `}
+      >
+        <span className="text-2xl">{item.icon}</span>
+        {!isCollapsed && <span>{item.name} 🔒</span>}
+      </div>
+    );
+  }
+
+  // 🔥 ELSE → NORMAL LINK
+  return (
+    <Link
+      key={item.name}
+      href={item.href}
+      className={`
+        group relative flex items-center gap-4
+        transition-all duration-300
+        ${isCollapsed ? 'justify-center px-3' : 'px-5'}
+        py-4 rounded-2xl font-semibold text-base
+        ${isActive 
+          ? "bg-linear-to-r from-indigo-500 to-purple-600 text-white shadow-lg" 
+          : "text-black hover:text-indigo-600 hover:bg-indigo-50"
+        }
+      `}
+    >
+      <span className="text-2xl">{item.icon}</span>
+      {!isCollapsed && <span>{item.name}</span>}
+    </Link>
+  );
+})}
+
           </div>
 
           {/* Stats Card */}

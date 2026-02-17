@@ -67,7 +67,22 @@ export default function SignupPage({ userType }: SignupPageProps) {
         router.push("/user/home");
       } else if (data.role === "organizer") {
         dispatch(setOrganizer(data));
-        router.push("/organizer/dashboard");
+        if (!data.isProfileCompleted) {
+          router.replace("/organizer/profile");
+          return;
+        }
+
+        if (!data.isKycSubmitted) {
+          router.replace("/organizer/profile?step=documents");
+          return;
+        }
+
+        if (!data.isSubscribed) {
+          router.replace("/organizer/subscription");
+          return;
+        }
+
+        router.replace("/organizer/dashboard");
       }
     } catch (error: unknown) {
       let message = "Google login failed";

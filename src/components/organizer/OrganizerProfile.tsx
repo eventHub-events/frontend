@@ -11,11 +11,13 @@ import Image from 'next/image';
 import KycVerificationStatus from './OrganizerKycVerification';
 import { FiXCircle } from 'react-icons/fi';
 import { SecurityTab } from './OrganizerPassword&security';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { showError, showInfo } from '@/utils/toastService';
 import { setOrganizer, updateKycAndVerificationStatus } from '@/redux/slices/organizer/authSlice';
 import OrganizerPaymentsSection from './payments/OrganizerPaymentsSection';
 import { PROFILE_SERVICE } from '@/services/organizer/profileService';
+import OrganizerOnboardingProgress from './OrganizerOnboardingProgress';
+import { KycStatus } from '@/types/admin/Enums/organizerVerificationEnum';
 
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security',"Payments"];
@@ -53,6 +55,44 @@ export default function OrganizerProfile() {
   const [activeTab, setActiveTab] = useState('Profile');
   const [isEditing, setIsEditing] = useState(false);
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
+  const getOnboardingMessage = () => {
+  if (!organizer) return null;
+
+  if (!organizer.isProfileCompleted) {
+    return {
+      type: "warning",
+      message: "Complete your profile to continue using EventHub.",
+      action: "Go to Profile"
+    };
+  }
+
+  if (!organizer.isKycSubmitted) {
+    return {
+      type: "info",
+      message: "Upload verification documents to unlock features.",
+      action: "Upload Documents"
+    };
+  }
+
+  if (organizer.kycStatus === "Pending") {
+    return {
+      type: "info",
+      message: "Your documents are under admin review.",
+      action: null
+    };
+  }
+
+  if (organizer.kycStatus === "Verified" && !organizer.isSubscribed) {
+    return {
+      type: "success",
+      message: "Verification approved! Purchase a subscription to start creating events.",
+      action: "View Plans"
+    };
+  }
+
+  return null;
+};
+
   const organizerId = organizer?.id;
   const dispatch = useAppDispatch();
   const [stripeAccounts, setStripeAccounts] = useState<StripeAccount[]>([]);
@@ -74,6 +114,26 @@ export default function OrganizerProfile() {
   });
 
   const [profileData, setProfileData] = useState<ProfileFormData>({ ...profileFormData });
+useEffect(() => {
+ if(!organizer) return;
+ if(organizer.role !== "organizer") return;
+
+ if(!organizer.isProfileCompleted){
+   setActiveTab("Profile");
+   return;
+ }
+
+ if(!organizer.isKycSubmitted){
+   setActiveTab("Documents");
+   return;
+ }
+
+ if(!organizer.isStripeConnected){
+   setActiveTab("Payments");
+   return;
+ }
+
+},[organizer]);
 
   useEffect(() => {
     if (organizer && !profileFormData.organizerId) {
@@ -93,8 +153,16 @@ export default function OrganizerProfile() {
     try {
       const res = await PROFILE_SERVICE.getStripeAccounts(organizerId);
       console.log("accounts", res)
-      setStripeAccounts(res.data.data);
-    } catch {
+      setStripeAccounts(res.data.data||[]);
+    } catch(err) {
+      console.log(err)
+       if(err instanceof AxiosError){
+      
+         if (err?.response?.status === 404||err?.response?.status === 403) {
+       setStripeAccounts([]); // treat as empty
+       return;
+       }
+    }
       showError("Failed to load Stripe accounts");
     }
   };
@@ -111,7 +179,7 @@ export default function OrganizerProfile() {
         if (!organizerId) return;
       
         const response = await PROFILE_SERVICE.getProfile(organizerId);
-       
+       console.log("response is", response)
 
         if (response?.data?.data) {
           const flatData: ProfileFormData = {
@@ -195,10 +263,33 @@ export default function OrganizerProfile() {
     try {
     
  const result = await PROFILE_SERVICE.updateProfile(profileFormData.organizerId, profileFormData);
-  const {id ,name ,email ,isVerified,isBlocked,role, isKycResubmitted}  = result .data?.data
-  const userData = {id, name ,email ,isVerified , isBlocked ,role, isKycResubmitted};
-  dispatch(setOrganizer(userData));
-           toast.success('Profile updated successfully');
+  const organizerData = result.data?.data;
+  
+
+dispatch(setOrganizer({
+ id: organizerData.id,
+ name: organizerData.name,
+ email: organizerData.email,
+ role: organizerData.role,
+ isVerified: organizerData.isVerified,
+ kycStatus: organizerData.kycStatus,
+ isKycResubmitted: organizerData.isKycResubmitted,
+
+ // ⭐ IMPORTANT
+ isProfileCompleted: organizerData.isProfileCompleted,
+ isKycSubmitted: organizerData.isKycSubmitted,
+ isStripeConnected: organizerData.isStripeConnected
+}));
+  
+  
+
+toast.success("Profile updated successfully");
+
+if (!organizerData.isKycSubmitted) {
+  setActiveTab("Documents");
+}
+
+           
 
       setProfileData(profileFormData);
       setIsEditing(false);
@@ -237,22 +328,137 @@ export default function OrganizerProfile() {
         <h2 className="text-2xl font-semibold">Profile & Settings</h2>
         <p className="text-gray-500 text-sm">Manage your account settings and preferences</p>
       </div>
+         {organizer?.role === "organizer" && (
+  <OrganizerOnboardingProgress organizer={organizer}/>
+)}
+
+   {/* 🔥 ONBOARDING GUIDE BANNER */}
+{/* 🔥 ONBOARDING GUIDE BANNER */}
+{/* 🚀 SMART ONBOARDING GUIDE */}
+{getOnboardingMessage() && (
+  <div className="relative overflow-hidden rounded-xl mb-6">
+
+    {/* animated gradient border */}
+    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-pulse opacity-20"></div>
+
+    <div className={`
+      relative flex items-center justify-between gap-6
+      px-6 py-5 rounded-xl border backdrop-blur-md
+      transition-all duration-500 shadow-md
+      ${getOnboardingMessage()?.type === "warning" && "bg-yellow-50/80 border-yellow-200"}
+      ${getOnboardingMessage()?.type === "info" && "bg-blue-50/80 border-blue-200"}
+      ${getOnboardingMessage()?.type === "success" && "bg-green-50/80 border-green-200"}
+    `}>
+
+      {/* LEFT ICON + TEXT */}
+      <div className="flex items-center gap-4">
+
+        {/* animated icon */}
+        <div className={`
+          w-12 h-12 rounded-full flex items-center justify-center text-white text-xl shadow-lg
+          ${getOnboardingMessage()?.type === "warning" && "bg-yellow-500 animate-bounce"}
+          ${getOnboardingMessage()?.type === "info" && "bg-blue-500 animate-pulse"}
+          ${getOnboardingMessage()?.type === "success" && "bg-green-500 animate-pulse"}
+        `}>
+          {getOnboardingMessage()?.type === "warning" && "⚠️"}
+          {getOnboardingMessage()?.type === "info" && "📄"}
+          {getOnboardingMessage()?.type === "success" && "🚀"}
+        </div>
+
+        {/* message */}
+        <div className="flex flex-col">
+          <span className="text-xs uppercase tracking-wider text-gray-500 font-semibold">
+            Organizer Onboarding
+          </span>
+
+          <span className="text-base md:text-lg font-bold text-gray-800 leading-snug">
+            {getOnboardingMessage()?.message}
+          </span>
+        </div>
+      </div>
+
+      {/* ACTION BUTTON */}
+      {getOnboardingMessage()?.action && (
+        <button
+          onClick={() => {
+            const msg = getOnboardingMessage();
+
+            if (msg?.action === "Go to Profile") setActiveTab("Profile");
+            if (msg?.action === "Upload Documents") setActiveTab("Documents");
+            if (msg?.action === "View Plans") setActiveTab("Payments");
+          }}
+          className="group relative px-6 py-2.5 rounded-lg bg-black text-white text-sm font-semibold overflow-hidden transition-all"
+        >
+          <span className="relative z-10">{getOnboardingMessage()?.action}</span>
+
+          {/* hover effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-all"></div>
+        </button>
+      )}
+    </div>
+  </div>
+)}
+
+
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 mb-6 space-x-8">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`pb-2 border-b-2 ${
-              activeTab === tab
-                ? 'border-blue-600 text-blue-600 font-medium'
-                : 'border-transparent text-gray-600 hover:text-blue-600'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+     <div className="flex border-b border-gray-200 mb-6 space-x-8">
+        {tabs.map((tab) => {
+
+        // 🔒 DOCUMENT TAB LOCK (until profile completed)
+  if (tab === "Documents" && !organizer?.isProfileCompleted) {
+    return (
+      <button
+        key={tab}
+        disabled
+        className="pb-2 border-b-2 text-gray-400 cursor-not-allowed"
+      >
+        {tab} 🔒
+      </button>
+    );
+  }
+
+  // 🔒 VERIFICATION TAB LOCK (until docs submitted)
+  if (tab === "Verification" && !organizer?.isKycSubmitted) {
+    return (
+      <button
+        key={tab}
+        disabled
+        className="pb-2 border-b-2 text-gray-400 cursor-not-allowed"
+      >
+        {tab} 🔒
+      </button>
+    );
+  }
+
+  // 🔒 PAYMENTS LOCK (until verified)
+  if ( tab === "Payments" &&
+  (organizer?.kycStatus !== KycStatus.APPROVED || !organizer?.isVerified)) {
+    return (
+      <button
+        key={tab}
+        disabled
+        className="pb-2 border-b-2 text-gray-400 cursor-not-allowed"
+      >
+        {tab} 🔒
+      </button>
+    );
+  }
+
+  return (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`pb-2 border-b-2 ${
+        activeTab === tab
+          ? "border-blue-600 text-blue-600 font-medium"
+          : "border-transparent text-gray-600 hover:text-blue-600"
+      }`}
+    >
+      {tab}
+    </button>
+  );
+        })}
       </div>
 
       {/* Profile Tab Content */}
@@ -405,11 +611,20 @@ export default function OrganizerProfile() {
         </div>
       )}
       {activeTab === "Payments" && organizerId && organizer && (
-  <OrganizerPaymentsSection
-    stripeAccounts={stripeAccounts}
-    organizerId={organizerId}
-    organizerEmail={organizer.email}
-  />
+   organizer.kycStatus !== KycStatus.APPROVED ? (
+          <div className="p-6 text-center text-gray-500">
+            <h3 className="text-lg font-semibold">Verification Pending</h3>
+            <p className="text-sm mt-2">
+              Your documents are under review. Stripe onboarding will unlock after admin approval.
+            </p>
+          </div>
+        ) : (
+          <OrganizerPaymentsSection
+            stripeAccounts={stripeAccounts}
+            organizerId={organizerId}
+            organizerEmail={organizer.email}
+          />
+        )
 )}
 
       {/* {activeTab === "Notifications" && (
