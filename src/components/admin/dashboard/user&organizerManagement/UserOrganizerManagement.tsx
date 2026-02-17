@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { FiEdit, FiSlash, FiUnlock, FiEye } from "react-icons/fi";
 import { IUserInfo } from "@/types/authTypes";
 import { confirmAction } from "@/services/common/alert";
-import Image from "next/image";
+// import Image from "next/image";
 import { useAdminSocket } from "@/hooks/useAdminSocket";
 import Pagination from "@/components/ui/Pagination";
 import { FilterBar } from "@/components/ui/FilterBar";
@@ -123,13 +123,13 @@ useEffect(() => {
               users?.map((user, i) => (
                 <tr key={i} className="border-b hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 flex items-center gap-3">
-                    <Image
+                    {/* <Image
                       src={`https://i.pravatar.cc/40?img=${i + 1}`}
                       alt={user.name}
                       width={40}
                       height={40}
                       className="rounded-full"
-                    />
+                    /> */}
                     <div>
                       <p className="font-medium">{user.name}</p>
                       <p className="text-sm text-gray-500">{user.email}</p>

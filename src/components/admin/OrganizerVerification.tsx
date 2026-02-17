@@ -246,6 +246,14 @@ export default function OrganizerVerification() {
     toast.error("Failed to download document");
   }
 };
+// ⭐ document summary
+const allDocsApproved =
+  selectedDetail?.documents &&
+  selectedDetail.documents.length > 0 &&
+  selectedDetail.documents.every(doc => doc.status === UploadDocumentStatus.APPROVED);
+
+const anyDocRejected =
+  selectedDetail?.documents.some(doc => doc.status === UploadDocumentStatus.REJECTED);
 
 
   return (
@@ -458,19 +466,33 @@ export default function OrganizerVerification() {
                   </div>
                 ))}
               </div>
+               {/* verification summary message */}
+<div className="mb-3">
+  {allDocsApproved && (
+    <p className="text-green-600 text-sm">
+      ✅ All documents approved. Ready for final approval.
+    </p>
+  )}
+
+  {anyDocRejected && (
+    <p className="text-red-600 text-sm">
+      ❌ Some documents rejected. Cannot approve organizer.
+    </p>
+  )}
+</div>
 
               <div className="flex gap-4">
                 <button
                   onClick={() => handleOverallStatus("Approved", true, true)}
                   className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  disabled={isLoading}
+                  disabled={isLoading || anyDocRejected}
                 >
                   ✓ Approve
                 </button>
                 <button
                   onClick={() => handleOverallStatus("Rejected", true)}
                   className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  disabled={isLoading}
+                  disabled={isLoading || allDocsApproved}
                 >
                   ✗ Reject
                 </button>

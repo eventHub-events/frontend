@@ -15,7 +15,12 @@ export interface IOrganizer extends IUser{
 companyName?:string;
 kycStatus?: KycStatus
 isKycResubmitted : boolean;
-stripeOnboarded?: boolean 
+stripeOnboarded?: boolean;
+isProfileCompleted?: boolean;
+ isKycSubmitted?: boolean;
+ isStripeConnected?: boolean;
+ isSubscribed?: boolean
+
 
 }
 export interface IAdmin extends IUser{
