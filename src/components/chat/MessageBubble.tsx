@@ -21,7 +21,7 @@ export default memo(function MessageBubble({ isMine, message, createdAt, senderN
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"} mb-3`}
        onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
+      // onMouseLeave={() => setShowActions(false)}
     >
       <div className="max-w-[70%] relative">
 
