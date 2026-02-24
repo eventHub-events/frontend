@@ -13,6 +13,7 @@ import { GiWineBottle } from "react-icons/gi";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
 import { useRouter } from "next/navigation";
+import FeaturedSkeleton from "./FeaturedSkelton";
 
 
 interface FeaturedEvent {
@@ -34,6 +35,7 @@ interface FeaturedEvent {
 
 const FeaturedEvents = () => {
   const [featuredEvents, setFeaturedEvents] = useState<FeaturedEvent[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   // Star rating component
@@ -61,8 +63,12 @@ const FeaturedEvents = () => {
       getFeaturedEvents();
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   }, []);
+  if (loading) return <FeaturedSkeleton />;
+if (!loading && featuredEvents.length === 0) return null;
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-150 to-slate-150">

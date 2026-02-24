@@ -166,7 +166,61 @@ const EventDetails: React.FC = () => {
 
   const handleBooking = async () => {
    if (!event ) return;
-   if(!user) return
+  if (!user) {
+   Swal.fire({
+  html: `
+  <div class="flex flex-col items-center text-center px-8 py-6">
+
+    <div class="w-20 h-20 flex items-center justify-center
+      rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600
+      shadow-xl mb-5 animate-pulse">
+      <svg xmlns="http://www.w3.org/2000/svg"
+        class="w-10 h-10 text-white"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2">
+        <path stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 11c0-3 2-5 5-5s5 2 5 5v2H2v-2c0-3 2-5 5-5s5 2 5 5zm0 0v2m0 4h.01" />
+      </svg>
+    </div>
+
+    <h2 class="text-2xl font-bold text-gray-900">
+      Login Required
+    </h2>
+
+    <p class="text-gray-500 mt-2 text-sm max-w-xs">
+      Please login to continue booking your tickets 🎟️
+    </p>
+
+    <button id="loginBtn"
+      class="mt-6 px-8 py-3 rounded-xl text-white font-semibold
+      bg-gradient-to-r from-indigo-600 to-purple-600
+      hover:scale-105 hover:shadow-xl
+      transition-all duration-300">
+      Login & Continue
+    </button>
+
+  </div>
+  `,
+  showConfirmButton: false,
+  background: "rgba(255,255,255,0.9)",
+  backdrop: "rgba(0,0,0,0.4)",
+  customClass: {
+    popup: "rounded-3xl backdrop-blur-lg shadow-2xl"
+  },
+  didOpen: () => {
+    const btn = document.getElementById("loginBtn");
+    btn?.addEventListener("click", () => {
+      Swal.close();
+      router.push(`/login/user?redirect=/user/events/${eventId}`);
+    });
+  }
+});
+
+    return;
+  }
   
 
   const selectedTickets: BookedTickets[] = ticketSelections

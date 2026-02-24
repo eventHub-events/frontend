@@ -129,10 +129,10 @@ import {
 
 
 interface Props {
-  mode: "event" | "organizer";
-  targetId: string;
-  userId: string;
-  userName: string;
+  mode: "event" | "organizer",
+  targetId: string,
+  userId?: string,
+  userName?: string;
 }
 export default function ReviewSection({ mode, targetId, userId, userName }: Props) {
   const [summary, setSummary] = useState<RatingSummary | null>(null);
@@ -148,7 +148,8 @@ export default function ReviewSection({ mode, targetId, userId, userName }: Prop
     try {
       const summaryRes = await reviewService.getReviewSummary(mode, targetId);
       const reviewRes = await reviewService.getEventReviews(targetId, mode, pageNumber, limit);
-
+       console.log("a",summaryRes)
+       console.log("b",reviewRes)
       if (pageNumber === 1) {
         setReviews(reviewRes.data.data.reviews);
       } else {
@@ -157,8 +158,14 @@ export default function ReviewSection({ mode, targetId, userId, userName }: Prop
       setHasMore(reviewRes.data.data.hasMore);
       setSummary(summaryRes.data.data);
       
-      const mine = reviewRes.data.data.reviews.find((r: EventReview) => r.userId === userId);
-      setMyReview(mine || null);
+    if (userId) {
+  const mine = reviewRes.data.data.reviews.find(
+    (r: EventReview) => r.userId === userId
+  );
+  setMyReview(mine || null);
+} else {
+  setMyReview(null);
+}
     } catch (err) {
       console.error(err);
     } finally {
@@ -216,11 +223,29 @@ export default function ReviewSection({ mode, targetId, userId, userName }: Prop
               {myReview ? "Your Experience" : "Write your review"}
             </h3>
             
-            {myReview ? (
-              <YourReviewCard review={myReview} refresh={refreshReviews} />
-            ) : (
-              <ReviewForm targetId={targetId} refresh={refreshReviews} userId={userId} userName={userName} mode={mode} />
-            )}
+           {!userId ? (
+  <div className="text-center py-6">
+    <p className="text-gray-500 text-sm mb-3">
+      Login to write a review
+    </p>
+    <button
+      onClick={() => window.location.href = "/login/user"}
+      className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold"
+    >
+      Login to review
+    </button>
+  </div>
+) : myReview ? (
+  <YourReviewCard review={myReview} refresh={refreshReviews} />
+) : (
+  <ReviewForm
+    targetId={targetId}
+    refresh={refreshReviews}
+    userId={userId}
+    userName={userName!}
+    mode={mode}
+  />
+)}
           </div>
         </div>
 

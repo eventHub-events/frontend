@@ -28,6 +28,8 @@ export default function UpcomingEventsSection() {
     fetchUpcoming();
   }, []);
 
+  if (!loading && events.length === 0) return null;
+
   return (
     <section className="relative py-20 bg-[#f4f7fb] mt-0">
       <div className="max-w-7xl mx-auto px-4 md:px-6">

@@ -2,13 +2,12 @@
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 import { setUser } from "@/redux/slices/user/authSlice"
-import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
 
 export function useUserState(){
   const  dispatch= useAppDispatch()
-  const router= useRouter()
+  
   
   const user=useAppSelector((state)=>state.auth.user)
 
@@ -24,10 +23,8 @@ if (stored && stored !== "undefined") {
     console.error("Failed to parse userInfo:", err);
     localStorage.removeItem("userInfo"); // optional: clean up
   }
-} else {
-  router.push("/");
-}
+} 
     }
 
-  },[user,dispatch,router])
+  },[user,dispatch])
 }
