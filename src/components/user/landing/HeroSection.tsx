@@ -5,6 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Image from "next/image";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
 import { useRouter } from "next/navigation";
+import HeroSkeleton from "./HeroSkeleton";
 
 interface TrendingEvent {
   id: string;
@@ -23,6 +24,7 @@ const EventPosterCarousel = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [trendingEvents, setTrendingEvents] = useState<TrendingEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const router= useRouter()
 
@@ -55,6 +57,8 @@ const EventPosterCarousel = () => {
         setTrendingEvents(res.data.data);
       } catch (err) {
         console.log(err);
+      }finally{
+        setLoading(false)
       }
     };
     fetchTrendingEvents();
@@ -101,6 +105,13 @@ const EventPosterCarousel = () => {
     };
   }, [isHovered, trendingEvents.length]);
 
+
+   if (loading) {
+  return <HeroSkeleton />;
+}
+if (!loading && trendingEvents.length === 0) {
+  return null; // don't render empty section
+}
   return (
     <section
       className="w-full py-12 bg-gray-200 relative overflow-visible"

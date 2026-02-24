@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setUser } from "@/redux/slices/user/authSlice";
 import { setOrganizer } from "@/redux/slices/organizer/authSlice";
 import { useNotify } from "./NotifyContext";
-
+import { useSearchParams } from "next/navigation";
 interface LoginPageProps {
   userType: "user" | "organizer" | "admin";
 }
@@ -28,6 +28,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
   const user = useAppSelector((state) => state.auth.user);
   const organizer = useAppSelector((state) => state.organizerAuth.organizer);
+  const searchParams = useSearchParams();
+const redirect = searchParams.get("redirect");
 
   const brandGradient = "from-[#f16307] to-[#e43a15]";
   const accentColor = "text-[#f16307]";
@@ -37,8 +39,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
     if (!organizer && !user) return;
 
     if (user) {
-      router.replace("/user/home");
-      return;
+    if (redirect) {
+    router.replace(redirect);
+  } else {
+    router.replace("/user/home");
+  }
+  return;
     }
 
     if (organizer) {
@@ -88,8 +94,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
       if (data.role === "user") {
         dispatch(setUser(data));
-        router.replace("/user/home");
-        return;
+          // 🔥 redirect if exists
+  if (redirect) {
+    router.replace(redirect);
+  } else {
+    router.replace("/user/home");
+  }
+  return;
       }
 
       if (data.role === "organizer") {
@@ -148,8 +159,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ userType }) => {
 
       if (data.role === "user") {
         dispatch(setUser(data));
-        router.replace("/user/home");
-        return;
+        if (redirect) {
+    router.replace(redirect);
+  } else {
+    router.replace("/user/home");
+  }
+  return;
       }
 
       if (data.role === "organizer") {

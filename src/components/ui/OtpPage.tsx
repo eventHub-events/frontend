@@ -9,6 +9,7 @@ import { Mail, ShieldCheck, ArrowLeft, RotateCw, Timer } from "lucide-react";
 import { authService } from "../../services/authService";
 import { passwordService } from "@/services/user/passwordService";
 
+
 interface OTPPageProps {
   userType: "user" | "organizer";
 }
@@ -17,6 +18,7 @@ export default function OTPPage({ userType }: OTPPageProps) {
   const isUser = userType === "user";
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -61,7 +63,9 @@ export default function OTPPage({ userType }: OTPPageProps) {
       if (type === "register") {
         result = await authService.verifyOtp({ email, otp, role: userType });
         toast.success("OTP Verified! Please log in.");
-        router.push(`/login/${result.data.data.role}`);
+        router.push(
+  `/login/${result.data.data.role}?redirect=${redirect ?? ""}`
+);
       } else if (type === "reset") {
         await passwordService.verifyResetPasswordOtp(userType, { email, otp });
         toast.success("OTP Verified! Create your new password.");

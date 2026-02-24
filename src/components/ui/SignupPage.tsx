@@ -13,6 +13,7 @@ import { setUser } from "@/redux/slices/user/authSlice";
 import { setOrganizer } from "@/redux/slices/organizer/authSlice";
 import { validateConfirmPassword, validateEmail, validateName, validatePassword, validatePhone } from "@/utils/validation";
 import { useNotify } from "./NotifyContext";
+import { useSearchParams } from "next/navigation";
 
 // Premium Notification Hook
 
@@ -24,6 +25,8 @@ interface SignupPageProps {
 export default function SignupPage({ userType }: SignupPageProps) {
   const isUser = userType === "user";
   const router = useRouter();
+  const searchParams = useSearchParams();
+const redirect = searchParams.get("redirect");
   const dispatch = useAppDispatch();
   const { notify } = useNotify(); // Initialize global notification
 
@@ -62,10 +65,15 @@ export default function SignupPage({ userType }: SignupPageProps) {
 
       notify("Welcome!", "Successfully joined via Google.", "success");
 
-      if (data.role === "user") {
-        dispatch(setUser(data));
-        router.push("/user/home");
-      } else if (data.role === "organizer") {
+    if (data.role === "user") {
+  dispatch(setUser(data));
+
+  if (redirect) {
+    router.replace(redirect);
+  } else {
+    router.replace("/user/home");
+  }
+} else if (data.role === "organizer") {
         dispatch(setOrganizer(data));
         if (!data.isProfileCompleted) {
           router.replace("/organizer/profile");
@@ -129,7 +137,9 @@ export default function SignupPage({ userType }: SignupPageProps) {
       setLoading(true);
       await authService.signup(form);
       notify("Account Created", "Check your email for the verification OTP.", "success");
-      router.push(`/verify-otp/${userType}?email=${encodeURIComponent(form.email)}`);
+      router.push(
+  `/verify-otp/${userType}?email=${encodeURIComponent(form.email)}&redirect=${redirect ?? ""}`
+);
     } catch (error) {
       let message = "Signup failed";
       if (axios.isAxiosError(error)) {
@@ -301,7 +311,7 @@ export default function SignupPage({ userType }: SignupPageProps) {
 
           <p className="text-center mt-10 text-zinc-500">
             Already part of the hub?{" "}
-            <Link href={`/login/${userType}`} className={`font-black ${accentColor} hover:underline decoration-2 underline-offset-4`}>
+            <Link href={`/login/${userType}?redirect=${redirect ?? ""}`} className={`font-black ${accentColor} hover:underline decoration-2 underline-offset-4`}>
               Sign In
             </Link>
           </p>
