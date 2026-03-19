@@ -21,7 +21,10 @@ export interface EventCreationForm {
     tags?:string[];
     stripeAccountId: string;
     organizerEmail?:string;
-    visibility: EventVisibility
+    visibility: EventVisibility;
+    saleStartDate?: string;
+    saleEndDate?: string;
+    waitingListEnabled?: boolean;
 
 }
 

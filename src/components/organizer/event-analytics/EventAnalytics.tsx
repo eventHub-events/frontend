@@ -62,6 +62,7 @@ const limit = 10;
   /* ---------------- API CALL ---------------- */
 
   useEffect(() => {
+    
     if (!organizer?.id) return;
     const fetchEvents = async () => {
       try {

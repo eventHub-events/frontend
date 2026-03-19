@@ -8,6 +8,9 @@ import { categoryService } from "@/services/admin/categoryService";
 import { useAppSelector } from "@/redux/hooks";
 import { uploadImageToCloudinary } from "@/services/common/cloudinary";
 import { showError, showSuccess, showWarning } from "@/utils/toastService";
+import { useFieldArray } from "react-hook-form";
+import { TicketStatus } from "@/enums/organizer/events";
+import { ITicketTier } from "@/types/organizer/events";
 
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
@@ -30,6 +33,15 @@ onboarded?: boolean;
   isDefault? : boolean;
   isActive?: boolean
 }
+type FullEventForm = EventCreationForm & {
+  tagsInput: string;
+  startAmPm: string;
+  endAmPm: string;
+  tickets: ITicketTier[];
+  saleStartDate?: string;
+  saleEndDate?: string;
+  waitingListEnabled?: boolean;
+};
 
 export default function EventFormPage() {
   const { eventId } = useParams();
@@ -42,6 +54,7 @@ export default function EventFormPage() {
   const [uploading, setUploading] = useState(false);
   const [mapUrl, setMapUrl] = useState<string>("");
   const [stripeAccounts, setStripeAccounts] = useState<StripeAccount[]>([]);
+  const [pageLoading, setPageLoading] = useState(false);
 
 
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
@@ -54,8 +67,9 @@ export default function EventFormPage() {
     handleSubmit,
     watch,
     reset,
+    control,
     formState: { errors, isSubmitting },
-  } = useForm<EventCreationForm & { tagsInput: string; startAmPm: string; endAmPm: string }>({
+  } = useForm<FullEventForm>({
     defaultValues: {
       tagsInput: "",
       featured: false,
@@ -69,16 +83,63 @@ export default function EventFormPage() {
       totalCapacity: 1,
 
       visibility: EventVisibility.Public,
+      tickets:[],
+      saleStartDate:"",
+   saleEndDate:"",
+   waitingListEnabled:false
     },
   });
-
+const { fields: ticketFields, append, remove } = useFieldArray({
+  control,
+  name: "tickets",
+});
+// useEffect(()=>{
+//  if(ticketFields.length === 0){
+//    append({
+//      name:"",
+//      price:0,
+//      totalSeats:1,
+//      benefits:[],
+//      status: TicketStatus.Active,
+//      isRefundable:false,
+//      description:"",
+//      maxTicketPerUser:1
+//    });
+//  }
+// },[]);
 
    // Fetch stripe account //
 
-   useEffect(() => {
+   const formatTimeForInput = (time?: string) => {
+  if (!time) return { time: "", ampm: "AM" };
+
+  const [hourMin, ampm] = time.split(" ");
+  const [hourRaw, minute] = hourMin.split(":").map(Number);
+  let hour = hourRaw;
+
+  if (ampm === "PM" && hour !== 12) {
+    hour += 12;
+  }
+
+  if (ampm === "AM" && hour === 12) {
+    hour = 0;
+  }
+
+  return {
+    time: `${hour.toString().padStart(2, "0")}:${minute}`,
+    ampm,
+  };
+};
+
+ useEffect(() => {
   const fetchStripeAccounts = async () => {
-    const res = await PROFILE_SERVICE.getStripeAccounts(organizerId!);
-    setStripeAccounts(res.data.data);
+    try {
+      setPageLoading(true);
+      const res = await PROFILE_SERVICE.getStripeAccounts(organizerId!);
+      setStripeAccounts(res.data.data);
+    } finally {
+      setPageLoading(false);
+    }
   };
 
   fetchStripeAccounts();
@@ -94,10 +155,15 @@ export default function EventFormPage() {
        router.push("/organizer/profile")
        return
      }
-    const fetchCategories = async () => {
-      const response = await categoryService.fetchAllCategories();
-      setCategories(response.data.data);
-    };
+   const fetchCategories = async () => {
+  try {
+    setPageLoading(true);
+    const response = await categoryService.fetchAllCategories();
+    setCategories(response.data.data);
+  } finally {
+    setPageLoading(false);
+  }
+};
     fetchCategories();
   }, [organizer?.isVerified,router]);
 
@@ -106,26 +172,54 @@ export default function EventFormPage() {
     const fetchEvent = async () => {
       if (!isEditMode) return;
       try {
+         setPageLoading(true);
         const response = await EVENT_SERVICE.fetchEventById(eventId as string);
-        const eventData = response.data.data;
+        
+const { event, tickets } = response.data.data;
         console.log("response is", response)
 
         // convert backend data to form-compatible structure
-        reset({
-          ...eventData,
-         startDate: eventData.startDate ? eventData.startDate.split("T")[0] : "",
-         endDate: eventData.endDate ? eventData.endDate.split("T")[0] : "",
-         tagsInput: eventData.tags?.join(", ") || "",
-         startAmPm: eventData.startTime?.includes("PM") ? "PM" : "AM",
-         endAmPm: eventData.endTime?.includes("PM") ? "PM" : "AM",
-        });
+        const startFormatted = formatTimeForInput(event.startTime);
+const endFormatted = formatTimeForInput(event.endTime);
 
-        if (eventData.images?.length) {
-          setUploadedImages(eventData.images);
-          setImagePreviews(eventData.images);
+        reset({
+  ...event,
+
+  startDate: event.startDate
+    ? event.startDate.split("T")[0]
+    : "",
+
+  endDate: event.endDate
+    ? event.endDate.split("T")[0]
+    : "",
+
+  tagsInput: event.tags?.join(", ") || "",
+
+   startTime: startFormatted.time,
+  startAmPm: startFormatted.ampm,
+
+  endTime: endFormatted.time,
+  endAmPm: endFormatted.ampm,
+
+  tickets: tickets?.tickets || [],  
+
+  saleStartDate: tickets?.saleStartDate
+    ? tickets.saleStartDate.split("T")[0]
+    : "",
+
+  saleEndDate: tickets?.saleEndDate
+    ? tickets.saleEndDate.split("T")[0]
+    : "",
+
+  waitingListEnabled: tickets?.waitingListEnabled ?? false,
+});
+
+        if (event.images?.length) {
+          setUploadedImages(event.images);
+          setImagePreviews(event.images);
         }
 
-        const loc = eventData.location;
+        const loc = event.location;
         if (loc?.address || loc?.city) {
           const query = encodeURIComponent(
             `${loc.venue} ${loc.address} ${loc.city} ${loc.state} ${loc.country}`
@@ -134,12 +228,14 @@ export default function EventFormPage() {
         }
       } catch (err) {
         console.error("Failed to fetch event", err);
-      }
+      }finally {
+  setPageLoading(false);
+}
     };
 
     fetchEvent();
   }, [isEditMode, eventId, reset]);
-
+const todayStr = new Date().toISOString().split("T")[0];
   // 🔹 Handle image selection & preview
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -210,9 +306,34 @@ export default function EventFormPage() {
         endTime,
         category,
         tags: data.tagsInput ? data.tagsInput.split(",").map((t: string) => t.trim()) : [],
+        tickets: data.tickets,
+        saleStartDate:data.saleStartDate,
+ saleEndDate:data.saleEndDate,
+ waitingListEnabled:data.waitingListEnabled
       };
-       console.log("ppppp", payload);
-     
+      if (!data.tickets || data.tickets.length === 0) {
+        showError("Please add at least one ticket tier");
+        return;
+      }
+      // total ticket seats
+      const totalTicketSeats = data.tickets.reduce(
+        (sum, t) => sum + Number(t.totalSeats || 0),
+        0
+      );
+      
+      // capacity validation
+      if (data.totalCapacity < 10) {
+        showError("Event capacity must be at least 10 seats");
+        return;
+      }
+      
+      if (totalTicketSeats > data.totalCapacity) {
+        showError(
+          `Total ticket seats (${totalTicketSeats}) cannot exceed event capacity (${data.totalCapacity})`
+        );
+        return;
+      }
+      console.log("ppppp", payload);
       
       if (isEditMode) {
         const res = await EVENT_SERVICE.updateEvent(eventId as string, payload);
@@ -224,7 +345,8 @@ export default function EventFormPage() {
         const res = await EVENT_SERVICE.createEvent(payload);
         if (res) {
           showSuccess("Event created successfully");
-          router.push(`/organizer/events/${res.data.data.eventId}/tickets`);
+          // router.push(`/organizer/events/${res.data.data.eventId}/tickets`);
+          router.push("/organizer/events");
         }
       }
     } catch (err) {
@@ -238,10 +360,34 @@ export default function EventFormPage() {
       }
     }
   };
+ const watchedTickets = watch("tickets");
+const watchedCapacity = watch("totalCapacity");
+
+const totalSeats =
+  watchedTickets?.reduce(
+    (sum, t) => sum + Number(t?.totalSeats || 0),
+    0
+  ) || 0;
 
   // 🔹 JSX (unchanged styling)
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4 sm:px-6 lg:px-8">
+       {pageLoading && (
+  <div className="fixed inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="flex flex-col items-center space-y-4">
+      
+      {/* Animated Gradient Spinner */}
+      <div className="relative w-16 h-16">
+        <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 border-r-purple-600 animate-spin"></div>
+        <div className="absolute inset-2 rounded-full bg-white"></div>
+      </div>
+
+      <p className="text-gray-700 font-medium animate-pulse">
+        Loading event details...
+      </p>
+    </div>
+  </div>
+)}
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
           <div className="text-center mb-8">
@@ -364,19 +510,78 @@ export default function EventFormPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                  <input
-                    type="date"
-                    {...register("startDate")}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
+                 <input
+  type="date"
+  {...register("startDate", {
+    required: "Start date is required",
+    validate: (value) => {
+      if (!value) return "Start date is required";
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      const selected = new Date(value);
+
+      if (isNaN(selected.getTime())) {
+        return "Invalid start date";
+      }
+
+      if (selected < today) {
+        return "Start date cannot be in the past";
+      }
+
+      return true;
+    },
+  })}
+  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+  min={todayStr}
+/>
+
+{errors.startDate && (
+  <p className="text-sm text-red-600 mt-1">
+    {errors.startDate.message as string}
+  </p>
+)}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
                   <input
-                    type="date"
-                    {...register("endDate")}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
+  type="date"
+  {...register("endDate", {
+    required: "End date is required",
+    validate: (value) => {
+      if (!value) return "End date is required";
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      const end = new Date(value);
+      const start = new Date(watch("startDate"));
+
+      if (isNaN(end.getTime())) {
+        return "Invalid end date";
+      }
+
+      if (end < today) {
+        return "End date cannot be in the past";
+      }
+
+      if (start && end < start) {
+        return "End date must be after start date";
+      }
+
+      return true;
+    },
+  })}
+  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+  min={todayStr}
+/>
+
+{errors.endDate && (
+  <p className="text-sm text-red-600 mt-1">
+    {errors.endDate.message as string}
+  </p>
+)}
                 </div>
 
                 <div>
@@ -428,10 +633,25 @@ export default function EventFormPage() {
                   </label>
                   <input
                     type="number"
-                    {...register("totalCapacity", { required: true, min: 1 })}
+  {...register("totalCapacity", {
+    required: "Total capacity is required",
+    min: {
+      value: 10,
+      message: "Minimum capacity should be at least 10 seats",
+    },
+    validate: (value) => {
+      if (value < 0) return "Capacity cannot be negative";
+      return true;
+    },
+  })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="100"
                   />
+                  {errors.totalCapacity && (
+  <p className="text-sm text-red-600 mt-1">
+    {errors.totalCapacity.message as string}
+  </p>
+)}
                 </div>
 
                 <div className="flex items-center space-x-4">
@@ -555,6 +775,248 @@ export default function EventFormPage() {
                 </div>
               </div>
             </section>
+             {/* 🎟 Ticket Section */}
+{/* 🎟 Ticket Configuration */}
+<section className="bg-gray-50 rounded-xl p-6">
+  <h2 className="text-xl font-semibold mb-6">Ticket Configuration</h2>
+
+  {/* Add ticket */}
+  <div className="flex justify-between mb-4">
+    <h3 className="font-semibold">Ticket Tiers</h3>
+    <button
+      type="button"
+      onClick={() =>
+        append({
+          name: "",
+          price: 0,
+          totalSeats: 1,
+          benefits: [],
+          status: TicketStatus.Active,
+          isRefundable: false,
+          description: "",
+          maxTicketPerUser: 1,
+        })
+      }
+      className="bg-green-600 text-white px-4 py-2 rounded"
+    >
+      + Add Ticket
+    </button>
+    {/* 🔥 Live Seat Counter */}
+<div className="mb-4">
+  <p className="text-sm text-gray-600">
+    Total Ticket Seats:{" "}
+    <span
+      className={
+        totalSeats > watchedCapacity
+          ? "text-red-600 font-semibold"
+          : "font-semibold"
+      }
+    >
+      {totalSeats}
+    </span>{" "}
+    / {watchedCapacity || 0}
+  </p>
+
+  {totalSeats > watchedCapacity && (
+    <p className="text-red-600 text-sm mt-1">
+      Ticket seats exceed event capacity
+    </p>
+  )}
+</div>
+  </div>
+
+  {ticketFields.map((ticket, index) => (
+    <div key={ticket.id} className="border p-4 mb-6 rounded-lg bg-white relative">
+      
+      <button
+        type="button"
+        onClick={() => remove(index)}
+        className="absolute top-2 right-2 text-red-500"
+      >
+        ✕
+      </button>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium">Ticket Name</label>
+          <input
+            {...register(`tickets.${index}.name` as const,{required:true})}
+            className="w-full border p-2 rounded"
+            placeholder="VIP / General"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Price</label>
+          <input
+            type="number"
+            {...register(`tickets.${index}.price` as const,{required:true,min:0})}
+            className="w-full border p-2 rounded"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Total Seats</label>
+          <input
+            type="number"
+            {...register(`tickets.${index}.totalSeats` as const,{required:true,min:1})}
+            className="w-full border p-2 rounded"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Max/User</label>
+          <input
+            type="number"
+            {...register(`tickets.${index}.maxTicketPerUser` as const)}
+            className="w-full border p-2 rounded"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="text-sm font-medium">Benefits</label>
+          <input
+            {...register(`tickets.${index}.benefits` as const)}
+            className="w-full border p-2 rounded"
+            placeholder="Free drinks, backstage pass"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="text-sm font-medium">Description</label>
+          <input
+            {...register(`tickets.${index}.description` as const)}
+            className="w-full border p-2 rounded"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Status</label>
+          <select
+            {...register(`tickets.${index}.status` as const)}
+            className="w-full border p-2 rounded"
+          >
+            {Object.values(TicketStatus).map((s)=>(
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+
+        <label className="flex items-center gap-2 mt-6">
+          <input type="checkbox" {...register(`tickets.${index}.isRefundable` as const)} />
+          Refundable
+        </label>
+      </div>
+    </div>
+  ))}
+
+  {/* SALE SETTINGS */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+    <div>
+      <label className="text-sm font-medium">Sale Start Date</label>
+      <input
+  type="date"
+  {...register("saleStartDate", {
+    required: "Sale start date is required",
+    validate: (value) => {
+      if (!value) return "Sale start date is required";
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      const saleStart = new Date(value);
+      const eventStart = new Date(watch("startDate") || "");
+      const eventEnd = new Date(watch("endDate") || "");
+
+      if (isNaN(saleStart.getTime())) {
+        return "Invalid sale start date";
+      }
+
+      if (saleStart < today) {
+        return "Sale start date cannot be in the past";
+      }
+
+      if (eventStart && saleStart > eventStart) {
+        return "Sale start must be before or on event start date";
+      }
+
+      if (eventEnd && saleStart > eventEnd) {
+        return "Sale start cannot be after event end date";
+      }
+
+      return true;
+    },
+  })}
+  className="w-full border p-2 rounded"
+  min={todayStr}
+/>
+
+{errors.saleStartDate && (
+  <p className="text-sm text-red-600 mt-1">
+    {errors.saleStartDate.message as string}
+  </p>
+)}
+    </div>
+
+    <div>
+      <label className="text-sm font-medium">Sale End Date</label>
+     <input
+  type="date"
+  {...register("saleEndDate", {
+    required: "Sale end date is required",
+    validate: (value) => {
+      if (!value) return "Sale end date is required";
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      const saleEnd = new Date(value);
+      const saleStart = new Date(watch("saleStartDate") || "");
+      const eventStart = new Date(watch("startDate") || "");
+      const eventEnd = new Date(watch("endDate") || "");
+
+      if (isNaN(saleEnd.getTime())) {
+        return "Invalid sale end date";
+      }
+
+      if (saleEnd < today) {
+        return "Sale end date cannot be in the past";
+      }
+
+      if (saleStart && saleEnd < saleStart) {
+        return "Sale end date must be after sale start date";
+      }
+
+      if (eventStart && saleEnd > eventStart) {
+        return "Sale end must be on or before event start date";
+      }
+
+      if (eventEnd && saleEnd > eventEnd) {
+        return "Sale end cannot be after event end date";
+      }
+
+      return true;
+    },
+  })}
+  className="w-full border p-2 rounded"
+  min={todayStr}
+/>
+
+{errors.saleEndDate && (
+  <p className="text-sm text-red-600 mt-1">
+    {errors.saleEndDate.message as string}
+  </p>
+)}
+    </div>
+
+    <div className="flex items-center mt-6">
+      <label className="flex items-center gap-2">
+        <input type="checkbox" {...register("waitingListEnabled")} />
+        Enable Waiting List
+      </label>
+    </div>
+  </div>
+</section>
             <div className="flex justify-center pt-4">
               <button
                 type="submit"
@@ -576,3 +1038,6 @@ export default function EventFormPage() {
     </div>
   );
 }
+
+
+
