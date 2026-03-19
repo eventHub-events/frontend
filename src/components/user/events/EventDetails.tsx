@@ -34,6 +34,7 @@ import Swal from "sweetalert2";
 import ReviewSection from "../review/event/ReviewSection";
 import ReportIcon from "../report/ReportIcon";
 import { BadgeCheck, RefreshCw, Shield, ShieldCheck, ShoppingBag, Sparkles, Ticket } from "lucide-react";
+import axios from "axios";
 
 interface TicketData {
   name: string;
@@ -263,8 +264,8 @@ const EventDetails: React.FC = () => {
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <h2 class="mt-5 text-2xl font-bold text-black tracking-wide">Booking Successful!</h2>
-      <p class="mt-2 text-gray-900 text-sm">Your tickets have been booked successfully 🎟️</p>
+      <h2 class="mt-5 text-2xl font-bold text-black tracking-wide">Kindly make payment!</h2>
+      <p class="mt-2 text-gray-900 text-sm">Make payment to  ensure your tickets 🎟️</p>
     </div>
   `,
   showConfirmButton: false,
@@ -283,10 +284,19 @@ const EventDetails: React.FC = () => {
     // showSuccess("Tickets booked successfully!");
 
    
-  } catch (err) {
-    console.log(err)
-    console.error("Booking failed:", err);
-    showError("Failed to book tickets. Please try again.");
+  } catch (err: unknown) {
+     let message = "Something went wrong";
+
+  if (axios.isAxiosError(err)) {
+    message =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.message;
+  } else if (err instanceof Error) {
+    message = err.message;
+  }
+
+  showError(message);
   }
 };
 

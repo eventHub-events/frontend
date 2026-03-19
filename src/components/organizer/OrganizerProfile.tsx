@@ -96,7 +96,7 @@ export default function OrganizerProfile() {
   const organizerId = organizer?.id;
   const dispatch = useAppDispatch();
   const [stripeAccounts, setStripeAccounts] = useState<StripeAccount[]>([]);
-
+  const [pageLoading, setPageLoading] = useState(true);
 
   const [profileFormData, setProfileFormData] = useState<ProfileFormData>({
     organizerId: '',
@@ -176,6 +176,7 @@ useEffect(() => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+         setPageLoading(true);
         if (!organizerId) return;
       
         const response = await PROFILE_SERVICE.getProfile(organizerId);
@@ -210,7 +211,9 @@ useEffect(() => {
       } catch (error: unknown) {
         const err = error instanceof Error ? error.message : 'Failed to fetch profile';
         toast.error(err);
-      }
+      }finally {
+    setPageLoading(false);
+  }
     };
 
     fetchProfile();
@@ -320,6 +323,16 @@ if (!organizerData.isKycSubmitted) {
     
     }
   };
+   if (pageLoading) {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-gray-500">Loading profile...</p>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="bg-white p-6 rounded-lg shadow mb-6">
