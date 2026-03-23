@@ -29,7 +29,11 @@ export default function SubscriptionSuccessPage() {
         const sub = res.data.data;
 
         if (!sub) return;
-
+          
+        const updatedOrganizer = {
+        ...organizer,
+        isSubscribed: true
+      };
         // 🔥 update redux organizer
         dispatch(setOrganizer({
           ...organizer,
@@ -38,7 +42,11 @@ export default function SubscriptionSuccessPage() {
 
         // redirect dashboard
         setTimeout(() => {
+         if (updatedOrganizer.isVerified) {
           router.replace("/organizer/dashboard");
+        } else {
+          router.replace("/organizer/profile");
+        }
         }, 2000);
 
       } catch (err) {
@@ -55,7 +63,8 @@ export default function SubscriptionSuccessPage() {
         🎉 Payment Successful!
       </h1>
       <p>Your subscription has been activated successfully.</p>
-      <p className="mt-3 text-gray-500">Redirecting to dashboard...</p>
+      <p className="mt-3 text-gray-500"> Redirecting to{" "}
+  {organizer?.isVerified ? "dashboard..." : "profile..."}</p>
     </div>
   );
 }
