@@ -46,7 +46,8 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (status === 401 && !originalRequest._retry) {
+    if (status === 401 && !originalRequest._retry &&
+  !originalRequest.url?.includes(ApiRoutes.REFRESH_TOKEN)) {
       originalRequest._retry = true;
 
       try {
