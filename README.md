@@ -120,16 +120,20 @@ Ensure backend is running at:
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home](public/screenshots/Home.png)
+<img width="1882" height="852" alt="Home" src="https://github.com/user-attachments/assets/89b6d6f4-a7d5-4bc2-8dcb-bb121fd506a9" />
+
 
 ### 🎟️ Event Details
-![Event Details](public/screenshots/EventDetails.png)
+<img width="1895" height="872" alt="EventDetails" src="https://github.com/user-attachments/assets/cceacf88-ae2f-4be8-ad16-16df6144d4da" />
+
 
 ### 💳 Booking Flow
-![Booking](public/screenshots/Booking.png)
+<img width="1902" height="867" alt="Booking" src="https://github.com/user-attachments/assets/2b4e3250-c58b-4f66-8f2a-af28f69a274d" />
+
 
 ### 💬 Chat System
-![Chat](public/screenshots/chat.png)
+<img width="1901" height="867" alt="chat" src="https://github.com/user-attachments/assets/9bc3cba6-7946-4efe-b096-ca3157e9da14" />
+
 ---
 
 ## 📌 Notes
