@@ -117,21 +117,19 @@ Ensure backend is running at:
 👉 http://localhost:8000
 
 ---
-
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home](./public/screenshots/Home.png)
+![Home](public/screenshots/Home.png)
 
 ### 🎟️ Event Details
-![Event Details](./public/screenshots/EventDetails.png)
+![Event Details](public/screenshots/EventDetails.png)
 
 ### 💳 Booking Flow
-![Booking](./public/screenshots/Booking.png)
+![Booking](public/screenshots/Booking.png)
 
 ### 💬 Chat System
-![Chat](./public/screenshots/chat.png)
-
+![Chat](public/screenshots/chat.png)
 ---
 
 ## 📌 Notes
