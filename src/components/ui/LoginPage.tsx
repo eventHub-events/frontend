@@ -304,7 +304,19 @@ const redirect = searchParams.get("redirect");
               )}
             </button>
           </form>
+             <div className="mt-6 p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-zinc-400">
+  <p className="font-semibold text-zinc-300 mb-2">Demo Credentials:</p>
 
+  <p>
+    <span className="text-zinc-500">Email:</span>{" "}
+    <span className="text-white">vsv23755@gmail.com</span>
+  </p>
+
+  <p>
+    <span className="text-zinc-500">Password:</span>{" "}
+    <span className="text-white">Vishnu@123</span>
+  </p>
+</div>
           {/* Google */}
           <div className="mt-10 flex justify-center">
             <GoogleLogin
