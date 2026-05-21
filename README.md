@@ -86,13 +86,13 @@ NEXT_PUBLIC_COMMUNITY_CHAT=http://localhost:8000/chat/community
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
 NEXT_PUBLIC_ADMIN_SOCKET_URL=http://localhost:8000/admin
 NEXT_PUBLIC_USER_SOCKET_URL=http://localhost:8000/user
-``
+```
 ## ▶️ Running the Frontend
 
 ### Install Dependencies
 ```bash
 npm install
-``
+```
 ## ▶️ Running the Frontend
 
 ### Start Development Server
@@ -113,9 +113,9 @@ npm start
 
 ## 🔗 Backend Integration
 
-Ensure backend is running at:  
+ backend is running at:  
 👉 http://localhost:8000
-
+```
 ---
 
 ## 📸 Screenshots
