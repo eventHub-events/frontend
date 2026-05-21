@@ -121,7 +121,8 @@ Ensure backend is running at:
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home](./public/screenshots/Home.png)
+<img width="1882" height="852" alt="Home" src="https://github.com/user-attachments/assets/e1d1af36-b3d6-45e2-a0f1-d6704b9c437e" />
+
 
 ### 🎟️ Event Details
 ![Event Details](./public/screenshots/EventDetails.png)
