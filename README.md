@@ -121,19 +121,16 @@ Ensure backend is running at:
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-_Add screenshot here_
-
-### 📊 Dashboard
-_Add screenshot here_
+![Home](./public/screenshots/home.png)
 
 ### 🎟️ Event Details
-_Add screenshot here_
+![Event Details](./public/screenshots/event-details.png)
 
 ### 💳 Booking Flow
-_Add screenshot here_
+![Booking](./public/screenshots/booking.png)
 
 ### 💬 Chat System
-_Add screenshot here_
+![Chat](./public/screenshots/chat.png)
 
 ---
 
