@@ -148,8 +148,7 @@ export default function ReviewSection({ mode, targetId, userId, userName }: Prop
     try {
       const summaryRes = await reviewService.getReviewSummary(mode, targetId);
       const reviewRes = await reviewService.getEventReviews(targetId, mode, pageNumber, limit);
-       console.log("a",summaryRes)
-       console.log("b",reviewRes)
+     
       if (pageNumber === 1) {
         setReviews(reviewRes.data.data.reviews);
       } else {

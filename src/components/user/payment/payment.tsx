@@ -12,8 +12,12 @@ export interface UserBookingData {
   eventId: string;
   eventName: string;
   eventImages?: string[];
-  eventDate: string;
+  eventStartDate: string;
+  eventEndDate: string;
+  attendanceDate :string;
   eventLocation: string;
+  eventStartTime: string;
+eventEndTime: string;
   organizerName: string;
   tickets: { name: string; quantity: number; price: number }[];
   totalAmount: number;
@@ -30,9 +34,9 @@ export default function Payment({ booking }: { booking: UserBookingData }) {
   const handlePayNow = async () => {
     try {
       setLoading(true);
-        console.log("bookingid", booking.bookingId)
+       
       const res = await paymentService.paymentCheckout(booking.bookingId!);
-      console.log("res", res)
+     
 
       if (res.data.data.url) {
         window.location.href = res.data.data.url;
@@ -78,12 +82,43 @@ export default function Payment({ booking }: { booking: UserBookingData }) {
             </div>
 
             {/* EVENT DATE */}
-            <div className="flex justify-between">
-              <span className="text-gray-500">Date</span>
-              <span className="font-medium text-gray-900">
-                {new Date(booking.eventDate).toLocaleDateString()}
-              </span>
-            </div>
+          {/* EVENT DURATION */}
+<div className="flex justify-between items-start">
+  <span className="text-gray-500">Event Duration</span>
+  <span className="font-medium text-gray-900 text-right">
+    {new Date(booking.eventStartDate).toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })}
+    {" - "}
+    {new Date(booking.eventEndDate).toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })}
+  </span>
+</div>
+
+{/* ATTENDANCE DATE */}
+<div className="flex justify-between items-start">
+  <span className="text-gray-500">Attendance Date</span>
+  <span className="font-medium text-gray-900 text-right">
+    {new Date(booking.attendanceDate).toLocaleDateString("en-US", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })}
+  </span>
+</div>
+{/* EVENT TIME */}
+<div className="flex justify-between items-start">
+  <span className="text-gray-500">Event Time</span>
+  <span className="font-medium text-gray-900 text-right">
+    {booking.eventStartTime} - {booking.eventEndTime}
+  </span>
+</div>
 
             {/* EVENT LOCATION */}
             <div className="flex justify-between">

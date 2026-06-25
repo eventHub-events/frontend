@@ -14,6 +14,7 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { eventDisplayService } from "@/services/user/eventDisplayService";
 import { useRouter } from "next/navigation";
 import FeaturedSkeleton from "./FeaturedSkelton";
+import { EventStatus } from "@/enums/organizer/events";
 
 
 interface FeaturedEvent {
@@ -27,6 +28,8 @@ interface FeaturedEvent {
   location: string;
   category: string;
   startDate: string;
+  status:EventStatus;
+  endDate:string;
   tags?: string[];
   price?: number;
   rating?: number;
@@ -57,7 +60,7 @@ const FeaturedEvents = () => {
     try {
       const getFeaturedEvents = async () => {
         const res = await eventDisplayService.fetchFeaturedEvents();
-        console.log("rseses", res)
+      
         setFeaturedEvents(res.data.data);
       };
       getFeaturedEvents();
@@ -85,7 +88,12 @@ if (!loading && featuredEvents.length === 0) return null;
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredEvents.map((event) => (
+          {featuredEvents.map((event) => {
+
+            const isBookingClosed =
+    event.status === EventStatus.Completed ||
+    event.status === EventStatus.Cancelled
+          return (  
             <div
               key={event.id}
               className="group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-indigo-100 aspect-[4/5] flex flex-col"
@@ -168,12 +176,15 @@ if (!loading && featuredEvents.length === 0) return null;
 
                 <div className="space-y-3 mb-4 shrink-0">
                   <div className="flex items-center text-gray-700">
-                    <DateIcon
-                      className="mr-3 text-purple-500 shrink-0"
-                      size={16}
-                    />
-                    <span className="font-medium text-sm">{event.startDate}</span>
-                  </div>
+  <DateIcon
+    className="mr-3 text-purple-500 shrink-0"
+    size={16}
+  />
+ <span className="font-medium text-sm">
+  {event.startDate}
+  {event.endDate && ` to ${event.endDate}`}
+</span>
+</div>
                   <div className="flex items-center text-gray-700">
                     <OrganizerIcon
                       className="mr-3 text-amber-500 shrink-0"
@@ -185,14 +196,24 @@ if (!loading && featuredEvents.length === 0) return null;
 
                 {/* Book Now Button */}
                 <div className="mb-4 shrink-0">
-                  <button onClick={() => router.push(`/user/events/${event.id}`) } className="w-full group relative px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm">
-                    <HiTicket className="text-white" size={16} />
-                    Book Now
-                    <FiArrowRight
-                      className="group-hover:translate-x-1 transition-transform duration-200"
-                      size={14}
-                    />
-                  </button>
+                 <button
+  onClick={() => router.push(`/user/events/${event.id}`)}
+  disabled={isBookingClosed}
+  className={`w-full group relative px-6 py-3 text-white font-semibold rounded-xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 text-sm ${
+    isBookingClosed
+      ? "bg-gray-500 cursor-not-allowed"
+      : "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:-translate-y-0.5"
+  }`}
+>
+  <HiTicket className="text-white" size={16} />
+  {isBookingClosed ? "Booking Closed" : "Book Now"}
+  {!isBookingClosed && (
+    <FiArrowRight
+      className="group-hover:translate-x-1 transition-transform duration-200"
+      size={14}
+    />
+  )}
+</button>
                 </div>
 
                 {/* Tickets Remaining */}
@@ -223,7 +244,8 @@ if (!loading && featuredEvents.length === 0) return null;
                 </div> */}
               </div>
             </div>
-          ))}
+          )
+})}
         </div>
 
         {/* CTA Section */}

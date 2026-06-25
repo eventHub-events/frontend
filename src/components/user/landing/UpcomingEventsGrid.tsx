@@ -1,5 +1,6 @@
 "use client";
 
+import { EventStatus } from "@/enums/organizer/events";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FiMapPin, FiArrowRight } from "react-icons/fi";
@@ -10,6 +11,8 @@ export interface UpcomingEvent {
   title: string;
   description: string;
   startDate: string;
+  status:EventStatus;
+  endDate:string;
   location: string;
   images: string[];
   category: string;
@@ -31,7 +34,9 @@ export default function UpcomingEventsGrid({ events }: Props) {
         const date = new Date(event.startDate);
         const month = date.toLocaleString("en-US", { month: "short" });
         const day = date.getDate();
-
+           const isBookingClosed =
+    event.status === EventStatus.Completed ||
+    event.status === EventStatus.Cancelled 
         const organizerInitials = event.organizer
           ? event.organizer.slice(0, 2).toUpperCase()
           : "EV";
@@ -137,21 +142,27 @@ export default function UpcomingEventsGrid({ events }: Props) {
                   </div>
 
                   {/* CTA */}
-                  <button
-                    onClick={() => router.push(`/user/events/${event.eventId}`)}
-                    className="
-                      w-full py-3.5 rounded-xl
-                      bg-gradient-to-r from-red-600 via-orange-500 to-amber-500
-                      bg-[length:200%_auto] hover:bg-right
-                      transition-all duration-500
-                      text-white font-bold text-sm
-                      shadow-xl shadow-orange-300
-                      flex items-center justify-center gap-2
-                    "
-                  >
-                    Get Tickets
-                    <FiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </button>
+                <button
+  onClick={() => router.push(`/user/events/${event.eventId}`)}
+  disabled={isBookingClosed}
+  className={`
+    w-full py-3.5 rounded-xl
+    transition-all duration-500
+    text-white font-bold text-sm
+    flex items-center justify-center gap-2
+    ${
+      isBookingClosed
+        ? "bg-gray-500 cursor-not-allowed"
+        : "bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 bg-[length:200%_auto] hover:bg-right shadow-xl shadow-orange-300"
+    }
+  `}
+>
+  {isBookingClosed ? "Booking Closed" : "Get Tickets"}
+
+  {!isBookingClosed && (
+    <FiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+  )}
+</button>
                 </div>
               </div>
             </div>

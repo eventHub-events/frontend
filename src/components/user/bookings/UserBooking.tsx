@@ -39,13 +39,18 @@ interface Booking {
   eventId: string;
   eventName: string;
   eventImages?: string[];
-  eventDate: string;
+
+  eventStartDate: string;
+  eventEndDate: string;
+  attendanceDate: string;
+  eventStartTime: string;
+  eventEndTime: string;
+
   eventLocation: string;
   organizerName: string;
   tickets: TicketInfo[];
   totalAmount: number;
   paymentStatus: string;
-
   paymentMethod: string;
   bookingDate: string;
   ticketUrls: string[];
@@ -179,7 +184,7 @@ export default function UserBookings() {
           startDate: appliedFilters.bookingDate || undefined,
         };
         const res = await bookingService.fetchAllBookings(user.id, payload);
-        console.log("bookings", res)
+      
         const bookingsList = res.data.data.bookingsList || [];
         setBookings(bookingsList);
         setTotalPages(res.data.data.totalPages || 1);
@@ -265,7 +270,7 @@ export default function UserBookings() {
                   </h3>
                   <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                     <Calendar className="w-3 h-3 text-primary" />
-                    <span>{format(new Date(booking.eventDate), "dd MMM yyyy")}</span>
+                    <span> {format(new Date(booking.attendanceDate), "dd MMM yyyy")}</span>
                   </div>
                   <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                     <Clock className="w-3 h-3 text-blue-500" />
@@ -409,11 +414,35 @@ export default function UserBookings() {
                   <Calendar className="w-4 h-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">Event Date</p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(selectedBooking.eventDate), "dd MMM yyyy, hh:mm a")}
-                  </p>
-                </div>
+                 <p className="text-sm font-medium">
+  Event Duration
+</p>
+
+<p className="text-sm text-muted-foreground">
+  {format(new Date(selectedBooking.eventStartDate), "dd MMM yyyy")}
+  {" - "}
+  {format(new Date(selectedBooking.eventEndDate), "dd MMM yyyy")}
+</p>
+            <p className="text-sm font-medium text-yellow-700">
+  Attendance Date
+</p>
+
+<p className="font-semibold">
+  {format(
+    new Date(selectedBooking.attendanceDate),
+    "EEEE, dd MMM yyyy"
+  )}
+</p>
+<p className="text-sm font-medium">
+  Event Time
+</p>
+
+<p className="text-sm text-muted-foreground">
+  {selectedBooking.eventStartTime} - {selectedBooking.eventEndTime}
+</p>
+
+
+    </div>
               </div>
 
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50">
@@ -566,7 +595,7 @@ export default function UserBookings() {
 
   {/* CANCEL BOOKING BUTTON */}
   {selectedBooking.paymentStatus === "confirmed" &&
-    new Date(selectedBooking.eventDate) > new Date() && (
+    new Date(selectedBooking.attendanceDate) > new Date() && (
       <Button
         variant="destructive"
         className="flex items-center gap-2 px-6 py-2.5"
@@ -596,7 +625,7 @@ try {
 
   fetchBookings(currentPage, filters);
 } catch (err) {
-   console.log(err)
+   
   Swal.fire({
     title: "Error",
     text: err instanceof AxiosError 

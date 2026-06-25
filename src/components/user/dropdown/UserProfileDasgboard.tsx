@@ -100,7 +100,7 @@ const UserProfile: React.FC = () => {
         setLoading(true);
         const result = await USER_PROFILE_SERVICE.fetchProfile(userId);
         const profile = result.data.data;
-        console.log("rewsult", result)
+     
        
 
         setUser((prev) => {
@@ -129,7 +129,7 @@ const UserProfile: React.FC = () => {
         });
       } catch (err) {
         console.error(err);
-        console.log(err)
+       
         toast.error("Failed to fetch profile");
       } finally {
         setLoading(false);
@@ -187,9 +187,7 @@ const UserProfile: React.FC = () => {
           userId
       }
       const profileData = data.address;
-      console.log("user", userData)
-      console.log("profile", profileData)
-      console.log("updatedUser", updatedUser)
+   
       await USER_PROFILE_SERVICE.updateProfile(user.profileId!, {user: userData, profile: {address:profileData}});
       setUser(updatedUser);
       toast.success("Profile updated successfully!");
@@ -220,10 +218,10 @@ const UserProfile: React.FC = () => {
     try {
       const imageUrl = await uploadImageToCloudinary(file,  `users/${userId}/profile`);
       if (!imageUrl) return;
-      console.log("image url", imageUrl)
+     
       const updatedUser = { ...user, image: imageUrl.secureUrl };
       setUser(updatedUser);
-          console.log("userId", userId)
+         
            const userData = {
           name: updatedUser.name,
           phone: updatedUser.phone,

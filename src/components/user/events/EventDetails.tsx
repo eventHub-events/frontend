@@ -12,8 +12,8 @@ import {
   FiLayers,
   FiUsers,
   FiMessageCircle,
-  FiShare2,
-  FiHeart,
+  // FiShare2,
+  // FiHeart,
   FiCheck,
   
   FiAward,
@@ -35,6 +35,10 @@ import ReviewSection from "../review/event/ReviewSection";
 import ReportIcon from "../report/ReportIcon";
 import { BadgeCheck, RefreshCw, Shield, ShieldCheck, ShoppingBag, Sparkles, Ticket } from "lucide-react";
 import axios from "axios";
+import { RatingSummary } from "@/types/user/review/reviewTypes";
+import { reviewService } from "@/services/review/reviewService";
+import { EventStatus } from "@/enums/organizer/events";
+import { toast } from "react-toastify";
 
 interface TicketData {
   name: string;
@@ -58,8 +62,12 @@ interface EventDetailsData {
     state: string;
     country: string;
   };
+  status:EventStatus;
   startDate: string;
+  endDate:string;
   tags?: string[];
+  startTime:string;
+  endTime:string;
   tickets: TicketData[];
   totalCapacity: number;
   organizerId: string;
@@ -78,14 +86,26 @@ const EventDetails: React.FC = () => {
 });
 
   const [event, setEvent] = useState<EventDetailsData | null>(null);
+  const [attendanceDate, setAttendanceDate] = useState("");
   const [loading, setLoading] = useState(true);
+  const[reviewSummary,setReviewSummary] = useState<RatingSummary>({
+     averageRating: 0,
+  totalReviews: 0,
+  starDistribution: {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  },
+  })
   const [ticketSelections, setTicketSelections] = useState<
     { ticket: TicketData; count: number }[]
   >([]);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  // const [isBookmarked, setIsBookmarked] = useState(false);
   const user = useAppSelector((state) => state.auth.user);
   const router = useRouter();
-  // const [selected, setSelected] = useState<any>(null);
+
 
 
  
@@ -95,12 +115,18 @@ const EventDetails: React.FC = () => {
 
     const fetchEvent = async () => {
       try {
-        const res = await eventDisplayService.fetchEventDetailsById(
-          eventId as string
-        );
-        const fetchedEvent = res.data.data;
-        console.log("fecthecd event", fetchedEvent);
-        setEvent(fetchedEvent);
+      
+
+        const [eventRes, summaryRes] = await Promise.all([
+        eventDisplayService.fetchEventDetailsById(eventId),
+        reviewService.getReviewSummary("event", eventId),
+      ]);
+
+      const fetchedEvent = eventRes.data.data;
+     
+      setEvent(fetchedEvent);
+
+      setReviewSummary(summaryRes.data.data);
 
         const initialSelection = fetchedEvent.tickets.map((t: TicketData) => ({
           ticket: t,
@@ -163,10 +189,22 @@ const EventDetails: React.FC = () => {
 
   const startingPrice = Math.min(...event.tickets.map((t) => t.price));
   const totalTicketsSelected = ticketSelections.reduce((sum, item) => sum + item.count, 0);
-  
 
+  const isBookingClosed =
+  event.status === EventStatus.Completed ||
+  event.status === EventStatus.Cancelled 
+ 
   const handleBooking = async () => {
    if (!event ) return;
+   if (isBookingClosed) {
+  showError("Bookings are closed for this event.");
+  return;
+}
+
+  if (!attendanceDate) {
+  toast.error("Please select an attendance date.");
+  return;
+}
   if (!user) {
    Swal.fire({
   html: `
@@ -236,7 +274,10 @@ const EventDetails: React.FC = () => {
      eventId,
      userId: user.id,
      eventTitle: event.title,
-     eventDate: event.startDate,
+     eventStartDate: event.startDate,
+     eventEndDate:event.endDate,
+     eventStartTime:event.startTime,
+     eventEndTime :event.endTime,
      userName : user.name,
      organizerName: event.organizerName,
      eventVenue: event.venue,
@@ -244,16 +285,17 @@ const EventDetails: React.FC = () => {
      organizerId: event.organizerId,
      eventImages : event.images,
      userEmail: user.email,
+     attendanceDate,
      stripeAccountId : event.stripeAccountId
      
 
   };
    
   try {
-    console.log("paayload is",payload);
-  
+    
+   
     const res = await bookingService.bookTicket(event.id, payload);
-    console.log("rseeee", res)
+  
     const bookingId = res.data.data.id;
     if(res) {
        Swal.fire({
@@ -299,6 +341,15 @@ const EventDetails: React.FC = () => {
   showError(message);
   }
 };
+const toInputDate = (date: string) => {
+  const d = new Date(date);
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 
   return (
     <div className="min-h-screen bg-gray-50/30">
@@ -314,10 +365,22 @@ const EventDetails: React.FC = () => {
                 <span className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-medium border border-white/30">
                   {event.category}
                 </span>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <FiStar className="text-yellow-400 fill-current" />
-                  <span className="text-sm font-medium">4.8 (124 reviews)</span>
-                </div>
+                  {event.status === EventStatus.Completed && (
+  <span className="bg-gray-700 text-white px-3 py-1 rounded-full text-xs font-semibold">
+    Completed
+  </span>
+)}
+               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
+  <FiStar className="text-yellow-400 fill-current" />
+
+  <span className="text-sm font-medium">
+    {reviewSummary.totalReviews > 0
+      ? `${reviewSummary.averageRating.toFixed(1)} (${reviewSummary.totalReviews} ${
+          reviewSummary.totalReviews === 1 ? "review" : "reviews"
+        })`
+      : "No reviews yet"}
+  </span>
+</div>
               </div>
 
               <h1 className="text-3xl lg:text-4xl font-bold leading-snug tracking-tight">
@@ -331,15 +394,25 @@ const EventDetails: React.FC = () => {
              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/30">
                   <FiCalendar className="text-white/90 text-sm" />
-                  <span className="text-sm font-medium">
-                    {new Date(event.startDate).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
+               <div className="flex flex-col">
+    <span className="text-sm font-medium">
+      {new Date(event.startDate).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })}{" "}
+      -{" "}
+      {new Date(event.endDate).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })}
+    </span>
+
+    <span className="text-xs text-white/80">
+      Each day • {event.startTime} - {event.endTime}
+    </span>
+  </div>
                 </div>
                 <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/30">
                   <FiMapPin className="text-white/90 text-sm" />
@@ -362,7 +435,7 @@ const EventDetails: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               
               <div className="absolute top-3 right-3 flex gap-2">
-                <button 
+                {/* <button 
                   onClick={() => setIsBookmarked(!isBookmarked)}
                   className="bg-white/25 backdrop-blur-sm p-2 rounded-lg hover:bg-white/35 transition-all hover:scale-110"
                 >
@@ -370,7 +443,7 @@ const EventDetails: React.FC = () => {
                 </button>
                 <button className="bg-white/25 backdrop-blur-sm p-2 rounded-lg hover:bg-white/35 transition-all hover:scale-110">
                   <FiShare2 className="text-sm text-white" />
-                </button>
+                </button> */}
                        {/* ✅ REPORT EVENT */}
                              <ReportIcon
                                targetId={event.id}
@@ -564,7 +637,7 @@ const EventDetails: React.FC = () => {
               <button
                 onClick={() => handleDecrease(index)}
                 className="text-2xl font-light text-slate-400"
-                disabled={item.count === 0}
+                disabled={item.count === 0 || isBookingClosed}
               >
                 −
               </button>
@@ -578,12 +651,13 @@ const EventDetails: React.FC = () => {
                 </span>
               </div>
 
-              <button
-                onClick={() => handleIncrease(index)}
-                className="text-2xl font-light text-slate-400"
-              >
-                +
-              </button>
+             <button
+  onClick={() => handleIncrease(index)}
+  disabled={isBookingClosed}
+  className="text-2xl font-light text-slate-400 disabled:opacity-40 disabled:cursor-not-allowed"
+>
+  +
+</button>
             </div>
           </div>
         </div>
@@ -656,14 +730,31 @@ const EventDetails: React.FC = () => {
           <div className="text-indigo-600 mt-1">
             <FiCalendar className="text-xl" />
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-500">
-              Date & Time
-            </p>
-            <p className="text-lg font-semibold text-gray-900">
-              {new Date(event.startDate).toLocaleString()}
-            </p>
-          </div>
+        <div className="flex-1">
+  <p className="text-sm font-medium text-gray-500">
+    Date & Time
+  </p>
+
+  <p className="text-lg font-semibold text-gray-900">
+    {new Date(event.startDate).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })}{" "}
+    -{" "}
+    {new Date(event.endDate).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })}
+  </p>
+
+  <p className="text-sm text-gray-500 mt-1">
+    Each day • {event.startTime} - {event.endTime}
+  </p>
+</div>
         </div>
 
         {/* Location */}
@@ -835,10 +926,24 @@ const EventDetails: React.FC = () => {
       )}
     </AnimatePresence>
 
+   <div className="space-y-2">
+  <label className="text-sm font-semibold text-gray-700">
+    Attendance Date
+  </label>
+
+  <input
+    type="date"
+    value={attendanceDate}
+   min={toInputDate(event.startDate)}
+  max={toInputDate(event.endDate)}
+    onChange={(e) => setAttendanceDate(e.target.value)}
+    className="w-full rounded-xl border border-gray-300 p-3 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+  />
+</div>
     {/* Checkout Button */}
     <motion.button
       onClick={handleBooking}
-      disabled={totalTicketsSelected === 0}
+      disabled={totalTicketsSelected === 0 || isBookingClosed}
       whileHover={totalTicketsSelected > 0 ? { scale: 1.03 } : {}}
       whileTap={totalTicketsSelected > 0 ? { scale: 0.97 } : {}}
       className={`w-full py-4 rounded-xl font-bold text-white transition-all duration-300 shadow-lg ${
@@ -847,9 +952,13 @@ const EventDetails: React.FC = () => {
           : "bg-gray-300 text-gray-500 cursor-not-allowed"
       }`}
     >
-      {totalTicketsSelected > 0
-        ? "Proceed to Checkout"
-        : "Select Tickets"}
+     {
+  isBookingClosed
+    ? "Booking Closed"
+    : totalTicketsSelected > 0
+    ? "Proceed to Checkout"
+    : "Select Tickets"
+}
     </motion.button>
 
     {/* Trust Badges */}

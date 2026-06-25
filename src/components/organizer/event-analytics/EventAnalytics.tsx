@@ -93,7 +93,7 @@ const limit = 10;
           page,
           limit
         });
-        console.log("ress", res)
+       
         setData(res.data.data);
       } catch (err) {
         console.error("Failed to load event analytics", err);

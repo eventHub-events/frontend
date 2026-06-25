@@ -21,7 +21,7 @@ export default function OrganizerDashboardPage() {
     
     const fetchDashboard = useCallback(async () => {
       const res = await organizerDashboardService.fetchDashboardData(range);
-      console.log("res", res);
+     
       setData(res.data.data);
     }, [range]);
     useEffect(() => {
