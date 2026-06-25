@@ -113,7 +113,7 @@ export default function OrganizerDashboardDetail() {
         from: f?.from,
         to: f?.to
       });
-    console.log("ree", res)
+  
       setData(res.data.data);
     } catch (err) {
       console.log(err);

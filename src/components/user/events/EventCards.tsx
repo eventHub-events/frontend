@@ -23,6 +23,7 @@ export interface EventCardData {
   location: string;
   category: string;
   startDate: string;
+  endDate:string;
   price?: number;
   rating?: number;
   totalReviews?: number;
@@ -105,10 +106,13 @@ export default function EventCards({ event }: Props) {
         </p>
 
         <div className="space-y-2 mb-4">
-          <div className="flex items-center text-gray-700 text-sm">
-            <DateIcon className="mr-2 text-purple-500" />
-            {event.startDate}
-          </div>
+        <div className="flex items-center text-gray-700 text-sm">
+  <DateIcon className="mr-2 text-purple-500 shrink-0" />
+  <span>
+    {event.startDate}
+    {event.endDate && ` to ${event.endDate}`}
+  </span>
+</div>
           <div className="flex items-center text-gray-700 text-sm">
             <OrganizerIcon className="mr-2 text-amber-500" />
             By {event.organizer}

@@ -152,7 +152,7 @@ useEffect(() => {
   const fetchStripeAccounts = async () => {
     try {
       const res = await PROFILE_SERVICE.getStripeAccounts(organizerId);
-      console.log("accounts", res)
+  
       setStripeAccounts(res.data.data||[]);
     } catch(err) {
       console.log(err)
@@ -180,7 +180,7 @@ useEffect(() => {
         if (!organizerId) return;
       
         const response = await PROFILE_SERVICE.getProfile(organizerId);
-       console.log("response is", response)
+      
 
         if (response?.data?.data) {
           const flatData: ProfileFormData = {
@@ -299,7 +299,7 @@ if (!organizerData.isKycSubmitted) {
     } catch (err: unknown) {
 
     if (axios.isAxiosError(err)) {
-    console.log("Axios error:", err);
+  
 
     const errors = err.response?.data?.errors;
     const message = err.response?.data?.message;

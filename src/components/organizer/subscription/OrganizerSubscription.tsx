@@ -96,7 +96,7 @@ useEffect(() => {
       subscriptionType : currentPlan?"upgrade":"new",
       commissionRate : plan.privileges.commissionRate
     });
-     console.log("rseses", response);
+   
      
     window.location.href = response.data.data; // Redirect to Stripe Checkout
   } catch (error) {

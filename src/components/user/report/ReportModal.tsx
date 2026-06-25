@@ -81,7 +81,7 @@ export default function ReportModal({
       showError("Please select a reason");
       return;
     }
-    console.log("message is", message)
+   
     try {
       // setLoading(true);
     
@@ -100,7 +100,7 @@ export default function ReportModal({
           messageSnapshot: message
           
        }
-       console.log("payylaod", payload)
+      
     if(targetType === "event" ){
        await reportService.createEventReport(payload)
        showSuccess("Report submitted successfully");

@@ -59,7 +59,7 @@ export default function EventFormPage() {
 
   const organizer = useAppSelector((state) => state.organizerAuth?.organizer);
   const organizerId = organizer?.id;
-  console.log("organizeeeerr", organizer)
+ 
   const router = useRouter();
 
   const {
@@ -176,7 +176,7 @@ const { fields: ticketFields, append, remove } = useFieldArray({
         const response = await EVENT_SERVICE.fetchEventById(eventId as string);
         
 const { event, tickets } = response.data.data;
-        console.log("response is", response)
+     
 
         // convert backend data to form-compatible structure
         const startFormatted = formatTimeForInput(event.startTime);
@@ -333,7 +333,7 @@ const todayStr = new Date().toISOString().split("T")[0];
         );
         return;
       }
-      console.log("ppppp", payload);
+      
       
       if (isEditMode) {
         const res = await EVENT_SERVICE.updateEvent(eventId as string, payload);

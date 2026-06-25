@@ -6,17 +6,19 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CalendarDays } from "lucide-react";
 import { UpcomingEvent } from "./UpcomingEventsGrid";
 import Image from "next/image";
+import FeaturedSkeleton from "./FeaturedSkelton";
+import { useRouter } from "next/navigation";
 
 
 export default function UpcomingEventsSection() {
   const [events, setEvents] = useState<UpcomingEvent[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
   useEffect(() => {
     const fetchUpcoming = async () => {
       try {
         const res = await eventDisplayService.fetchUpcomingEvents();
-         console.log("rses",res)
+        
         setEvents(res.data.data || []);
       } catch (err) {
         console.error("Failed to fetch upcoming events", err);
@@ -28,8 +30,15 @@ export default function UpcomingEventsSection() {
     fetchUpcoming();
   }, []);
 
-  if (!loading && events.length === 0) return null;
-
+ if (loading) return <FeaturedSkeleton />;
+if (!loading && events.length === 0) return null;
+   const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
   return (
     <section className="relative py-20 bg-[#f4f7fb] mt-0">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -116,7 +125,7 @@ export default function UpcomingEventsSection() {
       {/* black booking bar */}
     <div className="bg-black px-4 py-3 text-white text-sm font-medium text-center">
   {event.availability > 0
-    ? `${Number(event.availability).toFixed(2)}% Booked`
+    ? `${Number(event.availability).toFixed(0)}% Booked`
     : "Just Launched!"}
 </div>
 
@@ -130,9 +139,10 @@ export default function UpcomingEventsSection() {
       </p>
 
       <div className="space-y-2 mb-5 text-sm">
-        <div className="text-gray-700 font-medium">
-          📅 {event.startDate}
-        </div>
+       <div className="text-gray-700 font-medium">
+  📅 {formatDate(event.startDate)}
+  {event.endDate && ` - ${formatDate(event.endDate)}`}
+</div>
         <div className="text-gray-700">
           👤 By {event.organizer}
         </div>
@@ -168,6 +178,7 @@ export default function UpcomingEventsSection() {
         {!loading && events.length > 0 && (
           <div className="mt-16 flex justify-center">
             <Button
+              onClick={() => router.push("/user/events")}
               variant="outline"
               className="rounded-full px-8 py-6 border-slate-300 text-slate-700 font-semibold hover:bg-white hover:shadow-md transition-all"
             >

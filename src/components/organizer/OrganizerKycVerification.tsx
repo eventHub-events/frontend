@@ -25,7 +25,7 @@ export default function KycVerificationStatus({
     const fetchDocs = async () => {
       try {
         const docs = await DOCUMENT_SERVICE.getDocuments(organizerId);
-        console.log("docs is ", docs)
+      
         setDocuments(docs.data?.data.documents);
       } catch (error) {
         console.error("Error fetching documents", error);

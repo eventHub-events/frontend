@@ -68,7 +68,7 @@ const otpForm = useForm<SetPasswordWithOtpSchemaType>({
 const onSetPasswordWithOtp = async ( data:{otp: string,newPassword :string; confirmNewPassword: string}) => {
   try {
     await USER_PROFILE_SERVICE.userSetPasswordWithOtp(data);
-     console.log("data is", data)
+
     showSuccess("Password set successfully. Please login again.");
     
     // IMPORTANT: force re-auth

@@ -51,7 +51,7 @@ const Header: React.FC = () => {
   if (debounceRef.current) {
     clearTimeout(debounceRef.current);
   }
-    console.log("hello")
+   
   debounceRef.current = setTimeout(() => {
     router.push(`/user/events?search=${encodeURIComponent(searchQuery)}`);
   }, 400); // ⏱️ debounce time

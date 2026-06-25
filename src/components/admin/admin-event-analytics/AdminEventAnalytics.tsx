@@ -75,7 +75,7 @@ const limit = 10;
     const fetchEvents = async () => {
       try {
         const res = await eventManagementService.fetchAllEvents();
-        console.log("evneeee", res)
+       
         const formattedEvents = res.data.data
   .filter((e: EventData) => typeof e.id === "string" && e.id.trim() !== "")
   .map((e: EventData) => ({
@@ -107,7 +107,7 @@ setEvents(formattedEvents);
           page,
           limit
         });
-        console.log("ress", res)
+     
         setData(res.data.data);
       } catch (err) {
         console.error("Failed to load event analytics", err);

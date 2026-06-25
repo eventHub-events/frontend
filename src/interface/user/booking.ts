@@ -17,14 +17,18 @@ export interface BookingPayload {
         userId:  string;
         tickets: BookedTickets[];
         eventTitle: string;
-        eventDate : string;
+        eventStartDate : string;
+        eventEndDate:string;
         organizerName: string;
         eventVenue : string;
         userName: string;
         organizerId: string;
         eventImages: string[];
         userEmail?:string;
-        stripeAccountId : string
+        stripeAccountId : string;
+        attendanceDate:string;
+        eventStartTime:string;
+        eventEndTime:string
 
 }
 
