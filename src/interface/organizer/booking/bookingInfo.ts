@@ -4,7 +4,11 @@ import { BookedTickets } from "@/interface/user/booking";
 export interface BookingInfo {
   id: string;
   eventTitle: string;
-  eventDate: string;
+  eventStartDate: string;
+  eventEndDate: string;
+  attendanceDate:string;
+  eventStartTime:string;
+  eventEndTime:string;
   eventVenue: string;
   organizerName: string;
   totalAmount: number;
@@ -44,9 +48,12 @@ export interface BookingFilter {
     event : {
        eventId : string;
        title :string;
-       date: string;
-       time? :string;
+       startDate: string;
+       endDate: string;
+       startTime? :string;
+       endTime? :string;
        venue: string;
+       attendanceDate:string;
      },
      user : {
        name: string;

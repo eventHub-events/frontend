@@ -237,7 +237,7 @@ const Header: React.FC = () => {
                     </div>
 
                     {/* Quick Stats */}
-                    <div className="p-3 bg-gray-50/50 border-b border-gray-200/60">
+                    {/* <div className="p-3 bg-gray-50/50 border-b border-gray-200/60">
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div>
                           <p className="text-xs font-semibold text-gray-900">5</p>
@@ -252,7 +252,7 @@ const Header: React.FC = () => {
                           <p className="text-[10px] text-gray-500">Attended</p>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Menu Items */}
                     <div className="p-2">
