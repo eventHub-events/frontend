@@ -90,11 +90,16 @@ const filterConfig = [
   placeholder: "All statuses",
 },
 
-  {
-    label: "Booking Date",
-    name: "bookingDate",
-    type: "date" as const,
-  },
+ {
+  label: "Booking From",
+  name: "startDate",
+  type: "date" as const,
+},
+{
+  label: "Booking To",
+  name: "endDate",
+  type: "date" as const,
+},
 ];
 
 const BookingStatusBadge = ({ status }: { status: string }) => {
@@ -152,13 +157,14 @@ export default function UserBookings() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [filters, setFilters] = useState<Record<string, string>>({
-    organizerName: "",
-    status: "",
-    title: "",
-    search: "",
-    bookingDate: "",
-  });
+ const [filters, setFilters] = useState({
+  organizerName: "",
+  status: "",
+  title: "",
+  search: "",
+  startDate: "",
+  endDate: "",
+});
   const [loading, setLoading] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
   const [showTicketViewer, setShowTicketViewer] = useState(false);
@@ -175,14 +181,15 @@ export default function UserBookings() {
       if (!user?.id) return;
       try {
         setLoading(true);
-        const payload = {
-          page,
-          limit: pageLimit,
-          organizerName: appliedFilters.organizerName,
-          status: appliedFilters.status,
-          title: appliedFilters.title,
-          startDate: appliedFilters.bookingDate || undefined,
-        };
+       const payload = {
+  page,
+  limit: pageLimit,
+  organizerName: appliedFilters.organizerName,
+  status: appliedFilters.status,
+  title: appliedFilters.title,
+  startDate: appliedFilters.startDate || undefined,
+  endDate: appliedFilters.endDate || undefined,
+};
         const res = await bookingService.fetchAllBookings(user.id, payload);
       
         const bookingsList = res.data.data.bookingsList || [];
@@ -199,8 +206,8 @@ export default function UserBookings() {
         if (updatedMatch) {
           setSelectedBooking(updatedMatch); // ⭐ refresh right panel
         }
-      } else if (bookingsList.length > 0) {
-        setSelectedBooking(bookingsList[0]);
+      } else  {
+        setSelectedBooking(null);
       }
       } catch (err) {
         console.error("Error fetching bookings:", err);
@@ -494,7 +501,7 @@ export default function UserBookings() {
           <div className="grid gap-4">
             {selectedBooking.tickets.map((ticket, index) => (
               <motion.div
-                key={index}
+                key={ticket.name}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}

@@ -285,7 +285,7 @@ export default function OrganizerBookingList({eventId}:{eventId: string}) {
                             <div className="space-y-1">
                               <p className="text-sm text-gray-900 flex items-center">
                                 <FiCalendar className="w-3 h-3 mr-2 text-gray-400" />
-                                {booking.eventDate}
+                                {booking.attendanceDate}
                               </p>
                               <p className="text-sm text-gray-500 flex items-center truncate">
                                 <FiMapPin className="w-3 h-3 mr-2 text-gray-400" />

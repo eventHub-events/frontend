@@ -39,7 +39,7 @@ export default function OrganizerChat() {
     };
 
     fetchEvents();
-    console.log("ssssss", selected)
+   
    
   }, [organizer]);
 

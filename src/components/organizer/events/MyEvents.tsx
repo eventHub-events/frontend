@@ -48,7 +48,7 @@ export const MyEvents: React.FC = () => {
     router.push(`/organizer/events/edit/${id}`);
   };
 
-  const handleView = (id: string) => console.log("View", id);
+   const handleView = (id: string) => console.log("View", id);
 
   const handleDelete = async (id: string) => {
     try {
