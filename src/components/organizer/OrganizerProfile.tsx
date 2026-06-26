@@ -21,7 +21,6 @@ import { KycStatus } from '@/types/admin/Enums/organizerVerificationEnum';
 
 
 const tabs = ['Profile', 'Documents', 'Verification', 'Security',"Payments"];
-// const tabs = ['Profile', 'Documents', 'Verification', 'Security',"Payments", 'Notifications'];
 
 type ProfileFormData = {
   organizerId: string;
