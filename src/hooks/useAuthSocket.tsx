@@ -26,7 +26,7 @@ const socketRef = useRef<Socket | null>(null);
   useEffect(()=>{
    
      if (!activeAccount?.id || !role){  
-      console.log("no  active account")
+      // console.log("no  active account")
       return
       
      } ;
@@ -39,7 +39,7 @@ const socket=io(process.env.NEXT_PUBLIC_USER_SOCKET_URL!,{
  
   socketRef.current=socket
   socket .on("connect",()=>{
-console.log("connected to  webSocket for user:",activeAccount?.id,activeAccount.name)
+// console.log("connected to  webSocket for user:",activeAccount?.id,activeAccount.name)
   })
     socket .on("blocked",()=>{
       // localStorage.removeItem("userInfo")

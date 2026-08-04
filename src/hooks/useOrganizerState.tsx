@@ -21,7 +21,7 @@ if (stored && stored !== "undefined") {
     const parsed = JSON.parse(stored);
     dispatch(setOrganizer(parsed));
   } catch (err) {
-    console.error("Failed to parse userInfo:", err);
+     console.error("Failed to parse userInfo:", err);
     localStorage.removeItem("organizerInfo"); // optional: clean up
   }
 } else {
