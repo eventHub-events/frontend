@@ -15,7 +15,7 @@ export const useRefreshOrganizer = () => {
 
       const data = response?.data?.data;
       if (!data) return;
-        console.log("ressss", data)
+        
       const org = data.organizerId;
 
       // 🔥 Update redux with latest backend values

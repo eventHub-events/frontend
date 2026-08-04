@@ -24,16 +24,16 @@ export const useAdminSocket=()=>{
 })
 socketRef.current=socket;
 socket.on("connect",()=>{
-  console.log("admin socket connected",adminId)
+  // console.log("admin socket connected",adminId)
 
 })
 socket.on("block-user-success",(data)=>{
   toast.success(`${data?.result?.name} was ${data.result.isBlocked?"blocked":"unblocked"}`)
-  console.log("success")
-  console.log(data)
+  // console.log("success")
+  // console.log(data)
 })
 socket.on("disConnect",()=>{
-  console.log("admin socket  disconnected")
+  // console.log("admin socket  disconnected")
 })
 return ()=>{
   socket.disconnect()

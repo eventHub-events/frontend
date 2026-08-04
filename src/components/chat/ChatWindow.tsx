@@ -10,7 +10,7 @@ export default function ChatWindow({ messages, onSend, userName,userId, role,mod
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log("messages", messages)
+   
   }, [messages]);
 
   return (
